@@ -30,7 +30,7 @@ import de.unirostock.sems.bives.markup.Typesetting;
 import de.unirostock.sems.bives.markup.TypesettingHTML;
 import de.unirostock.sems.bives.markup.TypesettingMarkDown;
 import de.unirostock.sems.bives.markup.TypesettingReStructuredText;
-import de.unirostock.sems.xmltools.exception.XmlDocumentParseException;
+import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
 
 /**
  * TODO: not implemented yet

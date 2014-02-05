@@ -20,10 +20,10 @@ import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.exception.BivesFlattenException;
 import de.unirostock.sems.bives.exception.BivesImportException;
 import de.unirostock.sems.bives.exception.BivesLogicalException;
-import de.unirostock.sems.xmltools.ds.TreeDocument;
-import de.unirostock.sems.xmltools.exception.XmlDocumentConsistencyException;
-import de.unirostock.sems.xmltools.tools.DocumentTools;
-import de.unirostock.sems.xmltools.tools.XmlTools;
+import de.unirostock.sems.xmlutils.ds.TreeDocument;
+import de.unirostock.sems.xmlutils.exception.XmlDocumentConsistencyException;
+import de.unirostock.sems.xmlutils.tools.DocumentTools;
+import de.unirostock.sems.xmlutils.tools.XmlTools;
 
 
 /**

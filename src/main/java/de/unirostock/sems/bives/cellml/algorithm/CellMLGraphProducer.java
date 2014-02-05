@@ -23,8 +23,8 @@ import de.unirostock.sems.bives.ds.graph.CRNReaction;
 import de.unirostock.sems.bives.ds.graph.CRNSubstance;
 import de.unirostock.sems.bives.ds.graph.HierarchyNetworkComponent;
 import de.unirostock.sems.bives.ds.graph.HierarchyNetworkVariable;
-import de.unirostock.sems.xmltools.comparison.Connection;
-import de.unirostock.sems.xmltools.ds.DocumentNode;
+import de.unirostock.sems.xmlutils.comparison.Connection;
+import de.unirostock.sems.xmlutils.ds.DocumentNode;
 
 
 /**

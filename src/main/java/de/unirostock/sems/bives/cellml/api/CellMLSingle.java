@@ -23,7 +23,7 @@ import de.unirostock.sems.bives.ds.graph.GraphTranslatorJson;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.exception.BivesImportException;
 import de.unirostock.sems.bives.exception.BivesLogicalException;
-import de.unirostock.sems.xmltools.exception.XmlDocumentParseException;
+import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
 
 /**
  * TODO: not implemented yet

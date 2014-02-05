@@ -10,8 +10,8 @@ import java.util.Vector;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.exception.BivesLogicalException;
-import de.unirostock.sems.xmltools.ds.DocumentNode;
-import de.unirostock.sems.xmltools.ds.TreeNode;
+import de.unirostock.sems.xmlutils.ds.DocumentNode;
+import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**

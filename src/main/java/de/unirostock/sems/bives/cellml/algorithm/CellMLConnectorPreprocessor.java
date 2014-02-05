@@ -14,7 +14,7 @@ import de.unirostock.sems.bives.cellml.parser.CellMLModel;
 import de.unirostock.sems.bives.cellml.parser.CellMLUnitDictionary;
 import de.unirostock.sems.bives.cellml.parser.CellMLUserUnit;
 import de.unirostock.sems.bives.exception.BivesConnectionException;
-import de.unirostock.sems.xmltools.ds.TreeDocument;
+import de.unirostock.sems.xmlutils.ds.TreeDocument;
 
 
 /**
