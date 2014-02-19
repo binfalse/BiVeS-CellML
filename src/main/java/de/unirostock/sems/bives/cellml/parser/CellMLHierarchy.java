@@ -5,7 +5,8 @@ package de.unirostock.sems.bives.cellml.parser;
 
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
@@ -44,9 +45,9 @@ public class CellMLHierarchy
 	public void parseGroup (DocumentNode node) throws BivesCellMLParseException, BivesLogicalException
 	{
 		//CellMLHierarchyRelationship relationship = new CellMLHierarchyRelationship ();
-		Vector<CellMLHierarchyNetwork> curNetworks = new Vector<CellMLHierarchyNetwork> ();
+		List<CellMLHierarchyNetwork> curNetworks = new ArrayList<CellMLHierarchyNetwork> ();
 		
-		Vector<TreeNode> kids = node.getChildrenWithTag ("relationship_ref");
+		List<TreeNode> kids = node.getChildrenWithTag ("relationship_ref");
 		for (TreeNode kid : kids)
 		{
 			if (kid.getType () != TreeNode.DOC_NODE)
@@ -89,9 +90,9 @@ public class CellMLHierarchy
 		recursiveParseGroup (node, parents, curNetworks);
 	}
 	
-	private void recursiveParseGroup (DocumentNode cur, Stack<CellMLComponent> parents, Vector<CellMLHierarchyNetwork> curNetworks) throws BivesCellMLParseException, BivesLogicalException
+	private void recursiveParseGroup (DocumentNode cur, Stack<CellMLComponent> parents, List<CellMLHierarchyNetwork> curNetworks) throws BivesCellMLParseException, BivesLogicalException
 	{
-		Vector<TreeNode> kids = cur.getChildrenWithTag ("component_ref");
+		List<TreeNode> kids = cur.getChildrenWithTag ("component_ref");
 		
 		if (kids.size () == 0 && parents.size () == 0)
 			throw new BivesCellMLParseException ("group doesn't contain component_refs");

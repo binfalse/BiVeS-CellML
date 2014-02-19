@@ -41,9 +41,8 @@ public class CellMLConnectorPreprocessor
 	}
 	
 	@Override
-	public void init (TreeDocument docA, TreeDocument docB) throws BivesConnectionException
+	protected void init () throws BivesConnectionException
 	{
-		super.init (cellmlDocA.getTreeDocument (), cellmlDocB.getTreeDocument ());
 		
 		// not yet initialized?
 		if (preprocessor == null)

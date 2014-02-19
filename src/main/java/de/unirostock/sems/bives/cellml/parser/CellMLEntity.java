@@ -3,7 +3,8 @@
  */
 package de.unirostock.sems.bives.cellml.parser;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.unirostock.sems.bives.ds.RDF;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
@@ -17,7 +18,7 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 public class CellMLEntity
 {
 	protected CellMLModel model;
-	private Vector<RDF> rdfDescription;
+	private List<RDF> rdfDescription;
 	// might be null
 	private DocumentNode node;
 	
@@ -25,14 +26,14 @@ public class CellMLEntity
 	{
 		this.model = model;
 		this.node = node;
-		rdfDescription = new Vector<RDF> ();
+		rdfDescription = new ArrayList<RDF> ();
 
 		if (model != null)
 			model.mapNode (node, this);
 		
 		if (node != null)
 		{
-			Vector<TreeNode> kids= node.getChildrenWithTag ("rdf:RDF");
+			List<TreeNode> kids= node.getChildrenWithTag ("rdf:RDF");
 			for (TreeNode kid : kids)
 			{
 				if (kid.getType () != TreeNode.DOC_NODE)

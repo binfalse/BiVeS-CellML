@@ -3,13 +3,14 @@
  */
 package de.unirostock.sems.bives.cellml.parser;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.binfalse.bflog.LOGGER;
 import de.binfalse.bfutils.GeneralTools;
-import de.unirostock.sems.bives.algorithm.ClearConnectionManager;
+import de.unirostock.sems.bives.algorithm.DiffReporter;
+import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
-import de.unirostock.sems.bives.ds.DiffReporter;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.markup.Markup;
 import de.unirostock.sems.bives.markup.MarkupDocument;
@@ -35,7 +36,7 @@ public class CellMLUserUnit
 	private CellMLUnitDictionary dict;
 	private CellMLComponent component;
 
-	private Vector<BaseQuantity> baseQuantities;
+	private List<BaseQuantity> baseQuantities;
 	
 	public class BaseQuantity
 	implements Markup
@@ -57,7 +58,7 @@ public class CellMLUserUnit
 		
 		public BaseQuantity (DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException
 		{
-			LOGGER.debug ("reading base quantity from: " + node.getXPath () + " -> " + node.getAttribute ("units"));
+			LOGGER.debug ("reading base quantity from: ", node.getXPath (), " -> ", node.getAttribute ("units"));
 			
 			this.unit = dict.getUnit (node.getAttribute ("units"), component);
 			if (this.unit == null)
@@ -105,10 +106,10 @@ public class CellMLUserUnit
 		}*/
 
 		@Override
-		public String markup (MarkupDocument markupDocument)
+		public String markup ()
 		{
-			String ret = multiplier == 1 ? "" : GeneralTools.prettyDouble (multiplier, 1) + markupDocument.multiply ();
-			ret += prefix == 0 ? "" : "10^" + prefix + markupDocument.multiply ();
+			String ret = multiplier == 1 ? "" : GeneralTools.prettyDouble (multiplier, 1) + MarkupDocument.multiply ();
+			ret += prefix == 0 ? "" : "10^" + prefix + MarkupDocument.multiply ();
 			ret += "[" + unit.toString () + "]";
 			ret += exponent == 1 ? "" : "^" + GeneralTools.prettyDouble (exponent, 1);
 			ret += offset == 0 ? "" : "+"+GeneralTools.prettyDouble (offset, 0);
@@ -131,11 +132,11 @@ public class CellMLUserUnit
 			return;
 		}
 		
-		LOGGER.debug ("reading unit: " + getName ());
+		LOGGER.debug ("reading unit: ", getName ());
 		
-		baseQuantities = new Vector<BaseQuantity> ();
+		baseQuantities = new ArrayList<BaseQuantity> ();
 		
-		Vector<TreeNode> kids = node.getChildrenWithTag ("unit");
+		List<TreeNode> kids = node.getChildrenWithTag ("unit");
 		/*boolean nextRound = true;
 		
 		while (nextRound)
@@ -221,7 +222,7 @@ public class CellMLUserUnit
 		throw new BivesCellMLParseException ("unknown prefix: " + s);
 	}
 	
-	public String markup (MarkupDocument markupDocument)
+	public String markup ()
 	{
 		if (base_units || baseQuantities == null)
 			return "base units";
@@ -229,9 +230,9 @@ public class CellMLUserUnit
 		String ret = "";
 		for (int i = 0; i < baseQuantities.size (); i++)
 		{
-			ret += baseQuantities.elementAt (i).markup (markupDocument);//.toString ();
+			ret += baseQuantities.get (i).markup ();//.toString ();
 			if (i < baseQuantities.size () - 1)
-				ret += " "+markupDocument.multiply ()+" ";
+				ret += " "+MarkupDocument.multiply ()+" ";
 		}
 		return ret;
 	}
@@ -241,22 +242,22 @@ public class CellMLUserUnit
 		System.out.println (prefix + getName () + ": " + toString ());
 	}
 
-	public Vector<CellMLUserUnit> getDependencies (Vector<CellMLUserUnit> vector)
+	public List<CellMLUserUnit> getDependencies (List<CellMLUserUnit> List)
 	{
 		if (base_units || baseQuantities == null)
-			return vector;
+			return List;
 		
 		for (BaseQuantity bq : baseQuantities)
 		{
 			if (!bq.unit.isStandardUnits ())
-				vector.add ((CellMLUserUnit) bq.unit);
+				List.add ((CellMLUserUnit) bq.unit);
 		}
-		return vector;
+		return List;
 	}
 
 	@Override
-	public MarkupElement reportMofification (ClearConnectionManager conMgmt,
-		DiffReporter docA, DiffReporter docB, MarkupDocument markupDocument)
+	public MarkupElement reportMofification (SimpleConnectionManager conMgmt,
+		DiffReporter docA, DiffReporter docB)
 	{
 		CellMLUserUnit a = (CellMLUserUnit) docA;
 		CellMLUserUnit b = (CellMLUserUnit) docB;
@@ -269,37 +270,37 @@ public class CellMLUserUnit
 			me = new MarkupElement ("Units: " + idA);
 		else
 		{
-			me = new MarkupElement ("Units: " + markupDocument.delete (idA) + " "+markupDocument.rightArrow ()+" " + markupDocument.insert (idB));
+			me = new MarkupElement ("Units: " + MarkupDocument.delete (idA) + " "+MarkupDocument.rightArrow ()+" " + MarkupDocument.insert (idB));
 		}
 
-		String oldDef = a.markup (markupDocument);
-		String newDef = b.markup (markupDocument);
+		String oldDef = a.markup ();
+		String newDef = b.markup ();
 		if (oldDef.equals (newDef))
 			me.addValue ("defined by: " + oldDef);
 		else
 		{
-			me.addValue (markupDocument.delete ("old definition: " + oldDef));
-			me.addValue (markupDocument.insert ("new definition: " + newDef));
+			me.addValue (MarkupDocument.delete ("old definition: " + oldDef));
+			me.addValue (MarkupDocument.insert ("new definition: " + newDef));
 		}
 		
-		BivesTools.genAttributeHtmlStats (a.getDocumentNode (), b.getDocumentNode (), me, markupDocument);
+		BivesTools.genAttributeMarkupStats (a.getDocumentNode (), b.getDocumentNode (), me);
 		
 		return me;
 	}
 
 	@Override
-	public MarkupElement reportInsert (MarkupDocument markupDocument)
+	public MarkupElement reportInsert ()
 	{
-		MarkupElement me = new MarkupElement ("Units: " + markupDocument.insert (getName ()));
-		me.addValue (markupDocument.insert ("inserted: " + this.markup (markupDocument)));
+		MarkupElement me = new MarkupElement ("Units: " + MarkupDocument.insert (getName ()));
+		me.addValue (MarkupDocument.insert ("inserted: " + this.markup ()));
 		return me;
 	}
 
 	@Override
-	public MarkupElement reportDelete (MarkupDocument markupDocument)
+	public MarkupElement reportDelete ()
 	{
-		MarkupElement me = new MarkupElement ("Units: " + markupDocument.delete (getName ()));
-		me.addValue (markupDocument.delete ("deleted: " + this.markup (markupDocument)));
+		MarkupElement me = new MarkupElement ("Units: " + MarkupDocument.delete (getName ()));
+		me.addValue (MarkupDocument.delete ("deleted: " + this.markup ()));
 		return me;
 	}
 }

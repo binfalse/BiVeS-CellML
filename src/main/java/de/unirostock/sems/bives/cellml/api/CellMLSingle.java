@@ -39,14 +39,14 @@ public class CellMLSingle extends Single
 	XmlDocumentParseException, FileNotFoundException, SAXException,
 			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
 		super(a);
-		doc1 = new CellMLDocument (treeA);
+		doc1 = new CellMLDocument (tree);
 	}
 
 	public CellMLSingle(String a) throws ParserConfigurationException,
 	XmlDocumentParseException, FileNotFoundException, SAXException,
 			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
 		super(a);
-		doc1 = new CellMLDocument (treeA);
+		doc1 = new CellMLDocument (tree);
 	}
 
 	public CellMLSingle(CellMLDocument a, CellMLDocument b) throws ParserConfigurationException,

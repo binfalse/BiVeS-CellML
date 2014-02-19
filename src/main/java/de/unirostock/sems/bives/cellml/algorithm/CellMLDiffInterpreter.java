@@ -4,10 +4,11 @@
 package de.unirostock.sems.bives.cellml.algorithm;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.bives.algorithm.ClearConnectionManager;
+import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.algorithm.Interpreter;
 import de.unirostock.sems.bives.cellml.parser.CellMLComponent;
 import de.unirostock.sems.bives.cellml.parser.CellMLDocument;
@@ -37,7 +38,7 @@ public class CellMLDiffInterpreter
 	private MarkupDocument markupDocument;
 	private CellMLDocument cellmlDocA, cellmlDocB;
 	
-	public CellMLDiffInterpreter (ClearConnectionManager conMgmt, CellMLDocument cellmlDocA,
+	public CellMLDiffInterpreter (SimpleConnectionManager conMgmt, CellMLDocument cellmlDocA,
 		CellMLDocument cellmlDocB)
 	{
 		super (conMgmt, cellmlDocA.getTreeDocument (), cellmlDocB.getTreeDocument ());
@@ -101,7 +102,7 @@ public class CellMLDiffInterpreter
 			Connection con = conMgmt.getConnectionForNode (dn);
 			if (con == null)
 			{
-				unitsSec.addValue (unit.reportDelete (markupDocument));
+				unitsSec.addValue (unit.reportDelete ());
 			}
 			else
 			{
@@ -111,7 +112,7 @@ public class CellMLDiffInterpreter
 				
 				CellMLUserUnit unitB = (CellMLUserUnit) modelB.getFromNode (con.getPartnerOf (dn));
 				//System.out.println (unitB);
-				MarkupElement element = unit.reportMofification (conMgmt, unit, unitB, markupDocument);
+				MarkupElement element = unit.reportMofification (conMgmt, unit, unitB);
 				if (element != null)
 					unitsSec.addValue (element);
 			}
@@ -123,7 +124,7 @@ public class CellMLDiffInterpreter
 			Connection con = conMgmt.getConnectionForNode (dn);
 			if (con == null)
 			{
-				unitsSec.addValue (unit.reportInsert (markupDocument));
+				unitsSec.addValue (unit.reportInsert ());
 			}
 		}
 		if (unitsSec.getValues ().size () > 0)
@@ -140,25 +141,25 @@ public class CellMLDiffInterpreter
 
 			if (con == null)
 			{
-				MarkupSection msec = new MarkupSection ("Component " + markupDocument.delete (markupDocument.highlight (component.getName ())));
+				MarkupSection msec = new MarkupSection ("Component " + MarkupDocument.delete (MarkupDocument.highlight (component.getName ())));
 				// units
 				HashMap<String,CellMLUserUnit> componentUnits = unitsA.getComponetUnits (component);
 				for (CellMLUserUnit unit : componentUnits.values ())
-					msec.addValue (unit.reportDelete (markupDocument));
+					msec.addValue (unit.reportDelete ());
 				// variables
 				HashMap<String, CellMLVariable> vars = component.getVariables ();
 				for (CellMLVariable var : vars.values ())
-					msec.addValue (var.reportDelete (markupDocument));
+					msec.addValue (var.reportDelete ());
 				// reactions
-				Vector<CellMLReaction> reactions = component.getReactions ();
+				List<CellMLReaction> reactions = component.getReactions ();
 				for (CellMLReaction reaction : reactions)
-					msec.addValue (reaction.reportDelete (markupDocument));
+					msec.addValue (reaction.reportDelete ());
 				// math
-				Vector<MathML> math = component.getMath ();
+				List<MathML> math = component.getMath ();
 				for (MathML m: math)
 				{
 					MarkupElement me = new MarkupElement ("math");
-					BivesTools.genMathHtmlStats (m.getDocumentNode (), null, me, markupDocument);
+					BivesTools.genMathMarkupStats (m.getDocumentNode (), null, me);
 					msec.addValue (me);
 				}
 				
@@ -167,7 +168,7 @@ public class CellMLDiffInterpreter
 			}
 			else
 			{
-				MarkupSection msec = new MarkupSection ("Component " + markupDocument.highlight (component.getName ()));
+				MarkupSection msec = new MarkupSection ("Component " + MarkupDocument.highlight (component.getName ()));
 				CellMLComponent componentB = (CellMLComponent) modelB.getFromNode (con.getPartnerOf (dn));
 				// units
 				HashMap<String,CellMLUserUnit> componentUnitsA = unitsA.getComponetUnits (component);
@@ -180,13 +181,13 @@ public class CellMLDiffInterpreter
 				checkVariables (msec, varsA, varsB, modelA, modelB);
 
 				// reactions
-				Vector<CellMLReaction> reactionsA = component.getReactions ();
-				Vector<CellMLReaction> reactionsB = componentB.getReactions ();
+				List<CellMLReaction> reactionsA = component.getReactions ();
+				List<CellMLReaction> reactionsB = componentB.getReactions ();
 				checkReactions (msec, reactionsA, reactionsB, modelA, modelB);
 
 				// math
-				Vector<MathML> mathA = component.getMath ();
-				Vector<MathML> mathB = componentB.getMath ();
+				List<MathML> mathA = component.getMath ();
+				List<MathML> mathB = componentB.getMath ();
 				checkMath (msec, mathA, mathB, modelA, modelB);
 				
 				if (msec.getValues ().size () > 0)
@@ -198,28 +199,28 @@ public class CellMLDiffInterpreter
 		{
 			DocumentNode dn = component.getDocumentNode ();
 			Connection con = conMgmt.getConnectionForNode (dn);
-			MarkupSection msec = new MarkupSection ("Component " + markupDocument.insert (markupDocument.highlight (component.getName ())));
+			MarkupSection msec = new MarkupSection ("Component " + MarkupDocument.insert (MarkupDocument.highlight (component.getName ())));
 
 			if (con == null)
 			{
 				// units
 				HashMap<String,CellMLUserUnit> componentUnits = unitsB.getComponetUnits (component);
 				for (CellMLUserUnit unit : componentUnits.values ())
-					msec.addValue (unit.reportInsert (markupDocument));
+					msec.addValue (unit.reportInsert ());
 				// variables
 				HashMap<String, CellMLVariable> vars = component.getVariables ();
 				for (CellMLVariable var : vars.values ())
-					msec.addValue (var.reportInsert (markupDocument));
+					msec.addValue (var.reportInsert ());
 				// reactions
-				Vector<CellMLReaction> reactions = component.getReactions ();
+				List<CellMLReaction> reactions = component.getReactions ();
 				for (CellMLReaction reaction : reactions)
-					msec.addValue (reaction.reportInsert (markupDocument));
+					msec.addValue (reaction.reportInsert ());
 				// math
-				Vector<MathML> math = component.getMath ();
+				List<MathML> math = component.getMath ();
 				for (MathML m: math)
 				{
 					MarkupElement me = new MarkupElement ("math");
-					BivesTools.genMathHtmlStats (null, m.getDocumentNode (), me, markupDocument);
+					BivesTools.genMathMarkupStats (null, m.getDocumentNode (), me);
 					msec.addValue (me);
 				}
 			}
@@ -229,7 +230,7 @@ public class CellMLDiffInterpreter
 
 	}
 	
-	private void checkMath (MarkupSection msec, Vector<MathML> mathA, Vector<MathML> mathB, CellMLModel modelA, CellMLModel modelB)
+	private void checkMath (MarkupSection msec, List<MathML> mathA, List<MathML> mathB, CellMLModel modelA, CellMLModel modelB)
 	{
 		//System.out.println ("check math : " + mathA.size ());
 		boolean report = true;
@@ -247,7 +248,7 @@ public class CellMLDiffInterpreter
 					{
 						MarkupElement me = new MarkupElement ("math");
 						//System.out.println ("math: " + mA.getDocumentNode ().getXPath () + " -> " + mlb.getDocumentNode ().getXPath ());
-						BivesTools.genMathHtmlStats (mA.getDocumentNode (), mlb.getDocumentNode (), me, markupDocument);
+						BivesTools.genMathMarkupStats (mA.getDocumentNode (), mlb.getDocumentNode (), me);
 						if (me.getValues ().size () > 0)
 							msec.addValue (me);
 						report = false;
@@ -258,7 +259,7 @@ public class CellMLDiffInterpreter
 			if (report)
 			{
 				MarkupElement me = new MarkupElement ("math");
-				BivesTools.genMathHtmlStats (mA.getDocumentNode (), null, me, markupDocument);
+				BivesTools.genMathMarkupStats (mA.getDocumentNode (), null, me);
 				msec.addValue (me);
 			}
 		}
@@ -280,13 +281,13 @@ public class CellMLDiffInterpreter
 			if (report)
 			{
 				MarkupElement me = new MarkupElement ("math");
-				BivesTools.genMathHtmlStats (null, mB.getDocumentNode (), me, markupDocument);
+				BivesTools.genMathMarkupStats (null, mB.getDocumentNode (), me);
 				msec.addValue (me);
 			}
 		}
 	}
 	
-	private void checkReactions (MarkupSection msec, Vector<CellMLReaction> reactionsA, Vector<CellMLReaction> reactionsB, CellMLModel modelA, CellMLModel modelB)
+	private void checkReactions (MarkupSection msec, List<CellMLReaction> reactionsA, List<CellMLReaction> reactionsB, CellMLModel modelA, CellMLModel modelB)
 	{
 		for (CellMLReaction reactionA : reactionsA)
 		{
@@ -297,13 +298,13 @@ public class CellMLDiffInterpreter
 				CellMLReaction reactionB = (CellMLReaction) modelB.getFromNode (con.getPartnerOf (reactionA.getDocumentNode ()));
 				if (reactionsB.contains (reactionB))
 				{
-					MarkupElement element = reactionA.reportMofification (conMgmt, reactionA, reactionB, markupDocument);
+					MarkupElement element = reactionA.reportMofification (conMgmt, reactionA, reactionB);
 					if (element != null && element.getValues ().size () > 0)
 						msec.addValue (element);
 					continue;
 				}
 			}
-			msec.addValue (reactionA.reportDelete (markupDocument));
+			msec.addValue (reactionA.reportDelete ());
 		}
 		for (CellMLReaction reactionB : reactionsB)
 		{
@@ -315,7 +316,7 @@ public class CellMLDiffInterpreter
 				if (reactionsA.contains (reactionA))
 					continue;
 			}
-			msec.addValue (reactionB.reportInsert (markupDocument));
+			msec.addValue (reactionB.reportInsert ());
 		}
 	}
 	
@@ -330,13 +331,13 @@ public class CellMLDiffInterpreter
 				CellMLVariable varB = (CellMLVariable) modelB.getFromNode (con.getPartnerOf (varA.getDocumentNode ()));
 				if (varB == varsB.get (varB.getName ()))
 				{
-					MarkupElement element = varA.reportMofification (conMgmt, varA, varB, markupDocument);
+					MarkupElement element = varA.reportMofification (conMgmt, varA, varB);
 					if (element != null && element.getValues ().size () > 0)
 						msec.addValue (element);
 					continue;
 				}
 			}
-			msec.addValue (varA.reportDelete (markupDocument));
+			msec.addValue (varA.reportDelete ());
 		}
 		for (CellMLVariable varB : varsB.values ())
 		{
@@ -348,7 +349,7 @@ public class CellMLDiffInterpreter
 				if (varA == varsA.get (varA.getName ()))
 					continue;
 			}
-			msec.addValue (varB.reportInsert (markupDocument));
+			msec.addValue (varB.reportInsert ());
 		}
 	}
 	
@@ -358,23 +359,23 @@ public class CellMLDiffInterpreter
 		for (CellMLUserUnit unitA : unitsA.values ())
 		{
 			Connection con = conMgmt.getConnectionForNode (unitA.getDocumentNode ());
-			LOGGER.error ("a: " + unitA.getName ());
-			LOGGER.error ("con: " + con);
-			LOGGER.error ("unitsB: " + unitsB);
+			LOGGER.error ("a: ", unitA.getName ());
+			LOGGER.error ("con: ", con);
+			LOGGER.error ("unitsB: ", unitsB);
 			
 			if (con != null && unitsB != null)
 			{
 				CellMLUserUnit unitB = (CellMLUserUnit) modelB.getFromNode (con.getPartnerOf (unitA.getDocumentNode ()));
-				LOGGER.error ("b: " + unitB.getName ());
+				LOGGER.error ("b: ", unitB.getName ());
 				if (unitB == unitsB.get (unitB.getName ()))
 				{
-					MarkupElement element = unitA.reportMofification (conMgmt, unitA, unitB, markupDocument);
+					MarkupElement element = unitA.reportMofification (conMgmt, unitA, unitB);
 					if (element != null && element.getValues ().size () > 0)
 						msec.addValue (element);
 					continue;
 				}
 			}
-			msec.addValue (unitA.reportDelete (markupDocument));
+			msec.addValue (unitA.reportDelete ());
 		}
 		if (unitsB != null)
 		for (CellMLUserUnit unitB : unitsB.values ())
@@ -387,7 +388,7 @@ public class CellMLDiffInterpreter
 				if (unitA == unitsA.get (unitA.getName ()))
 					continue;
 			}
-			msec.addValue (unitB.reportInsert (markupDocument));
+			msec.addValue (unitB.reportInsert ());
 		}
 		
 	}

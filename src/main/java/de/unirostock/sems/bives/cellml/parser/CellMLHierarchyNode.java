@@ -3,7 +3,8 @@
  */
 package de.unirostock.sems.bives.cellml.parser;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -15,12 +16,12 @@ public class CellMLHierarchyNode
 	private CellMLComponent component;
 
 	private CellMLHierarchyNode parent;
-	private Vector<CellMLHierarchyNode> children;
+	private List<CellMLHierarchyNode> children;
 	
 	public CellMLHierarchyNode (CellMLComponent component)
 	{
 		this.component = component;
-		children = new Vector<CellMLHierarchyNode> ();
+		children = new ArrayList<CellMLHierarchyNode> ();
 	}
 	
 	public CellMLComponent getComponent ()
@@ -43,7 +44,7 @@ public class CellMLHierarchyNode
 		this.children.add (child);
 	}
 	
-	public Vector<CellMLHierarchyNode> getChildren ()
+	public List<CellMLHierarchyNode> getChildren ()
 	{
 		return children;
 	}

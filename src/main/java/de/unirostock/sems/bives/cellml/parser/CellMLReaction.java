@@ -4,12 +4,13 @@
 package de.unirostock.sems.bives.cellml.parser;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.binfalse.bfutils.GeneralTools;
-import de.unirostock.sems.bives.algorithm.ClearConnectionManager;
+import de.unirostock.sems.bives.algorithm.DiffReporter;
+import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
-import de.unirostock.sems.bives.ds.DiffReporter;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.markup.MarkupDocument;
 import de.unirostock.sems.bives.markup.MarkupElement;
@@ -30,7 +31,7 @@ implements DiffReporter
 	// The <reaction> element may define a reversible attribute, the value of which indicates whether or not the reaction is reversible. The default value of the reversible attribute is "yes".
 	private boolean reversible;
 	//The reaction element contains multiple <variable_ref> elements, each of which references a variable that participates in the reaction.
-	private Vector<CellMLReactionSubstance> variable_refs;
+	private List<CellMLReactionSubstance> variable_refs;
 	private CellMLComponent component;
 	
 	public CellMLReaction (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException
@@ -43,16 +44,16 @@ implements DiffReporter
 		else
 			reversible = false;
 		
-		variable_refs = new Vector<CellMLReactionSubstance> ();
+		variable_refs = new ArrayList<CellMLReactionSubstance> ();
 		
-		Vector<TreeNode> kids = node.getChildrenWithTag ("variable_ref");
+		List<TreeNode> kids = node.getChildrenWithTag ("variable_ref");
 		for (TreeNode kid : kids)
 		{
 			variable_refs.add (new CellMLReactionSubstance (model, component, (DocumentNode) kid));
 		}
 	}
 	
-	public Vector<CellMLReactionSubstance> getSubstances ()
+	public List<CellMLReactionSubstance> getSubstances ()
 	{
 		return variable_refs;
 	}
@@ -68,8 +69,8 @@ implements DiffReporter
 	}
 
 	@Override
-	public MarkupElement reportMofification (ClearConnectionManager conMgmt,
-		DiffReporter docA, DiffReporter docB, MarkupDocument markupDocument)
+	public MarkupElement reportMofification (SimpleConnectionManager conMgmt,
+		DiffReporter docA, DiffReporter docB)
 	{
 		CellMLReaction a = (CellMLReaction) docA;
 		CellMLReaction b = (CellMLReaction) docB;
@@ -78,7 +79,7 @@ implements DiffReporter
 		
 		MarkupElement me = new MarkupElement ("Reaction");
 
-		BivesTools.genAttributeHtmlStats (a.getDocumentNode (), b.getDocumentNode (), me, markupDocument);
+		BivesTools.genAttributeMarkupStats (a.getDocumentNode (), b.getDocumentNode (), me);
 
 		HashMap<String, Integer> inputs = new HashMap<String, Integer> ();
 		HashMap<String, Integer> outputs = new HashMap<String, Integer> ();
@@ -86,8 +87,8 @@ implements DiffReporter
 		HashMap<String, Integer> modifiersInh = new HashMap<String, Integer> ();
 		HashMap<String, Integer> modifiers = new HashMap<String, Integer> ();
 		
-		Vector<CellMLReactionSubstance> varsA = a.getSubstances ();
-		Vector<CellMLReactionSubstance> varsB = b.getSubstances ();
+		List<CellMLReactionSubstance> varsA = a.getSubstances ();
+		List<CellMLReactionSubstance> varsB = b.getSubstances ();
 		
 		for (CellMLReactionSubstance sub : varsA)
 		{
@@ -171,29 +172,29 @@ implements DiffReporter
 
 		String sub = "", ret = "";
 
-		sub = expandSubstances ("", "", inputs, " + ", markupDocument);
+		sub = expandSubstances ("", "", inputs, " + ");
 		if (sub.length () > 0)
-			ret += sub + " "+markupDocument.rightArrow ()+" ";
+			ret += sub + " "+MarkupDocument.rightArrow ()+" ";
 		else
-			ret += "&Oslash; "+markupDocument.rightArrow ()+" ";
+			ret += "&Oslash; "+MarkupDocument.rightArrow ()+" ";
 
-		sub = expandSubstances ("", "", outputs, " + ", markupDocument);
+		sub = expandSubstances ("", "", outputs, " + ");
 		if (sub.length () > 0)
 			ret += sub;
 		else
 			ret += "&Oslash;";
 		me.addValue (ret);
 
-		sub = expandSubstances ("", " (unknown)", modifiers, "; ", markupDocument);
-		sub = expandSubstances (sub, " (stimulator)", modifiersStim, "; ", markupDocument);
-		sub = expandSubstances (sub, " (inhibitor)", modifiersInh, "; ", markupDocument);
+		sub = expandSubstances ("", " (unknown)", modifiers, "; ");
+		sub = expandSubstances (sub, " (stimulator)", modifiersStim, "; ");
+		sub = expandSubstances (sub, " (inhibitor)", modifiersInh, "; ");
 		if (sub.length () > 0)
 			me.addValue ("Modifiers: " + sub);
 		
 		return me;
 	}
 	
-	private String expandSubstances (String sub, String supp, HashMap<String, Integer> map, String collapse, MarkupDocument markupDocument)
+	private String expandSubstances (String sub, String supp, HashMap<String, Integer> map, String collapse)
 	{
 		for (String subst : map.keySet ())
 		{
@@ -202,10 +203,10 @@ implements DiffReporter
 			switch (map.get (subst))
 			{
 				case -1:
-					sub += markupDocument.delete (subst + supp);
+					sub += MarkupDocument.delete (subst + supp);
 					break;
 				case 1:
-					sub += markupDocument.insert (subst + supp);
+					sub += MarkupDocument.insert (subst + supp);
 					break;
 				default:
 					sub += subst + supp;
@@ -216,18 +217,18 @@ implements DiffReporter
 	}
 
 	@Override
-	public MarkupElement reportInsert (MarkupDocument markupDocument)
+	public MarkupElement reportInsert ()
 	{
-		MarkupElement me = new MarkupElement ("Reactioon: " + markupDocument.insert ("reaction"));
-		me.addValue (markupDocument.insert ("inserted"));
+		MarkupElement me = new MarkupElement ("Reactioon: " + MarkupDocument.insert ("reaction"));
+		me.addValue (MarkupDocument.insert ("inserted"));
 		return me;
 	}
 
 	@Override
-	public MarkupElement reportDelete (MarkupDocument markupDocument)
+	public MarkupElement reportDelete ()
 	{
-		MarkupElement me = new MarkupElement ("Reactioon: " + markupDocument.delete ("reaction"));
-		me.addValue (markupDocument.delete ("deleted"));
+		MarkupElement me = new MarkupElement ("Reactioon: " + MarkupDocument.delete ("reaction"));
+		me.addValue (MarkupDocument.delete ("deleted"));
 		return me;
 	}
 }

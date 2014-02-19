@@ -3,7 +3,8 @@
  */
 package de.unirostock.sems.bives.cellml.parser;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.ds.MathML;
@@ -42,7 +43,7 @@ extends CellMLEntity
 		// The optional stoichiometry attribute stores the stoichiometry of the current variable relative to the other reaction participants.
 		public Double stoichiometry;
 		// The <role> elements may also contain <math> elements in the MathML namespace, which define equations using MathML
-		public Vector<MathML> math;
+		public List<MathML> math;
 		
 		public Role (CellMLModel model, DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException
 		{
@@ -50,7 +51,7 @@ extends CellMLEntity
 			direction = DIRECTION_FORWARD;
 			delta_variable = null;
 			stoichiometry = null;
-			math = new Vector<MathML> ();
+			math = new ArrayList<MathML> ();
 			
 			role = resolveRole (node.getAttribute ("role"));
 			
@@ -70,7 +71,7 @@ extends CellMLEntity
 					throw new BivesCellMLParseException ("no proper stoichiometry: " + node.getAttribute ("stoichiometry"));
 				}
 			
-			Vector<TreeNode> kids = node.getChildrenWithTag ("math");
+			List<TreeNode> kids = node.getChildrenWithTag ("math");
 			for (TreeNode kid : kids)
 				math.add (new MathML ((DocumentNode) kid));
 		}
@@ -91,7 +92,7 @@ extends CellMLEntity
 	}
 	
 	private CellMLVariable variable;
-	private Vector<Role> roles;
+	private List<Role> roles;
 	private CellMLComponent component;
 	
 	public CellMLReactionSubstance (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException
@@ -105,9 +106,9 @@ extends CellMLEntity
 		if (variable == null)
 			throw new BivesCellMLParseException ("variable ref in reaction of component " + component.getName () + " doesn't define a valid variable. ("+var+", "+node.getXPath ()+")");
 		
-		roles = new Vector<Role> ();
+		roles = new ArrayList<Role> ();
 		
-		Vector<TreeNode> kids = node.getChildrenWithTag ("role");
+		List<TreeNode> kids = node.getChildrenWithTag ("role");
 		for (TreeNode kid : kids)
 			roles.add (new Role (model, (DocumentNode) kid));
 	}
@@ -117,7 +118,7 @@ extends CellMLEntity
 		return variable;
 	}
 	
-	public Vector<Role> getRoles ()
+	public List<Role> getRoles ()
 	{
 		return roles;
 	}

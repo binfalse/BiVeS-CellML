@@ -4,11 +4,11 @@
 package de.unirostock.sems.bives.cellml.algorithm;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.bives.algorithm.ClearConnectionManager;
 import de.unirostock.sems.bives.algorithm.GraphProducer;
+import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.parser.CellMLComponent;
 import de.unirostock.sems.bives.cellml.parser.CellMLDocument;
 import de.unirostock.sems.bives.cellml.parser.CellMLHierarchyNetwork;
@@ -17,12 +17,12 @@ import de.unirostock.sems.bives.cellml.parser.CellMLModel;
 import de.unirostock.sems.bives.cellml.parser.CellMLReaction;
 import de.unirostock.sems.bives.cellml.parser.CellMLReactionSubstance;
 import de.unirostock.sems.bives.cellml.parser.CellMLVariable;
-import de.unirostock.sems.bives.ds.SBOTerm;
-import de.unirostock.sems.bives.ds.graph.CRNCompartment;
-import de.unirostock.sems.bives.ds.graph.CRNReaction;
-import de.unirostock.sems.bives.ds.graph.CRNSubstance;
-import de.unirostock.sems.bives.ds.graph.HierarchyNetworkComponent;
-import de.unirostock.sems.bives.ds.graph.HierarchyNetworkVariable;
+import de.unirostock.sems.bives.ds.crn.CRNCompartment;
+import de.unirostock.sems.bives.ds.crn.CRNReaction;
+import de.unirostock.sems.bives.ds.crn.CRNSubstance;
+import de.unirostock.sems.bives.ds.hn.HierarchyNetworkComponent;
+import de.unirostock.sems.bives.ds.hn.HierarchyNetworkVariable;
+import de.unirostock.sems.bives.ds.ontology.SBOTerm;
 import de.unirostock.sems.xmlutils.comparison.Connection;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
 
@@ -35,10 +35,10 @@ public class CellMLGraphProducer
 extends GraphProducer
 {
 	private CellMLDocument cellmlDocA, cellmlDocB;
-	private ClearConnectionManager conMgmt;
+	private SimpleConnectionManager conMgmt;
 	private CRNCompartment wholeCompartment;
 	
-	public CellMLGraphProducer (ClearConnectionManager conMgmt, CellMLDocument cellmlDocA, CellMLDocument cellmlDocB)
+	public CellMLGraphProducer (SimpleConnectionManager conMgmt, CellMLDocument cellmlDocA, CellMLDocument cellmlDocB)
 	{
 		super (false);
 		this.cellmlDocA = cellmlDocA;
@@ -98,7 +98,7 @@ extends GraphProducer
 			{
 				//LOGGER.info ("create var A: " + var.getName ());
 				HierarchyNetworkVariable hnVar = new HierarchyNetworkVariable (hn, var.getName (), null, var.getDocumentNode (), null, nc, null);
-				nc.addVaribale (hnVar);
+				nc.addVariable (hnVar);
 				hn.setVariable (var.getDocumentNode (), hnVar);
 				variableMapper.put (var, hnVar);
 			}
@@ -135,7 +135,7 @@ extends GraphProducer
 				//System.out.println ("con var A: " + var.getName () + " = " + var.getPublicInterfaceConnections () + " / " + var.getPrivateInterfaceConnections ());
 				if (var.getPublicInterface () == CellMLVariable.INTERFACE_IN)
 				{
-					Vector<CellMLVariable> cons = var.getPublicInterfaceConnections ();
+					List<CellMLVariable> cons = var.getPublicInterfaceConnections ();
 					for (CellMLVariable con : cons)
 					{
 						//LOGGER.info ("create var connection A (pub): " + var.getName () + " -> " + con.getName () + " --- " + var.getComponent ().getName () + " -> " + con.getComponent ().getName ());
@@ -144,7 +144,7 @@ extends GraphProducer
 				}
 				if (var.getPrivateInterface () == CellMLVariable.INTERFACE_IN)
 				{
-					Vector<CellMLVariable> cons = var.getPrivateInterfaceConnections ();
+					List<CellMLVariable> cons = var.getPrivateInterfaceConnections ();
 					for (CellMLVariable con : cons)
 					{
 						//LOGGER.info ("create var connection A (priv): " + var.getName () + " -> " + con.getName () + " --- " + var.getComponent ().getName () + " -> " + con.getComponent ().getName ());
@@ -214,7 +214,7 @@ extends GraphProducer
 					hnVar.setComponentB (nc);
 				}
 				
-				nc.addVaribale (hnVar);
+				nc.addVariable (hnVar);
 				hn.setVariable (varNode, hnVar);
 				variableMapper.put (var, hnVar);
 			}
@@ -245,7 +245,7 @@ extends GraphProducer
 			for (CellMLVariable var : vars.values ())
 			{
 				HierarchyNetworkVariable hnv = variableMapper.get (var);
-				/*Vector<CellMLVariable> cons = var.getPrivateInterfaceConnections ();
+				/*List<CellMLVariable> cons = var.getPrivateInterfaceConnections ();
 				for (CellMLVariable con : cons)
 				{
 					LOGGER.info ("create var connection B: " + var.getName () + " -> " + con.getName ());
@@ -253,7 +253,7 @@ extends GraphProducer
 				}*/
 				if (var.getPublicInterface () == CellMLVariable.INTERFACE_IN)
 				{
-					Vector<CellMLVariable> cons = var.getPublicInterfaceConnections ();
+					List<CellMLVariable> cons = var.getPublicInterfaceConnections ();
 					for (CellMLVariable con : cons)
 					{
 						//LOGGER.info ("create var connection B (pub): " + var.getName () + " -> " + con.getName () + " --- " + var.getComponent ().getName () + " -> " + con.getComponent ().getName ());
@@ -262,7 +262,7 @@ extends GraphProducer
 				}
 				if (var.getPrivateInterface () == CellMLVariable.INTERFACE_IN)
 				{
-					Vector<CellMLVariable> cons = var.getPrivateInterfaceConnections ();
+					List<CellMLVariable> cons = var.getPrivateInterfaceConnections ();
 					for (CellMLVariable con : cons)
 					{
 						//LOGGER.info ("create var connection B (prib): " + var.getName () + " -> " + con.getName () + " --- " + var.getComponent ().getName () + " -> " + con.getComponent ().getName ());
@@ -288,19 +288,18 @@ extends GraphProducer
 		HashMap<String, CellMLComponent> components = modelA.getComponents ();
 		for (CellMLComponent component : components.values ())
 		{
-			Vector<CellMLReaction> reactions = component.getReactions ();
+			List<CellMLReaction> reactions = component.getReactions ();
 			for (CellMLReaction reaction : reactions)
 			{
-				CRNReaction crnreaction = new CRNReaction (crn, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, reaction.isReversible ());
+				CRNReaction crnreaction = new CRNReaction (crn, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, null, reaction.isReversible ());
 				crn.setReaction (reaction.getDocumentNode (), crnreaction);
-				crnreaction.setCompartmentA (wholeCompartment);
-				Vector<CellMLReactionSubstance> substances = reaction.getSubstances ();
+				List<CellMLReactionSubstance> substances = reaction.getSubstances ();
 				for (CellMLReactionSubstance substance : substances)
 				{
 					boolean addSubstance = false;
 					CellMLVariable var = substance.getVariable ();
 					CellMLVariable rootvar = var.getRootVariable ();
-					Vector<CellMLReactionSubstance.Role> roles = substance.getRoles ();
+					List<CellMLReactionSubstance.Role> roles = substance.getRoles ();
 					CRNSubstance subst = crn.getSubstance (rootvar.getDocumentNode ());
 					// substance undefined?
 					if (subst == null)
@@ -353,7 +352,7 @@ extends GraphProducer
 		HashMap<String, CellMLComponent> components = modelB.getComponents ();
 		for (CellMLComponent component : components.values ())
 		{
-			Vector<CellMLReaction> reactions = component.getReactions ();
+			List<CellMLReaction> reactions = component.getReactions ();
 			for (CellMLReaction reaction : reactions)
 			{
 				DocumentNode rNode = reaction.getDocumentNode ();
@@ -362,7 +361,7 @@ extends GraphProducer
 				if (con == null)
 				{
 					// no equivalent in doc a
-					crnreaction = new CRNReaction (crn, null, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), reaction.isReversible ());
+					crnreaction = new CRNReaction (crn, null, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, reaction.isReversible ());
 					crn.setReaction (rNode, crnreaction);
 				}
 				else
@@ -370,14 +369,14 @@ extends GraphProducer
 					crnreaction = crn.getReaction (con.getPartnerOf (rNode));
 					crn.setReaction (rNode, crnreaction);
 					crnreaction.setDocB (rNode);
+					crnreaction.setCompartmentB (wholeCompartment);
 				}
-				crnreaction.setCompartmentB (wholeCompartment);
-				Vector<CellMLReactionSubstance> substances = reaction.getSubstances ();
+				List<CellMLReactionSubstance> substances = reaction.getSubstances ();
 				for (CellMLReactionSubstance substance : substances)
 				{
 					CellMLVariable var = substance.getVariable ();
 					CellMLVariable rootvar = var.getRootVariable ();
-					Vector<CellMLReactionSubstance.Role> roles = substance.getRoles ();
+					List<CellMLReactionSubstance.Role> roles = substance.getRoles ();
 
 					DocumentNode varDoc = var.getDocumentNode ();
 					DocumentNode varRootDoc = rootvar.getDocumentNode ();

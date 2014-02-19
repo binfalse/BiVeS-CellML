@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -70,7 +71,7 @@ extends CellMLEntity
 	public void pparse () throws IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, XmlDocumentParseException
 	{
 		URI baseUri = model.getDocument ().getBaseUri ();
-		LOGGER.info ("parsing import from " + href + " (base uri is: "+baseUri+")");
+		LOGGER.info ("parsing import from ", href, " (base uri is: ", baseUri, ")");
 		File tmp = File.createTempFile ("cellmlimporter", "cellml");
 		tmp.deleteOnExit ();
 		
@@ -85,11 +86,11 @@ extends CellMLEntity
 		}
 		CellMLModel modelToImport = toImport.getModel ();
 		
-		Vector<Object> doubles = new Vector<Object> ();
+		List<Object> doubles = new ArrayList<Object> ();
 		
 		
 		CellMLUnitDictionary units = modelToImport.getUnits ();
-		Vector<TreeNode> kids = node.getChildrenWithTag ("units");
+		List<TreeNode> kids = node.getChildrenWithTag ("units");
 		for (TreeNode kid : kids)
 		{
 			DocumentNode ukid = (DocumentNode) kid;
@@ -111,11 +112,11 @@ extends CellMLEntity
 					throw new BivesCellMLParseException ("double import of same unit. not supported yet.");
 				doubles.add (uu);
 				uu.setName (name);
-				Vector<CellMLUserUnit> unitsToImport = uu.getDependencies (new Vector<CellMLUserUnit> ());
+				List<CellMLUserUnit> unitsToImport = uu.getDependencies (new ArrayList<CellMLUserUnit> ());
 				for (CellMLUserUnit unit : unitsToImport)
 					model.importDependencyUnit (unit);
 				model.importUnit (uu);
-				LOGGER.info ("imported unit " + name + " from " + ref + "@" + href);
+				LOGGER.info ("imported unit ", name, " from ", ref, "@", href);
 			}
 			else
 			{
@@ -148,11 +149,11 @@ extends CellMLEntity
 			// TODO: kill all connections??
 			//c.unconnect ();
 			c.setName (name);
-			Vector<CellMLUserUnit> unitsToImport = c.getDependencies (new Vector<CellMLUserUnit> ());
+			List<CellMLUserUnit> unitsToImport = c.getDependencies (new ArrayList<CellMLUserUnit> ());
 			for (CellMLUserUnit unit : unitsToImport)
 				model.importDependencyUnit (unit);
 			model.importComponent (c);
-			LOGGER.info ("imported component " + name + " from " + ref + "@" + href);
+			LOGGER.info ("imported component ", name, " from ", ref, "@", href);
 		}
 
 		// reconnect a subset

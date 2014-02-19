@@ -6,7 +6,8 @@ package de.unirostock.sems.bives.cellml.parser;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -34,7 +35,7 @@ extends CellMLEntity
 	private String name;
 	
 	// A modeller may import parts of another valid CellML model, as described in
-	//private Vector<CellMLImport> imports;
+	//private List<CellMLImport> imports;
 	
 	private CellMLDocument doc;
 	
@@ -45,15 +46,15 @@ extends CellMLEntity
 	// Components are the smallest functional units in a model. Each component may contain variables that represent the key properties of the component and/or mathematics that describe the behaviour of the portion of the system represented by that component.
 	private HashMap<String, CellMLComponent> components;
 
-	private Vector<CellMLComponent> importedComponents;
-	private Vector<CellMLUserUnit> importedUnits;
-	private Vector<DocumentNode> importedConnections;
+	private List<CellMLComponent> importedComponents;
+	private List<CellMLUserUnit> importedUnits;
+	private List<DocumentNode> importedConnections;
 	
 	private HashMap<TreeNode, CellMLEntity> nodeMapper;
 	
 	private CellMLHierarchy hierarchy;
 	
-	private Vector<CellMLConnection> connections;
+	private List<CellMLConnection> connections;
 	
 	private boolean containsImports;
 	
@@ -67,11 +68,11 @@ extends CellMLEntity
 		unitDict = new CellMLUnitDictionary (this);
 		components = new HashMap<String, CellMLComponent> ();
 		hierarchy = new CellMLHierarchy (this);
-		connections = new Vector<CellMLConnection> ();
+		connections = new ArrayList<CellMLConnection> ();
 		
-		importedUnits = new Vector<CellMLUserUnit> ();
-		importedComponents = new Vector<CellMLComponent> ();
-		importedConnections = new Vector<DocumentNode>  ();
+		importedUnits = new ArrayList<CellMLUserUnit> ();
+		importedComponents = new ArrayList<CellMLComponent> ();
+		importedConnections = new ArrayList<DocumentNode>  ();
 		
 		nodeMapper = new HashMap<TreeNode, CellMLEntity> ();
 		
@@ -99,43 +100,43 @@ extends CellMLEntity
 		
 		
 		// imports
-		LOGGER.info ("reading imports in " + doc.getBaseUri ());
+		LOGGER.info ("reading imports in ", doc.getBaseUri ());
 		readImports (root);
 
 		LOGGER.info ("after import:");
 		for (String c : components.keySet ())
-			LOGGER.info ("comp: " + c + " -> " + components.get (c).getName ());
+			LOGGER.info ("comp: ", c, " -> ", components.get (c).getName ());
 		
 		// units
-		LOGGER.info ("reading units in " + doc.getBaseUri ());
+		LOGGER.info ("reading units in ", doc.getBaseUri ());
 		readUnits (root);
 		
 		// components
-		LOGGER.info ("reading components in " + doc.getBaseUri ());
+		LOGGER.info ("reading components in ", doc.getBaseUri ());
 		readComponents (root);
 		
 		// manage groups
-		LOGGER.info ("reading groups in " + doc.getBaseUri ());
+		LOGGER.info ("reading groups in ", doc.getBaseUri ());
 		readGroups (root);
 		
 		// manage connections
-		LOGGER.info ("reading connections in " + doc.getBaseUri ());
+		LOGGER.info ("reading connections in ", doc.getBaseUri ());
 		readConnections (root);
 	}
 	
 	private void readUnits (DocumentNode root) throws BivesDocumentConsistencyException, BivesCellMLParseException
 	{
-		Vector<TreeNode> kids = root.getChildrenWithTag ("units");
+		List<TreeNode> kids = root.getChildrenWithTag ("units");
 		// units might be in unordered seq -> first unit might depend on last unit
 		boolean nextRound = true;
-		Vector<String> problems = new Vector<String> ();
+		List<String> problems = new ArrayList<String> ();
 		while (nextRound && kids.size () > 0)
 		{
 			nextRound = false;
 			problems.clear ();
 			for (int i = kids.size () - 1; i >= 0; i--)
 			{
-				TreeNode kid = kids.elementAt (i);
+				TreeNode kid = kids.get (i);
 				if (kid.getType () != TreeNode.DOC_NODE)
 					continue;
 				try
@@ -164,7 +165,7 @@ extends CellMLEntity
 	
 	private void readImports (DocumentNode root) throws BivesCellMLParseException, IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException
 	{
-		Vector<TreeNode> kids = root.getChildrenWithTag ("import");
+		List<TreeNode> kids = root.getChildrenWithTag ("import");
 		for (TreeNode kid : kids)
 		{
 			if (kid.getType () != TreeNode.DOC_NODE)
@@ -178,7 +179,7 @@ extends CellMLEntity
 
 	private void readConnections (DocumentNode root) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException
 	{
-		Vector<TreeNode> kids = root.getChildrenWithTag ("connection");
+		List<TreeNode> kids = root.getChildrenWithTag ("connection");
 		for (TreeNode kid : kids)
 		{
 			if (kid.getType () != TreeNode.DOC_NODE)
@@ -190,7 +191,7 @@ extends CellMLEntity
 
 	private void readGroups (DocumentNode root) throws BivesCellMLParseException, BivesLogicalException
 	{
-		Vector<TreeNode> kids = root.getChildrenWithTag ("group");
+		List<TreeNode> kids = root.getChildrenWithTag ("group");
 		for (TreeNode kid : kids)
 		{
 			if (kid.getType () != TreeNode.DOC_NODE)
@@ -202,7 +203,7 @@ extends CellMLEntity
 
 	private void readComponents (DocumentNode root) throws BivesDocumentConsistencyException, BivesCellMLParseException, BivesLogicalException
 	{
-		Vector<TreeNode> kids = root.getChildrenWithTag ("component");
+		List<TreeNode> kids = root.getChildrenWithTag ("component");
 		for (TreeNode kid : kids)
 		{
 			if (kid.getType () != TreeNode.DOC_NODE)
@@ -352,8 +353,8 @@ extends CellMLEntity
 		//System.out.println (getNode ().dump (""));
 		
 		// and last but not least delete the import definitions
-		Vector<TreeNode> kids = getDocumentNode ().getChildrenWithTag ("import");
-		Vector<DocumentNode> importNodes = new Vector<DocumentNode> ();
+		List<TreeNode> kids = getDocumentNode ().getChildrenWithTag ("import");
+		List<DocumentNode> importNodes = new ArrayList<DocumentNode> ();
 		for (TreeNode kid : kids)
 		{
 			if (kid.getType () != TreeNode.DOC_NODE)

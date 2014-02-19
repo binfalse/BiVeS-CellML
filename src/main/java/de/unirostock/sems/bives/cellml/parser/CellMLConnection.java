@@ -4,7 +4,8 @@
 package de.unirostock.sems.bives.cellml.parser;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
@@ -21,11 +22,11 @@ public class CellMLConnection
 {
 	public static final boolean parseConnection (CellMLModel model, CellMLHierarchy hierarchy, DocumentNode connection, HashMap<String, CellMLComponent> limit) throws BivesCellMLParseException, BivesLogicalException, BivesDocumentConsistencyException
 	{
-		// A <connection> element must contain exactly one <map_components> element, which is used to reference the two componVector<E>nvolved in the connection.
-		Vector<TreeNode> kids = connection.getChildrenWithTag ("map_components");
+		// A <connection> element must contain exactly one <map_components> element, which is used to reference the two componList<E>nvolved in the connection.
+		List<TreeNode> kids = connection.getChildrenWithTag ("map_components");
 		if (kids.size () != 1)
 			throw new BivesCellMLParseException ("connection does not have exactly one map_components.");
-		DocumentNode child = (DocumentNode) kids.elementAt (0);
+		DocumentNode child = (DocumentNode) kids.get (0);
 		String v1 = child.getAttribute ("component_1");
 		String v2 = child.getAttribute ("component_2");
 		

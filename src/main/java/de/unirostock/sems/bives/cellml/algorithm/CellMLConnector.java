@@ -40,12 +40,11 @@ public class CellMLConnector
 	
 
 	@Override
-	public void init (TreeDocument docA, TreeDocument docB) throws BivesConnectionException
+	protected void init () throws BivesConnectionException
 	{
 		// TODO: maybe preporcessing -> instead of id's use annotations/ontologies etc
 		// use id's
 		// use variables for rules
-		super.init (cellmlDocA.getTreeDocument (), cellmlDocB.getTreeDocument ());
 
 		// preprocessor connects by id and stuff
 		// xy propagates connections

@@ -3,8 +3,9 @@
  */
 package de.unirostock.sems.bives.cellml.parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
-import java.util.Vector;
 
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.ds.MathML;
@@ -33,10 +34,10 @@ extends CellMLEntity
 	private HashMap<String, CellMLVariable> variables;
 	
 	// A component may contain <reaction> elements, which are used to provide chemical and biochemical context for the equations describing a reaction. It is recommended that only one <reaction> element appear in any <component> element.
-	private Vector<CellMLReaction> reactions;
+	private List<CellMLReaction> reactions;
 	
 	// A component may contain a set of mathematical relationships between the variables declared in this component.
-	private Vector<MathML> math;
+	private List<MathML> math;
 	
 	/*public CellMLComponent copy (CellMLModel model, String newName) throws BivesConsistencyException, BivesCellMLParseException, BivesLogicalException
 	{
@@ -51,16 +52,16 @@ extends CellMLEntity
 		super (node, model);
 		
 		units = model.getUnits ();
-		math = new Vector<MathML> ();
+		math = new ArrayList<MathML> ();
 		variables = new HashMap<String, CellMLVariable> ();
-		reactions = new Vector<CellMLReaction> ();
+		reactions = new ArrayList<CellMLReaction> ();
 
 		name = node.getAttribute ("name");
 		if (name == null || name.length () < 1)
 			throw new BivesCellMLParseException ("component doesn't have a name.");
 		
-		Vector<TreeNode> kids = node.getChildrenWithTag ("units");
-		Vector<String> problems = new Vector<String> ();
+		List<TreeNode> kids = node.getChildrenWithTag ("units");
+		List<String> problems = new ArrayList<String> ();
 		boolean nextRound = true;
 		while (nextRound && kids.size () > 0)
 		{
@@ -68,7 +69,7 @@ extends CellMLEntity
 			problems.clear ();
 			for (int i = kids.size () - 1; i >= 0; i--)
 			{
-				TreeNode kid = kids.elementAt (i);
+				TreeNode kid = kids.get (i);
 				if (kid.getType () != TreeNode.DOC_NODE)
 					continue;
 				try
@@ -94,7 +95,7 @@ extends CellMLEntity
 			problems.clear ();
 			for (int i = kids.size () - 1; i >= 0; i--)
 			{
-				TreeNode kid = kids.elementAt (i);
+				TreeNode kid = kids.get (i);
 				if (kid.getType () != TreeNode.DOC_NODE)
 					continue;
 				try
@@ -166,17 +167,17 @@ extends CellMLEntity
 			var.unconnect ();
 	}
 
-	public Vector<CellMLUserUnit> getDependencies (Vector<CellMLUserUnit> vector)
+	public List<CellMLUserUnit> getDependencies (List<CellMLUserUnit> List)
 	{
 		for (CellMLVariable var : variables.values ())
 		{
-			var.getDependencies (vector);
+			var.getDependencies (List);
 		}
 		
-		return vector;
+		return List;
 	}
 	
-	public Vector<CellMLReaction> getReactions ()
+	public List<CellMLReaction> getReactions ()
 	{
 		return reactions;
 	}
@@ -186,7 +187,7 @@ extends CellMLEntity
 		return variables;
 	}
 	
-	public Vector<MathML> getMath ()
+	public List<MathML> getMath ()
 	{
 		return math;
 	}

@@ -3,11 +3,12 @@
  */
 package de.unirostock.sems.bives.cellml.parser;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-import de.unirostock.sems.bives.algorithm.ClearConnectionManager;
+import de.unirostock.sems.bives.algorithm.DiffReporter;
+import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
-import de.unirostock.sems.bives.ds.DiffReporter;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.exception.BivesLogicalException;
 import de.unirostock.sems.bives.markup.MarkupDocument;
@@ -42,10 +43,10 @@ implements DiffReporter
 	
 	//This attribute specifies the interface exposed to components in the parent and sibling sets (see below). The public interface must have a value of "in", "out", or "none". The absence of a public_interface attribute implies a default value of "none".
 	private int public_interface;
-	private Vector<CellMLVariable> public_interface_connection;
+	private List<CellMLVariable> public_interface_connection;
 	// This attribute specifies the interface exposed to components in the encapsulated set (see below). The private interface must have a value of "in", "out", or "none". The absence of a private_interface attribute implies a default value of "none".
 	private int private_interface;
-	private Vector<CellMLVariable> private_interface_connection;
+	private List<CellMLVariable> private_interface_connection;
 	
 	public CellMLVariable (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesCellMLParseException, BivesLogicalException
 	{
@@ -64,8 +65,8 @@ implements DiffReporter
 		if (public_interface == private_interface && public_interface == INTERFACE_IN)
 			throw new BivesLogicalException ("variable " + name + " defines public and private interface to be 'in'. (component: "+component.getName ()+")");
 		
-		private_interface_connection = new Vector<CellMLVariable> ();
-		public_interface_connection = new Vector<CellMLVariable> ();
+		private_interface_connection = new ArrayList<CellMLVariable> ();
+		public_interface_connection = new ArrayList<CellMLVariable> ();
 		
 		// An initial_value attribute must not be defined on a <variable> element with a public_interface or private_interface attribute with a value of "in". [ These variables receive their value from variables belonging to another component. ]
 		
@@ -113,7 +114,7 @@ implements DiffReporter
 		public_interface_connection.add (var);
 	}
 	
-	public Vector<CellMLVariable> getPublicInterfaceConnections ()
+	public List<CellMLVariable> getPublicInterfaceConnections ()
 	{
 		return public_interface_connection;
 	}
@@ -130,7 +131,7 @@ implements DiffReporter
 		private_interface_connection.add (var);
 	}
 	
-	public Vector<CellMLVariable> getPrivateInterfaceConnections ()
+	public List<CellMLVariable> getPrivateInterfaceConnections ()
 	{
 		return private_interface_connection;
 	}
@@ -138,16 +139,16 @@ implements DiffReporter
 	public CellMLVariable getRootVariable ()
 	{
 		if (private_interface == INTERFACE_IN && private_interface_connection.size () == 1)
-			return private_interface_connection.elementAt (0).getRootVariable ();
+			return private_interface_connection.get (0).getRootVariable ();
 		if (public_interface == INTERFACE_IN && public_interface_connection.size () == 1)
-			return public_interface_connection.elementAt (0).getRootVariable ();
+			return public_interface_connection.get (0).getRootVariable ();
 		return this;
 	}
 	
 	public void unconnect ()
 	{
-		public_interface_connection = new Vector<CellMLVariable> (); 
-		private_interface_connection = new Vector<CellMLVariable> (); 
+		public_interface_connection = new ArrayList<CellMLVariable> (); 
+		private_interface_connection = new ArrayList<CellMLVariable> (); 
 	}
 	
 	private String parseInterface (int attr)
@@ -180,19 +181,19 @@ implements DiffReporter
 		System.out.println (prefix + "var: " + name);
 	}
 
-	public void getDependencies (Vector<CellMLUserUnit> vector)
+	public void getDependencies (List<CellMLUserUnit> List)
 	{
 		if (!unit.isStandardUnits ())
 		{
 			CellMLUserUnit u = (CellMLUserUnit) unit;
-			vector.add (u);
-			u.getDependencies (vector);
+			List.add (u);
+			u.getDependencies (List);
 		}
 	}
 
 	@Override
-	public MarkupElement reportMofification (ClearConnectionManager conMgmt,
-		DiffReporter docA, DiffReporter docB, MarkupDocument markupDocument)
+	public MarkupElement reportMofification (SimpleConnectionManager conMgmt,
+		DiffReporter docA, DiffReporter docB)
 	{
 		CellMLVariable a = (CellMLVariable) docA;
 		CellMLVariable b = (CellMLVariable) docB;
@@ -205,28 +206,28 @@ implements DiffReporter
 			me = new MarkupElement ("Variable: " + idA);
 		else
 		{
-			me = new MarkupElement ("Variable: " + markupDocument.delete (idA) + " "+markupDocument.rightArrow ()+" " + markupDocument.insert (idB));
+			me = new MarkupElement ("Variable: " + MarkupDocument.delete (idA) + " "+MarkupDocument.rightArrow ()+" " + MarkupDocument.insert (idB));
 		}
 		
-		BivesTools.genAttributeHtmlStats (a.getDocumentNode (), b.getDocumentNode (), me, markupDocument);
+		BivesTools.genAttributeMarkupStats (a.getDocumentNode (), b.getDocumentNode (), me);
 		
 		return me;
 		
 	}
 
 	@Override
-	public MarkupElement reportInsert (MarkupDocument markupDocument)
+	public MarkupElement reportInsert ()
 	{
-		MarkupElement me = new MarkupElement ("Variable: " + markupDocument.insert (name));
-		me.addValue (markupDocument.insert ("inserted"));
+		MarkupElement me = new MarkupElement ("Variable: " + MarkupDocument.insert (name));
+		me.addValue (MarkupDocument.insert ("inserted"));
 		return me;
 	}
 
 	@Override
-	public MarkupElement reportDelete (MarkupDocument markupDocument)
+	public MarkupElement reportDelete ()
 	{
-		MarkupElement me = new MarkupElement ("Variable: " + markupDocument.delete (name));
-		me.addValue (markupDocument.delete ("deleted"));
+		MarkupElement me = new MarkupElement ("Variable: " + MarkupDocument.delete (name));
+		me.addValue (MarkupDocument.delete ("deleted"));
 		return me;
 	}
 }
