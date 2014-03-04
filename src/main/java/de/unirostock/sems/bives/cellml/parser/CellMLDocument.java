@@ -26,48 +26,124 @@ import de.unirostock.sems.xmlutils.tools.DocumentTools;
 import de.unirostock.sems.xmlutils.tools.XmlTools;
 
 
+
 /**
+ * The Class CellMLDocument representing a document containing a CellML model.
+ * 
  * @author Martin Scharm
- *
  */
 public class CellMLDocument
 {
 	
-	private CellMLModel model;
-	private TreeDocument doc;
+	/** The actual model. */
+	private CellMLModel		model;
 	
-	public CellMLDocument (TreeDocument doc) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesImportException
+	/** The document storing this model. */
+	private TreeDocument	doc;
+	
+	
+	/**
+	 * Instantiates a new cell ml document.
+	 * 
+	 * @param doc
+	 *          the document encoding the model
+	 * @throws BivesCellMLParseException
+	 *           the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException
+	 *           the bives document consistency exception
+	 * @throws BivesLogicalException
+	 *           the bives logical exception
+	 * @throws IOException
+	 *           Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException
+	 *           the uRI syntax exception
+	 * @throws ParserConfigurationException
+	 *           the parser configuration exception
+	 * @throws SAXException
+	 *           the sAX exception
+	 * @throws BivesImportException
+	 *           the bives import exception
+	 */
+	public CellMLDocument (TreeDocument doc)
+		throws BivesCellMLParseException,
+			BivesDocumentConsistencyException,
+			BivesLogicalException,
+			IOException,
+			URISyntaxException,
+			ParserConfigurationException,
+			SAXException,
+			BivesImportException
 	{
-	  this.doc = doc;
-	  if (!doc.getRoot ().getTagName ().equals ("model"))
-	  	throw new BivesCellMLParseException ("cellml document does not define a model");
-	  model = new CellMLModel (this, doc.getRoot ());
+		this.doc = doc;
+		if (!doc.getRoot ().getTagName ().equals ("model"))
+			throw new BivesCellMLParseException (
+				"cellml document does not define a model");
+		model = new CellMLModel (this, doc.getRoot ());
 	}
 	
+	
+	/**
+	 * Gets the encoded model.
+	 * 
+	 * @return the model
+	 */
 	public CellMLModel getModel ()
 	{
 		return model;
 	}
 	
+	
+	/**
+	 * Gets the base URI. (used to resolve relative paths e.g. for imports)
+	 * 
+	 * @return the base URI
+	 */
 	public URI getBaseUri ()
 	{
 		return doc.getBaseUri ();
 	}
-	public void debug (String prefix)
-	{
-		System.out.println (prefix + "cellml: " + doc.getBaseUri ());
-		model.debug (prefix + "  ");
-	}
+	
+	
+	/**
+	 * Does this model contain imports?
+	 * 
+	 * @return true, if it contains imports
+	 */
 	public boolean containsImports ()
 	{
 		return model.containsImports ();
 	}
 	
-	public void flatten () throws BivesFlattenException, BivesDocumentConsistencyException, XmlDocumentConsistencyException
+	
+	/**
+	 * Flatten flatten the model encoded in this document.
+	 * 
+	 * @throws BivesFlattenException
+	 *           the bives flatten exception
+	 * @throws BivesDocumentConsistencyException
+	 *           the bives document consistency exception
+	 * @throws XmlDocumentConsistencyException
+	 *           the xml document consistency exception
+	 */
+	public void flatten ()
+		throws BivesFlattenException,
+			BivesDocumentConsistencyException,
+			XmlDocumentConsistencyException
 	{
 		model.flatten ();
 	}
 	
+	
+	/**
+	 * Write the document to disk.
+	 * 
+	 * @param dest
+	 *          the target file
+	 * @throws IOException
+	 *           Signals that an I/O exception has occurred.
+	 * @throws TransformerException
+	 *           the transformer exception
+	 */
 	public void write (File dest) throws IOException, TransformerException
 	{
 		String s = XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc));
@@ -75,7 +151,13 @@ public class CellMLDocument
 		bw.write (s);
 		bw.close ();
 	}
-
+	
+	
+	/**
+	 * Gets the tree document.
+	 * 
+	 * @return the tree document
+	 */
 	public TreeDocument getTreeDocument ()
 	{
 		return doc;

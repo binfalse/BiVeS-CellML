@@ -33,15 +33,38 @@ import de.unirostock.sems.bives.markup.TypesettingReStructuredText;
 import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
 
 /**
- * TODO: not implemented yet
- * 
- * @author Martin Scharm
+ * The Class CellMLDiff to compare two CellML models.
  *
+ * @author Martin Scharm
  */
 public class CellMLDiff extends Diff
 {
+	
+	/** The two documents. */
 	private CellMLDocument doc1, doc2;
+	
+	/** The graph producer. */
+	protected CellMLGraphProducer graphProducer;
+	
+	/** The interpreter. */
+	protected CellMLDiffInterpreter interpreter;
 
+	/**
+	 * Instantiates a new CellML differ.
+	 *
+	 * @param a the file containing the original CellML model
+	 * @param b the file containing the modified CellML model
+	 * @throws ParserConfigurationException the parser configuration exception
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws SAXException the sAX exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws URISyntaxException the uRI syntax exception
+	 * @throws BivesImportException the bives import exception
+	 */
 	public CellMLDiff(File a, File b) throws ParserConfigurationException,
 	XmlDocumentParseException, FileNotFoundException, SAXException,
 			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
@@ -50,6 +73,22 @@ public class CellMLDiff extends Diff
 		doc2 = new CellMLDocument (treeB);
 	}
 
+	/**
+	 * Instantiates a new CellML differ.
+	 *
+	 * @param a the XML code representing the original CellML model
+	 * @param b the XML code representing the modified CellML model
+	 * @throws ParserConfigurationException the parser configuration exception
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws SAXException the sAX exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws URISyntaxException the uRI syntax exception
+	 * @throws BivesImportException the bives import exception
+	 */
 	public CellMLDiff(String a, String b) throws ParserConfigurationException,
 	XmlDocumentParseException, FileNotFoundException, SAXException,
 			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
@@ -58,6 +97,22 @@ public class CellMLDiff extends Diff
 		doc2 = new CellMLDocument (treeB);
 	}
 
+	/**
+	 * Instantiates a new CellML differ.
+	 *
+	 * @param a the original CellML document
+	 * @param b the modified CellML document
+	 * @throws ParserConfigurationException the parser configuration exception
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws SAXException the sAX exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws URISyntaxException the uRI syntax exception
+	 * @throws BivesImportException the bives import exception
+	 */
 	public CellMLDiff(CellMLDocument a, CellMLDocument b) throws ParserConfigurationException,
 	XmlDocumentParseException, FileNotFoundException, SAXException,
 			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
@@ -72,8 +127,6 @@ public class CellMLDiff extends Diff
 	@Override
 	public boolean mapTrees() throws BivesConnectionException {
 		CellMLConnector con = new CellMLConnector (doc1, doc2);
-		
-		con.init (treeA, treeB);
 		con.findConnections ();
 		connections = con.getConnections();
 		
@@ -87,8 +140,6 @@ public class CellMLDiff extends Diff
 		return true;
 	}
 	
-	protected CellMLGraphProducer graphProducer;
-	protected CellMLDiffInterpreter interpreter;
 
 	/* (non-Javadoc)
 	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
@@ -132,6 +183,9 @@ public class CellMLDiff extends Diff
 		return  new TypesettingMarkDown ().typeset (interpreter.getReport ());
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Diff#getReStructuredTextReport()
+	 */
 	@Override
 	public String getReStructuredTextReport ()
 	{
@@ -156,6 +210,9 @@ public class CellMLDiff extends Diff
 		return  new TypesettingHTML ().typeset (interpreter.getReport ());
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Diff#getCRNGraph(de.unirostock.sems.bives.ds.graph.GraphTranslator)
+	 */
 	@Override
 	public Object getCRNGraph (GraphTranslator gt) throws Exception
 	{
@@ -164,6 +221,9 @@ public class CellMLDiff extends Diff
 		return gt.translate (graphProducer.getCRN ());
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Diff#getCRNDotGraph()
+	 */
 	@Override
 	public String getCRNDotGraph ()
 	{
@@ -172,6 +232,9 @@ public class CellMLDiff extends Diff
 		return new GraphTranslatorDot ().translate (graphProducer.getCRN ());
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Diff#getCRNJsonGraph()
+	 */
 	@Override
 	public String getCRNJsonGraph ()
 	{
@@ -191,6 +254,9 @@ public class CellMLDiff extends Diff
 		return new GraphTranslatorDot ().translate (graphProducer.getHierarchy ());
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Diff#getHierarchyJsonGraph()
+	 */
 	@Override
 	public String getHierarchyJsonGraph ()
 	{
@@ -199,6 +265,9 @@ public class CellMLDiff extends Diff
 		return new GraphTranslatorJson ().translate (graphProducer.getHierarchy ());
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Diff#getReport(de.unirostock.sems.bives.markup.Typesetting)
+	 */
 	@Override
 	public String getReport (Typesetting ts)
 	{

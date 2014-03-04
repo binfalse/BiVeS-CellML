@@ -12,21 +12,33 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLEntity representing an entity in a CellML model.
  *
+ * @author Martin Scharm
  */
-public class CellMLEntity
+public abstract class CellMLEntity
 {
+	
+	/** The model. */
 	protected CellMLModel model;
-	private List<RDF> rdfDescription;
-	// might be null
+
+	/** The RDF descriptions. */
+	private List<RDF> rdfDescriptions;
+	
+	/** The document node. */
 	private DocumentNode node;
 	
+	/**
+	 * Instantiates a new CellML entity.
+	 *
+	 * @param node the corresponding node in the XML document
+	 * @param model the model
+	 */
 	public CellMLEntity (DocumentNode node, CellMLModel model)
 	{
 		this.model = model;
 		this.node = node;
-		rdfDescription = new ArrayList<RDF> ();
+		rdfDescriptions = new ArrayList<RDF> ();
 
 		if (model != null)
 			model.mapNode (node, this);
@@ -38,13 +50,39 @@ public class CellMLEntity
 			{
 				if (kid.getType () != TreeNode.DOC_NODE)
 					continue;
-				rdfDescription.add (new RDF ((DocumentNode) kid));
+				rdfDescriptions.add (new RDF ((DocumentNode) kid));
 			}
 		}
 	}
 	
+	/**
+	 * Gets the document node.
+	 *
+	 * @return the document node
+	 */
 	public DocumentNode getDocumentNode ()
 	{
 		return node;
+	}
+	
+	/**
+	 * Gets the RDF descriptions, if there are any rooted in this entity.
+	 *
+	 * @return the RDF descriptions
+	 */
+	public List<RDF> getRdfDescriptions ()
+	{
+		return rdfDescriptions;
+	}
+	
+	
+	/**
+	 * Gets the corresponding model.
+	 *
+	 * @return the model
+	 */
+	public CellMLModel getModel ()
+	{
+		return model;
 	}
 }

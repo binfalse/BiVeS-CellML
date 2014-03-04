@@ -14,32 +14,50 @@ import de.unirostock.sems.bives.cellml.parser.CellMLModel;
 import de.unirostock.sems.bives.cellml.parser.CellMLUnitDictionary;
 import de.unirostock.sems.bives.cellml.parser.CellMLUserUnit;
 import de.unirostock.sems.bives.exception.BivesConnectionException;
-import de.unirostock.sems.xmlutils.ds.TreeDocument;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLConnectorPreprocessor to pre-compute a mapping.
  *
+ * @author Martin Scharm
  */
 public class CellMLConnectorPreprocessor
 	extends Connector
 {
+	
+	/** The preprocessor. */
 	private Connector preprocessor;
+	
+	/** The CellML documents A and B. */
 	private CellMLDocument cellmlDocA, cellmlDocB;
 
+	/**
+	 * Instantiates a new CellML connector preprocessor.
+	 *
+	 * @param cellmlDocA the original CellML document
+	 * @param cellmlDocB the modified CellML document
+	 */
 	public CellMLConnectorPreprocessor (CellMLDocument cellmlDocA, CellMLDocument cellmlDocB)
 	{
-		super ();
+		super (cellmlDocA.getTreeDocument (), cellmlDocB.getTreeDocument ());
 		this.cellmlDocA = cellmlDocA;
 		this.cellmlDocB = cellmlDocB;
 	}
 	
+	/**
+	 * Instantiates a new CellML connector preprocessor.
+	 *
+	 * @param preprocessor the preprocessor
+	 */
 	public CellMLConnectorPreprocessor (Connector preprocessor)
 	{
-		super ();
+		super (preprocessor.getDocA (), preprocessor.getDocB ());
 		this.preprocessor = preprocessor;
 	}
 	
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.algorithm.Connector#init()
+	 */
 	@Override
 	protected void init () throws BivesConnectionException
 	{
@@ -48,15 +66,14 @@ public class CellMLConnectorPreprocessor
 		if (preprocessor == null)
 		{
 			// then we'll use by default an id-connector...
-			IdConnector id = new IdConnector ();
-			id.init (docA, docB);
+			IdConnector id = new IdConnector (docA, docB, true);
 			id.findConnections ();
 	
 			conMgmt = id.getConnections ();
 		}
 		else
 		{
-			preprocessor.init (docA, docB);
+			//preprocessor.init (docA, docB);
 			preprocessor.findConnections ();
 	
 			conMgmt = preprocessor.getConnections ();

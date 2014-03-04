@@ -25,109 +25,263 @@ import de.unirostock.sems.bives.exception.BivesImportException;
 import de.unirostock.sems.bives.exception.BivesLogicalException;
 import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
 
+
+
 /**
- * TODO: not implemented yet
+ * The Class CellMLSingle to study single CellML documents.
  * 
  * @author Martin Scharm
- *
  */
-public class CellMLSingle extends Single
+public class CellMLSingle
+	extends Single
 {
-	private CellMLDocument doc1;
-
-	public CellMLSingle(File a) throws ParserConfigurationException,
-	XmlDocumentParseException, FileNotFoundException, SAXException,
-			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
-		super(a);
-		doc1 = new CellMLDocument (tree);
-	}
-
-	public CellMLSingle(String a) throws ParserConfigurationException,
-	XmlDocumentParseException, FileNotFoundException, SAXException,
-			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
-		super(a);
-		doc1 = new CellMLDocument (tree);
-	}
-
-	public CellMLSingle(CellMLDocument a, CellMLDocument b) throws ParserConfigurationException,
-	XmlDocumentParseException, FileNotFoundException, SAXException,
-			IOException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, URISyntaxException, BivesImportException {
-		super(a.getTreeDocument ());
-		doc1 = a;
+	
+	/** The doc. */
+	private CellMLDocument				doc;
+	
+	/** The graph producer. */
+	protected CellMLGraphProducer	graphProducer;
+	
+	
+	/**
+	 * Instantiates a new object.
+	 * 
+	 * @param file
+	 *          the file containing the model
+	 * @throws ParserConfigurationException
+	 *           the parser configuration exception
+	 * @throws XmlDocumentParseException
+	 *           the xml document parse exception
+	 * @throws FileNotFoundException
+	 *           the file not found exception
+	 * @throws SAXException
+	 *           the sAX exception
+	 * @throws IOException
+	 *           Signals that an I/O exception has occurred.
+	 * @throws BivesCellMLParseException
+	 *           the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException
+	 *           the bives document consistency exception
+	 * @throws BivesLogicalException
+	 *           the bives logical exception
+	 * @throws URISyntaxException
+	 *           the uRI syntax exception
+	 * @throws BivesImportException
+	 *           the bives import exception
+	 */
+	public CellMLSingle (File file)
+		throws ParserConfigurationException,
+			XmlDocumentParseException,
+			FileNotFoundException,
+			SAXException,
+			IOException,
+			BivesCellMLParseException,
+			BivesDocumentConsistencyException,
+			BivesLogicalException,
+			URISyntaxException,
+			BivesImportException
+	{
+		super (file);
+		doc = new CellMLDocument (tree);
 	}
 	
-	protected CellMLGraphProducer graphProducer;
-
-	/* (non-Javadoc)
+	
+	/**
+	 * Instantiates a new object.
+	 * 
+	 * @param xml
+	 *          the encoding the model
+	 * @throws ParserConfigurationException
+	 *           the parser configuration exception
+	 * @throws XmlDocumentParseException
+	 *           the xml document parse exception
+	 * @throws FileNotFoundException
+	 *           the file not found exception
+	 * @throws SAXException
+	 *           the sAX exception
+	 * @throws IOException
+	 *           Signals that an I/O exception has occurred.
+	 * @throws BivesCellMLParseException
+	 *           the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException
+	 *           the bives document consistency exception
+	 * @throws BivesLogicalException
+	 *           the bives logical exception
+	 * @throws URISyntaxException
+	 *           the uRI syntax exception
+	 * @throws BivesImportException
+	 *           the bives import exception
+	 */
+	public CellMLSingle (String xml)
+		throws ParserConfigurationException,
+			XmlDocumentParseException,
+			FileNotFoundException,
+			SAXException,
+			IOException,
+			BivesCellMLParseException,
+			BivesDocumentConsistencyException,
+			BivesLogicalException,
+			URISyntaxException,
+			BivesImportException
+	{
+		super (xml);
+		doc = new CellMLDocument (tree);
+	}
+	
+	
+	/**
+	 * Instantiates a new object.
+	 * 
+	 * @param doc
+	 *          the document
+	 * @throws ParserConfigurationException
+	 *           the parser configuration exception
+	 * @throws XmlDocumentParseException
+	 *           the xml document parse exception
+	 * @throws FileNotFoundException
+	 *           the file not found exception
+	 * @throws SAXException
+	 *           the sAX exception
+	 * @throws IOException
+	 *           Signals that an I/O exception has occurred.
+	 * @throws BivesCellMLParseException
+	 *           the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException
+	 *           the bives document consistency exception
+	 * @throws BivesLogicalException
+	 *           the bives logical exception
+	 * @throws URISyntaxException
+	 *           the uRI syntax exception
+	 * @throws BivesImportException
+	 *           the bives import exception
+	 */
+	public CellMLSingle (CellMLDocument doc)
+		throws ParserConfigurationException,
+			XmlDocumentParseException,
+			FileNotFoundException,
+			SAXException,
+			IOException,
+			BivesCellMLParseException,
+			BivesDocumentConsistencyException,
+			BivesLogicalException,
+			URISyntaxException,
+			BivesImportException
+	{
+		super (doc.getTreeDocument ());
+		this.doc = doc;
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
 	 */
 	@Override
-	public String getCRNGraphML() throws ParserConfigurationException {
+	public String getCRNGraphML () throws ParserConfigurationException
+	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
+			graphProducer = new CellMLGraphProducer (doc);
 		return new GraphTranslatorGraphML ().translate (graphProducer.getCRN ());
 	}
-
-	/* (non-Javadoc)
+	
+	
+	/*
+	 * (non-Javadoc)
 	 */
 	@Override
-	public Object getHierarchyGraph(GraphTranslator gt) throws Exception {
+	public Object getHierarchyGraph (GraphTranslator gt) throws Exception
+	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
+			graphProducer = new CellMLGraphProducer (doc);
 		return gt.translate (graphProducer.getHierarchy ());
 	}
-
-	/* (non-Javadoc)
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
 	 */
 	@Override
-	public String getHierarchyGraphML() throws ParserConfigurationException {
+	public String getHierarchyGraphML () throws ParserConfigurationException
+	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
-		return new GraphTranslatorGraphML ().translate (graphProducer.getHierarchy ());
+			graphProducer = new CellMLGraphProducer (doc);
+		return new GraphTranslatorGraphML ().translate (graphProducer
+			.getHierarchy ());
 	}
 	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.unirostock.sems.bives.api.Single#getCRNGraph(de.unirostock.sems.bives
+	 * .ds.graph.GraphTranslator)
+	 */
 	@Override
 	public Object getCRNGraph (GraphTranslator gt) throws Exception
 	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
+			graphProducer = new CellMLGraphProducer (doc);
 		return gt.translate (graphProducer.getCRN ());
 	}
-
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.unirostock.sems.bives.api.Single#getCRNDotGraph()
+	 */
 	@Override
 	public String getCRNDotGraph ()
 	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
+			graphProducer = new CellMLGraphProducer (doc);
 		return new GraphTranslatorDot ().translate (graphProducer.getCRN ());
 	}
-
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.unirostock.sems.bives.api.Single#getCRNJsonGraph()
+	 */
 	@Override
 	public String getCRNJsonGraph ()
 	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
+			graphProducer = new CellMLGraphProducer (doc);
 		return new GraphTranslatorJson ().translate (graphProducer.getCRN ());
 	}
-
-	/* (non-Javadoc)
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
 	 */
 	@Override
-	public String getHierarchyDotGraph()
+	public String getHierarchyDotGraph ()
 	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
+			graphProducer = new CellMLGraphProducer (doc);
 		return new GraphTranslatorDot ().translate (graphProducer.getHierarchy ());
 	}
-
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.unirostock.sems.bives.api.Single#getHierarchyJsonGraph()
+	 */
 	@Override
 	public String getHierarchyJsonGraph ()
 	{
 		if (graphProducer == null)
-			graphProducer = new CellMLGraphProducer (doc1);
+			graphProducer = new CellMLGraphProducer (doc);
 		return new GraphTranslatorJson ().translate (graphProducer.getHierarchy ());
 	}
-
+	
 }

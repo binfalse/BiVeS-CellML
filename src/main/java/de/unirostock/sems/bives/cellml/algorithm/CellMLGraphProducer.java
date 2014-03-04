@@ -23,21 +23,36 @@ import de.unirostock.sems.bives.ds.crn.CRNSubstance;
 import de.unirostock.sems.bives.ds.hn.HierarchyNetworkComponent;
 import de.unirostock.sems.bives.ds.hn.HierarchyNetworkVariable;
 import de.unirostock.sems.bives.ds.ontology.SBOTerm;
+import de.unirostock.sems.bives.exception.BivesUnsupportedException;
 import de.unirostock.sems.xmlutils.comparison.Connection;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLGraphProducer to create the graphs.
  *
+ * @author Martin Scharm
  */
 public class CellMLGraphProducer
 extends GraphProducer
 {
+	
+	/** The cellml documents A and B. */
 	private CellMLDocument cellmlDocA, cellmlDocB;
+	
+	/** The connection manager. */
 	private SimpleConnectionManager conMgmt;
+	
+	/** The dummy compartment for reactions. */
 	private CRNCompartment wholeCompartment;
 	
+	/**
+	 * Instantiates a new CellML graph producer for difference graphs.
+	 *
+	 * @param conMgmt the connection manager
+	 * @param cellmlDocA the original document
+	 * @param cellmlDocB the modified document
+	 */
 	public CellMLGraphProducer (SimpleConnectionManager conMgmt, CellMLDocument cellmlDocA, CellMLDocument cellmlDocB)
 	{
 		super (false);
@@ -46,12 +61,20 @@ extends GraphProducer
 		this.conMgmt = conMgmt;
 	}
 	
+	/**
+	 * Instantiates a new CellML graph producer for single document graphs.
+	 *
+	 * @param cellmlDoc the CellML document
+	 */
 	public CellMLGraphProducer (CellMLDocument cellmlDoc)
 	{
 		super (true);
 		this.cellmlDocA = cellmlDoc;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.algorithm.GraphProducer#produceCRN()
+	 */
 	@Override
 	protected void produceCRN ()
 	{
@@ -60,13 +83,23 @@ extends GraphProducer
 			wholeCompartment = new CRNCompartment (crn, "document", "document", null, null);
 			wholeCompartment.setSingleDocument ();
 		}
-		processCrnA ();
-		if (single)
-			crn.setSingleDocument ();
-		else
-			processCrnB ();
+		try
+		{
+			processCrnA ();
+			if (single)
+				crn.setSingleDocument ();
+			else
+				processCrnB ();
+		}
+		catch (BivesUnsupportedException e)
+		{
+			LOGGER.error (e, "something bad happened");
+		}
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.algorithm.GraphProducer#produceHierachyGraph()
+	 */
 	@Override
 	protected void produceHierachyGraph ()
 	{
@@ -77,6 +110,9 @@ extends GraphProducer
 			processHnB ();
 	}
 	
+	/**
+	 * Process Hierarchy Network of the original document.
+	 */
 	protected void processHnA ()
 	{
 		LOGGER.info ("processHnA");
@@ -114,7 +150,7 @@ extends GraphProducer
 		for (CellMLComponent component : components.values ())
 		{
 			//LOGGER.info ("check " + component.getName ());
-			CellMLHierarchyNode compNode = enc.get (component);
+			CellMLHierarchyNode compNode = enc.getNode (component);
 			//LOGGER.info ("hierarchy node: " + compNode);
 			if (compNode != null)
 			{
@@ -155,6 +191,9 @@ extends GraphProducer
 		}
 	}
 	
+	/**
+	 * Process Hierarchy Network of the modified document.
+	 */
 	protected void processHnB ()
 	{
 		LOGGER.info ("processHnB");
@@ -229,7 +268,7 @@ extends GraphProducer
 		// connect nodes
 		for (CellMLComponent component : components.values ())
 		{
-			CellMLHierarchyNode compNode = enc.get (component);
+			CellMLHierarchyNode compNode = enc.getNode (component);
 			if (compNode != null)
 			{
 				CellMLHierarchyNode parent = compNode.getParent ();
@@ -274,7 +313,11 @@ extends GraphProducer
 	}
 	
 	
-	protected void processCrnA ()
+	/**
+	 * Process Chemical Reaction Network of the original document.
+	 * @throws BivesUnsupportedException 
+	 */
+	protected void processCrnA () throws BivesUnsupportedException
 	{
 		LOGGER.info ("init compartment");
 		CellMLModel modelA = cellmlDocA.getModel ();
@@ -342,7 +385,11 @@ extends GraphProducer
 		}
 	}
 	
-	protected void processCrnB ()
+	/**
+	 * Process Chemical Reaction Network of the modified document.
+	 * @throws BivesUnsupportedException 
+	 */
+	protected void processCrnB () throws BivesUnsupportedException
 	{
 		CellMLModel modelB = cellmlDocB.getModel ();
 		wholeCompartment.setDocB (modelB.getDocumentNode ());

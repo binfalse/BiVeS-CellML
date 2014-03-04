@@ -4,12 +4,11 @@
 package de.unirostock.sems.bives.cellml.algorithm;
 
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.algorithm.Interpreter;
+import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.parser.CellMLComponent;
 import de.unirostock.sems.bives.cellml.parser.CellMLDocument;
 import de.unirostock.sems.bives.cellml.parser.CellMLModel;
@@ -28,34 +27,45 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLDiffInterpreter to interpret a mapping of CellML models.
  *
+ * @author Martin Scharm
  */
 public class CellMLDiffInterpreter
 	extends Interpreter
 {
-	//private SBMLDiffReport report;
+	/** The markup document. */
 	private MarkupDocument markupDocument;
+	
+	/** The CellML documents A and B. */
 	private CellMLDocument cellmlDocA, cellmlDocB;
 	
+	/**
+	 * Instantiates a new CellML diff interpreter.
+	 *
+	 * @param conMgmt the connection manager
+	 * @param cellmlDocA the original document
+	 * @param cellmlDocB the modified document
+	 */
 	public CellMLDiffInterpreter (SimpleConnectionManager conMgmt, CellMLDocument cellmlDocA,
 		CellMLDocument cellmlDocB)
 	{
 		super (conMgmt, cellmlDocA.getTreeDocument (), cellmlDocB.getTreeDocument ());
 			//report = new SBMLDiffReport ();
-		markupDocument = new MarkupDocument ("CellML Differences");
 			this.cellmlDocA = cellmlDocA;
 			this.cellmlDocB = cellmlDocB;
 	}
 	
-	// TODO!!!
-	public void annotatePatch ()
-	{
-		// TODO!!!
-	}
 	
+	/**
+	 * Gets the produced report.
+	 *
+	 * @return the report
+	 */
 	public MarkupDocument getReport ()
 	{
+		if (markupDocument == null)
+			interprete ();
 		return markupDocument;
 	}
 	
@@ -66,29 +76,26 @@ public class CellMLDiffInterpreter
 	@Override
 	public void interprete ()
 	{
+		if (markupDocument != null)
+			return;
+		
+		markupDocument = new MarkupDocument ("CellML Differences");
+		
+		
 		// id's are quite critical!
 
 		CellMLModel modelA = cellmlDocA.getModel ();
 		CellMLModel modelB = cellmlDocB.getModel ();
 		
 		checkComponents (modelA, modelB);
-		
-
-		
-		/*checkUnits (modelA, modelB);
-		checkParameters (modelA, modelB);
-		checkCompartments (modelA, modelB);
-		checkCompartmentTypes (modelA, modelB);
-		checkSpecies (modelA, modelB);
-		checkSpeciesTypes (modelA, modelB);
-		checkReactions (modelA, modelB);
-		checkRules (modelA, modelB);
-		checkConstraints (modelA, modelB);
-		checkInitialAssignments (modelA, modelB);
-		checkFunctions (modelA, modelB);
-		checkEvents (modelA, modelB);*/
 	}
 	
+	/**
+	 * Evaluate the components.
+	 *
+	 * @param modelA the original model
+	 * @param modelB the modified model
+	 */
 	private void checkComponents (CellMLModel modelA, CellMLModel modelB)
 	{
 		CellMLUnitDictionary unitsA = modelA.getUnits (), unitsB = modelB.getUnits ();
@@ -106,7 +113,7 @@ public class CellMLDiffInterpreter
 			}
 			else
 			{
-				DocumentNode unitBNode = (DocumentNode) con.getPartnerOf (dn);
+				//DocumentNode unitBNode = (DocumentNode) con.getPartnerOf (dn);
 				//System.out.println (dn.getXPath ());
 				//System.out.println (unitBNode.getXPath ());
 				
@@ -143,7 +150,7 @@ public class CellMLDiffInterpreter
 			{
 				MarkupSection msec = new MarkupSection ("Component " + MarkupDocument.delete (MarkupDocument.highlight (component.getName ())));
 				// units
-				HashMap<String,CellMLUserUnit> componentUnits = unitsA.getComponetUnits (component);
+				HashMap<String,CellMLUserUnit> componentUnits = unitsA.getComponentUnits (component);
 				for (CellMLUserUnit unit : componentUnits.values ())
 					msec.addValue (unit.reportDelete ());
 				// variables
@@ -171,8 +178,8 @@ public class CellMLDiffInterpreter
 				MarkupSection msec = new MarkupSection ("Component " + MarkupDocument.highlight (component.getName ()));
 				CellMLComponent componentB = (CellMLComponent) modelB.getFromNode (con.getPartnerOf (dn));
 				// units
-				HashMap<String,CellMLUserUnit> componentUnitsA = unitsA.getComponetUnits (component);
-				HashMap<String,CellMLUserUnit> componentUnitsB = unitsB.getComponetUnits (componentB);
+				HashMap<String,CellMLUserUnit> componentUnitsA = unitsA.getComponentUnits (component);
+				HashMap<String,CellMLUserUnit> componentUnitsB = unitsB.getComponentUnits (componentB);
 				checkUnits (msec, componentUnitsA, componentUnitsB, modelA, modelB);
 				
 				// variables
@@ -204,7 +211,7 @@ public class CellMLDiffInterpreter
 			if (con == null)
 			{
 				// units
-				HashMap<String,CellMLUserUnit> componentUnits = unitsB.getComponetUnits (component);
+				HashMap<String,CellMLUserUnit> componentUnits = unitsB.getComponentUnits (component);
 				for (CellMLUserUnit unit : componentUnits.values ())
 					msec.addValue (unit.reportInsert ());
 				// variables
@@ -230,6 +237,15 @@ public class CellMLDiffInterpreter
 
 	}
 	
+	/**
+	 * Evaluate the math.
+	 *
+	 * @param msec the MarkUp section
+	 * @param mathA the math of the original document
+	 * @param mathB the math of the modified document
+	 * @param modelA the original model
+	 * @param modelB the modified model
+	 */
 	private void checkMath (MarkupSection msec, List<MathML> mathA, List<MathML> mathB, CellMLModel modelA, CellMLModel modelB)
 	{
 		//System.out.println ("check math : " + mathA.size ());
@@ -287,6 +303,15 @@ public class CellMLDiffInterpreter
 		}
 	}
 	
+	/**
+	 * Evaluate the reactions.
+	 *
+	 * @param msec the MarkUp section
+	 * @param reactionsA the reactions of the original document
+	 * @param reactionsB the reactions of the modified document
+	 * @param modelA the original model
+	 * @param modelB the modified model
+	 */
 	private void checkReactions (MarkupSection msec, List<CellMLReaction> reactionsA, List<CellMLReaction> reactionsB, CellMLModel modelA, CellMLModel modelB)
 	{
 		for (CellMLReaction reactionA : reactionsA)
@@ -320,6 +345,15 @@ public class CellMLDiffInterpreter
 		}
 	}
 	
+	/**
+	 * Evaluate the variables.
+	 *
+	 * @param msec the MarkUp section
+	 * @param varsA the variables of the original document
+	 * @param varsB the variables of the modified document
+	 * @param modelA the original model
+	 * @param modelB the modified model
+	 */
 	private void checkVariables (MarkupSection msec, HashMap<String, CellMLVariable> varsA, HashMap<String, CellMLVariable> varsB, CellMLModel modelA, CellMLModel modelB)
 	{
 		for (CellMLVariable varA : varsA.values ())
@@ -353,6 +387,15 @@ public class CellMLDiffInterpreter
 		}
 	}
 	
+	/**
+	 * Evaluate the units.
+	 *
+	 * @param msec the MarkUp section
+	 * @param unitsA the units of the original document
+	 * @param unitsB the units of the modified document
+	 * @param modelA the original model
+	 * @param modelB the modified model
+	 */
 	private void checkUnits (MarkupSection msec, HashMap<String, CellMLUserUnit> unitsA, HashMap<String, CellMLUserUnit> unitsB, CellMLModel modelA, CellMLModel modelB)
 	{
 		if (unitsA != null)

@@ -25,39 +25,60 @@ import de.unirostock.sems.xmlutils.exception.XmlDocumentConsistencyException;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLModel representing a computational model that was encoded in CellML.
  *
+ * @author Martin Scharm
  */
 public class CellMLModel
 extends CellMLEntity
 {
-	// The <model> element has a name attribute that allows the model to be unambiguously referenced.
+	/** The <model> element has a name attribute that allows the model to be unambiguously referenced. */
 	private String name;
 	
 	// A modeller may import parts of another valid CellML model, as described in
 	//private List<CellMLImport> imports;
 	
+	/** The document holding this model. */
 	private CellMLDocument doc;
 	
-	// A modeller can declare a set of units to use in the model
+	/** A modeller can declare a set of units to use in the model. */
 	private CellMLUnitDictionary unitDict;
 	
-	
-	// Components are the smallest functional units in a model. Each component may contain variables that represent the key properties of the component and/or mathematics that describe the behaviour of the portion of the system represented by that component.
+	/** Components are the smallest functional units in a model. Each component may contain variables that represent the key properties of the component and/or mathematics that describe the behaviour of the portion of the system represented by that component. */
 	private HashMap<String, CellMLComponent> components;
 
+	/** The imported components. */
 	private List<CellMLComponent> importedComponents;
+	
+	/** The imported units. */
 	private List<CellMLUserUnit> importedUnits;
+	
+	/** The imported connections. */
 	private List<DocumentNode> importedConnections;
 	
+	/** The node mapper mapping tree nodes to entities. */
 	private HashMap<TreeNode, CellMLEntity> nodeMapper;
 	
+	/** The component hierarchies. */
 	private CellMLHierarchy hierarchy;
 	
-	private List<CellMLConnection> connections;
-	
+	/** The flag to determine whether there are imports. */
 	private boolean containsImports;
 	
+	/**
+	 * Instantiates a new model.
+	 *
+	 * @param doc the document containing this model
+	 * @param rootNode the root node of the model
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException the uRI syntax exception
+	 * @throws ParserConfigurationException the parser configuration exception
+	 * @throws SAXException the sAX exception
+	 * @throws BivesImportException the bives import exception
+	 */
 	public CellMLModel (CellMLDocument doc, DocumentNode rootNode) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesImportException
 	{
 		super (rootNode, null);
@@ -68,7 +89,6 @@ extends CellMLEntity
 		unitDict = new CellMLUnitDictionary (this);
 		components = new HashMap<String, CellMLComponent> ();
 		hierarchy = new CellMLHierarchy (this);
-		connections = new ArrayList<CellMLConnection> ();
 		
 		importedUnits = new ArrayList<CellMLUserUnit> ();
 		importedComponents = new ArrayList<CellMLComponent> ();
@@ -77,28 +97,43 @@ extends CellMLEntity
 		nodeMapper = new HashMap<TreeNode, CellMLEntity> ();
 		
 		readDocument (rootNode);
-		/*this.baseUri = baseUri;
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-	  DocumentBuilder db = dbf.newDocumentBuilder();
-	  Document doc = db.parse(file);
-	  readDocument (doc);*/
 	}
 	
+	/**
+	 * Gets the name of the model.
+	 *
+	 * @return the name
+	 */
 	public String getName ()
 	{
 		return name;
 	}
 	
+	/**
+	 * Does this model contain imports?
+	 *
+	 * @return true, if it contains imports
+	 */
 	public boolean containsImports ()
 	{
 		return containsImports;
 	}
 	
+	/**
+	 * Parse the model from XML code.
+	 *
+	 * @param root the root element holding the model
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException the uRI syntax exception
+	 * @throws ParserConfigurationException the parser configuration exception
+	 * @throws SAXException the sAX exception
+	 * @throws BivesImportException the bives import exception
+	 */
 	private void readDocument (DocumentNode root) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesImportException
 	{
-		//Element root = doc.getDocumentElement ();
-		
-		
 		// imports
 		LOGGER.info ("reading imports in ", doc.getBaseUri ());
 		readImports (root);
@@ -124,6 +159,13 @@ extends CellMLEntity
 		readConnections (root);
 	}
 	
+	/**
+	 * Read the defined units.
+	 *
+	 * @param root the root node
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	private void readUnits (DocumentNode root) throws BivesDocumentConsistencyException, BivesCellMLParseException
 	{
 		List<TreeNode> kids = root.getChildrenWithTag ("units");
@@ -156,13 +198,21 @@ extends CellMLEntity
 		if (kids.size () != 0)
 			throw new BivesDocumentConsistencyException ("inconsistencies for "+kids.size ()+" units, problems: " + problems);
 		
-		/*for (TreeNode kid : kids)
-		{
-
-			unitDict.addUnit (null, new CellMLUserUnit (model, unitDict, null, (DocumentNode) kid));
-		}*/
 	}
 	
+	/**
+	 * Read imported entities.
+	 *
+	 * @param root the root node
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException the uRI syntax exception
+	 * @throws ParserConfigurationException the parser configuration exception
+	 * @throws SAXException the sAX exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesImportException the bives import exception
+	 */
 	private void readImports (DocumentNode root) throws BivesCellMLParseException, IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException
 	{
 		List<TreeNode> kids = root.getChildrenWithTag ("import");
@@ -177,6 +227,14 @@ extends CellMLEntity
 		}
 	}
 
+	/**
+	 * Read connections.
+	 *
+	 * @param root the root node
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 */
 	private void readConnections (DocumentNode root) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException
 	{
 		List<TreeNode> kids = root.getChildrenWithTag ("connection");
@@ -189,6 +247,13 @@ extends CellMLEntity
 		}
 	}
 
+	/**
+	 * Read groups.
+	 *
+	 * @param root the root node
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesLogicalException the bives logical exception
+	 */
 	private void readGroups (DocumentNode root) throws BivesCellMLParseException, BivesLogicalException
 	{
 		List<TreeNode> kids = root.getChildrenWithTag ("group");
@@ -201,6 +266,14 @@ extends CellMLEntity
 		}
 	}
 
+	/**
+	 * Read components.
+	 *
+	 * @param root the root node
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesLogicalException the bives logical exception
+	 */
 	private void readComponents (DocumentNode root) throws BivesDocumentConsistencyException, BivesCellMLParseException, BivesLogicalException
 	{
 		List<TreeNode> kids = root.getChildrenWithTag ("component");
@@ -218,7 +291,7 @@ extends CellMLEntity
 	 * Imports a unit from another document. Runs some additional code (in cmp to addUnit) in order to flatten a document.
 	 *
 	 * @param unit the unit
-	 * @throws BivesConsistencyException the bives consistency exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 */
 	public void importUnit (CellMLUserUnit unit) throws BivesDocumentConsistencyException
 	{
@@ -230,23 +303,39 @@ extends CellMLEntity
 	 * Imports a unit from another document. Runs some additional code (in cmp to addUnit) in order to flatten a document.
 	 *
 	 * @param unit the unit
-	 * @throws BivesConsistencyException the bives consistency exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 */
 	public void importDependencyUnit (CellMLUserUnit unit) throws BivesDocumentConsistencyException
 	{
 		importedUnits.add (unit);
 	}
 	
+	/**
+	 * Adds a unit.
+	 *
+	 * @param unit the unit
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 */
 	public void addUnit (CellMLUserUnit unit) throws BivesDocumentConsistencyException
 	{
 		unitDict.addUnit (null, unit);
 	}
 	
+	/**
+	 * Gets the units.
+	 *
+	 * @return the unit dictionary
+	 */
 	public CellMLUnitDictionary getUnits ()
 	{
 		return unitDict;
 	}
 	
+	/**
+	 * Gets the document.
+	 *
+	 * @return the document
+	 */
 	public CellMLDocument getDocument ()
 	{
 		return doc;
@@ -254,16 +343,34 @@ extends CellMLEntity
 	
 
 
+	/**
+	 * Gets the components.
+	 *
+	 * @return the components
+	 */
 	public HashMap<String, CellMLComponent> getComponents ()
 	{
 		return components;
 	}
 
+	/**
+	 * Gets the component having a specified name.
+	 *
+	 * @param name the name of the component
+	 * @return the component
+	 */
 	public CellMLComponent getComponent (String name)
 	{
 		return components.get (name);
 	}
 	
+	/**
+	 * Adds a component.
+	 *
+	 * @param component the component to add
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 */
 	public void addComponent (CellMLComponent component) throws BivesDocumentConsistencyException, BivesLogicalException
 	{
 		if (components.get (component.getName ()) != null)
@@ -272,28 +379,36 @@ extends CellMLEntity
 		//hierarchy.addUnencapsulatedComponent (component);
 	}
 	
+	/**
+	 * Import a component from another document.
+	 *
+	 * @param component the component to import
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 */
 	public void importComponent (CellMLComponent component) throws BivesDocumentConsistencyException, BivesLogicalException
 	{
-		/*DocumentNode toAdd = component.getDocumentNode ().extract ();
-		getDocumentNode ().addChild (toAdd);*/
-		
 		addComponent (component);
 		importedComponents.add (component);
 	}
 	
+	/**
+	 * Import a connection.
+	 *
+	 * @param node the node
+	 */
 	public void importConnection (DocumentNode node)
 	{
 		importedConnections.add (node);
 	}
 	
-	public void debug (String prefix)
-	{
-		System.out.println (prefix + "model: " + name);
-		unitDict.debug (prefix + "  ");
-		for (CellMLComponent c : components.values ())
-			c.debug (prefix + "  ");
-	}
-	
+	/**
+	 * Flatten this model. Write all imported entities to this tree.
+	 *
+	 * @throws BivesFlattenException the bives flatten exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws XmlDocumentConsistencyException the xml document consistency exception
+	 */
 	public void flatten () throws BivesFlattenException, BivesDocumentConsistencyException, XmlDocumentConsistencyException
 	{
 		// might be quite confusing. due to the multiple recursive options
@@ -366,21 +481,35 @@ extends CellMLEntity
 		containsImports = false;
 	}
 	
+	/**
+	 * Gets the hierarchy.
+	 *
+	 * @return the hierarchy
+	 */
 	public CellMLHierarchy getHierarchy ()
 	{
 		return hierarchy;
 	}
 	
+	/**
+	 * Map document node to a CellML entity.
+	 *
+	 * @param node the document node
+	 * @param entity the entity
+	 */
 	public void mapNode (DocumentNode node, CellMLEntity entity)
 	{
-		//System.out.println ("mappe: " + entity.getDocumentNode ().getXPath ());
 		nodeMapper.put (node, entity);
 	}
 	
+	/**
+	 * Gets an entity given a node in an XML tree.
+	 *
+	 * @param node the node
+	 * @return the from node
+	 */
 	public CellMLEntity getFromNode (TreeNode node)
 	{
-		//for (TreeNode n : nodeMapper.keySet ())
-			//System.out.println ("mapped: " + n.getXPath ());
 		return nodeMapper.get (node);
 	}
 }

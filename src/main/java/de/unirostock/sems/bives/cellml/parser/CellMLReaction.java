@@ -20,20 +20,32 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLReaction representing a reaction defined in a CellML model.
  *
+ * @author Martin Scharm
  */
 public class CellMLReaction
 extends CellMLEntity
 implements DiffReporter
 {
 	
-	// The <reaction> element may define a reversible attribute, the value of which indicates whether or not the reaction is reversible. The default value of the reversible attribute is "yes".
+	/** The <reaction> element may define a reversible attribute, the value of which indicates whether or not the reaction is reversible. The default value of the reversible attribute is "yes".*/
 	private boolean reversible;
-	//The reaction element contains multiple <variable_ref> elements, each of which references a variable that participates in the reaction.
+	/**The reaction element contains multiple <variable_ref> elements, each of which references a variable that participates in the reaction.*/
 	private List<CellMLReactionSubstance> variable_refs;
+	
+	/** The component. */
 	private CellMLComponent component;
 	
+	/**
+	 * Instantiates a new CellML reaction.
+	 *
+	 * @param model the model defining this reaction
+	 * @param component the component this reaction belongs to
+	 * @param node the corresponding document node in the XML tree
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	public CellMLReaction (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException
 	{
 		super (node, model);
@@ -48,26 +60,42 @@ implements DiffReporter
 		
 		List<TreeNode> kids = node.getChildrenWithTag ("variable_ref");
 		for (TreeNode kid : kids)
-		{
 			variable_refs.add (new CellMLReactionSubstance (model, component, (DocumentNode) kid));
-		}
 	}
 	
+	/**
+	 * Gets the substances taking part in the reaction.
+	 *
+	 * @return the substances
+	 */
 	public List<CellMLReactionSubstance> getSubstances ()
 	{
 		return variable_refs;
 	}
 	
+	/**
+	 * Gets the component defining this reaction.
+	 *
+	 * @return the component
+	 */
 	public CellMLComponent getComponent ()
 	{
 		return component;
 	}
 	
+	/**
+	 * Checks if this reaction is reversible.
+	 *
+	 * @return true, if is reversible
+	 */
 	public boolean isReversible ()
 	{
 		return reversible;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.algorithm.DiffReporter#reportMofification(de.unirostock.sems.bives.algorithm.SimpleConnectionManager, de.unirostock.sems.bives.algorithm.DiffReporter, de.unirostock.sems.bives.algorithm.DiffReporter)
+	 */
 	@Override
 	public MarkupElement reportMofification (SimpleConnectionManager conMgmt,
 		DiffReporter docA, DiffReporter docB)
@@ -170,52 +198,64 @@ implements DiffReporter
 			}
 		}
 
-		String sub = "", ret = "";
+		StringBuilder sub, ret = new StringBuilder ();
 
-		sub = expandSubstances ("", "", inputs, " + ");
+		sub = expandSubstances (new StringBuilder (), "", inputs, " + ");
 		if (sub.length () > 0)
-			ret += sub + " "+MarkupDocument.rightArrow ()+" ";
+			ret.append (sub).append (" ").append (MarkupDocument.rightArrow ()).append (" ");
 		else
-			ret += "&Oslash; "+MarkupDocument.rightArrow ()+" ";
+			ret.append ("&Oslash; ").append (MarkupDocument.rightArrow ()).append (" ");
 
-		sub = expandSubstances ("", "", outputs, " + ");
+		sub = expandSubstances (new StringBuilder (), "", outputs, " + ");
 		if (sub.length () > 0)
-			ret += sub;
+			ret.append (sub);
 		else
-			ret += "&Oslash;";
-		me.addValue (ret);
+			ret.append ("&Oslash;");
+		me.addValue (ret.toString ());
 
-		sub = expandSubstances ("", " (unknown)", modifiers, "; ");
+		sub = expandSubstances (new StringBuilder (), " (unknown)", modifiers, "; ");
 		sub = expandSubstances (sub, " (stimulator)", modifiersStim, "; ");
 		sub = expandSubstances (sub, " (inhibitor)", modifiersInh, "; ");
 		if (sub.length () > 0)
-			me.addValue ("Modifiers: " + sub);
+			me.addValue ("Modifiers: " + sub.toString ());
 		
 		return me;
 	}
 	
-	private String expandSubstances (String sub, String supp, HashMap<String, Integer> map, String collapse)
+	/**
+	 * Expand the substances.
+	 *
+	 * @param sub the sub
+	 * @param supp the supp
+	 * @param map the map
+	 * @param collapse the collapse
+	 * @return the string
+	 */
+	private StringBuilder expandSubstances (StringBuilder sub, String supp, HashMap<String, Integer> map, String collapse)
 	{
 		for (String subst : map.keySet ())
 		{
 			if (sub.length () > 0)
-				sub += collapse;
+				sub.append (collapse);
 			switch (map.get (subst))
 			{
 				case -1:
-					sub += MarkupDocument.delete (subst + supp);
+					sub.append (MarkupDocument.delete (subst + supp));
 					break;
 				case 1:
-					sub += MarkupDocument.insert (subst + supp);
+					sub.append (MarkupDocument.insert (subst + supp));
 					break;
 				default:
-					sub += subst + supp;
+					sub.append (subst).append (supp);
 					break;
 			}
 		}
 		return sub;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.algorithm.DiffReporter#reportInsert()
+	 */
 	@Override
 	public MarkupElement reportInsert ()
 	{
@@ -224,6 +264,9 @@ implements DiffReporter
 		return me;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.algorithm.DiffReporter#reportDelete()
+	 */
 	@Override
 	public MarkupElement reportDelete ()
 	{

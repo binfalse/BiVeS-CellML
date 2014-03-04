@@ -16,20 +16,36 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLHierarchy representing the hierarchy of CellML components.
  *
+ * @author Martin Scharm
  */
 public class CellMLHierarchy
 {
+	
+	/** The Constant RELATION_HIDDEN => components cannot see each other. */
 	public static final int RELATION_HIDDEN = 0;
+	
+	/** The Constant RELATION_SIBLING => components are siblings. */
 	public static final int RELATION_SIBLING = 1;
+	
+	/** The Constant RELATION_PARENT => component 1 is parent of component 2 . */
 	public static final int RELATION_PARENT = 2;
+	
+	/** The Constant RELATION_ENCAPSULATED => component 1 is encapsulated in component 2. */
 	public static final int RELATION_ENCAPSULATED = 3;
 	
+	/** The different hierarchy networks. */
 	private HashMap <String, CellMLHierarchyNetwork> networks;
 	
+	/** The model. */
 	private CellMLModel model;
 	
+	/**
+	 * Instantiates a new CellML hierarchy object.
+	 *
+	 * @param model the model
+	 */
 	public CellMLHierarchy (CellMLModel model)
 	{
 		this.model = model;
@@ -37,11 +53,25 @@ public class CellMLHierarchy
 		networks.put ("encapsulation:", new CellMLHierarchyNetwork ("encapsulation", ""));
 	}
 	
+	/**
+	 * Gets a specific hierarchy network.
+	 *
+	 * @param relationship the name of the relationship
+	 * @param name the name of the hierarchy
+	 * @return the hierarchy network
+	 */
 	public CellMLHierarchyNetwork getHierarchyNetwork (String relationship, String name)
 	{
 		return networks.get (relationship + ":" + name);
 	}
 	
+	/**
+	 * Parses a component group.
+	 *
+	 * @param node the corresponding document node in the XML tree
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesLogicalException the bives logical exception
+	 */
 	public void parseGroup (DocumentNode node) throws BivesCellMLParseException, BivesLogicalException
 	{
 		//CellMLHierarchyRelationship relationship = new CellMLHierarchyRelationship ();
@@ -87,10 +117,19 @@ public class CellMLHierarchy
 		}
 		
 		Stack<CellMLComponent> parents = new Stack<CellMLComponent> ();
-		recursiveParseGroup (node, parents, curNetworks);
+		recursiveParseGroups (node, parents, curNetworks);
 	}
 	
-	private void recursiveParseGroup (DocumentNode cur, Stack<CellMLComponent> parents, List<CellMLHierarchyNetwork> curNetworks) throws BivesCellMLParseException, BivesLogicalException
+	/**
+	 * Recursive parse component groups.
+	 *
+	 * @param cur the current document node
+	 * @param parents the stack of parents
+	 * @param curNetworks the current networks
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesLogicalException the bives logical exception
+	 */
+	private void recursiveParseGroups (DocumentNode cur, Stack<CellMLComponent> parents, List<CellMLHierarchyNetwork> curNetworks) throws BivesCellMLParseException, BivesLogicalException
 	{
 		List<TreeNode> kids = cur.getChildrenWithTag ("component_ref");
 		
@@ -124,13 +163,21 @@ public class CellMLHierarchy
 			}
 			
 			parents.add (child);
-			recursiveParseGroup (next, parents, curNetworks);
+			recursiveParseGroups (next, parents, curNetworks);
 		}
 		
 		if (parents.size () > 0)
 			parents.pop ();
 	}
 
+	/**
+	 * Gets the encapsulation relationship of two components.
+	 *
+	 * @param component_1 the first component
+	 * @param component_2 the second component
+	 * @return the encapsulation relationship
+	 * @throws BivesLogicalException the bives logical exception
+	 */
 	public int getEncapsulationRelationship (CellMLComponent component_1,
 		CellMLComponent component_2) throws BivesLogicalException
 	{
@@ -138,8 +185,8 @@ public class CellMLHierarchy
 		if (network == null)
 			return RELATION_SIBLING;
 		
-		CellMLHierarchyNode node_1 = network.get (component_1);
-		CellMLHierarchyNode node_2 = network.get (component_2);
+		CellMLHierarchyNode node_1 = network.getNode (component_1);
+		CellMLHierarchyNode node_2 = network.getNode (component_2);
 
 		if (node_1 == null)
 		{

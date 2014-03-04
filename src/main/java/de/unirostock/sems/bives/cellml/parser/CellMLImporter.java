@@ -29,17 +29,30 @@ import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLImporter to import entities in CellML models.
  *
+ * @author Martin Scharm
  */
 public class CellMLImporter
 extends CellMLEntity
 {
+	
+	/** The import mapper. */
 	private static HashMap<URI, CellMLDocument> importMapper;
 	
+	/** The location of imported entities. */
 	private String href;
+	
+	/** The corresponding document node in the XML code. */
 	private DocumentNode node;
 	
+	/**
+	 * Instantiates a new CellML importer.
+	 *
+	 * @param node the document node of the corresponding XML tree
+	 * @param model the model to import the entities to
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	public CellMLImporter (DocumentNode node, CellMLModel model) throws BivesCellMLParseException
 	{
 		super (node, model);
@@ -54,6 +67,11 @@ extends CellMLEntity
 		
 	}
 	
+	/**
+	 * Parses the import section.
+	 *
+	 * @throws BivesImportException the bives import exception
+	 */
 	public void parse () throws BivesImportException
 	{
 		try
@@ -68,7 +86,20 @@ extends CellMLEntity
 
 
 
-	public void pparse () throws IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, XmlDocumentParseException
+	/**
+	 * Really do the parsing ;-)
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException the uRI syntax exception
+	 * @throws ParserConfigurationException the parser configuration exception
+	 * @throws SAXException the sAX exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesImportException the bives import exception
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 */
+	private void pparse () throws IOException, URISyntaxException, ParserConfigurationException, SAXException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, XmlDocumentParseException
 	{
 		URI baseUri = model.getDocument ().getBaseUri ();
 		LOGGER.info ("parsing import from ", href, " (base uri is: ", baseUri, ")");

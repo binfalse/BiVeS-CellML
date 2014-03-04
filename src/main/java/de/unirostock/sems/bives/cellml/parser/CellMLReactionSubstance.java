@@ -14,8 +14,9 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLReactionSubstance representing a substance taking part in a reaction.
  *
+ * @author Martin Scharm
  */
 public class CellMLReactionSubstance
 extends CellMLEntity
@@ -31,20 +32,43 @@ extends CellMLEntity
 	public static final int DIRECTION_REVERSE = 1;
 	public static final int DIRECTION_BOTH = 2;
 	
+	/** The variable that corresponds to this substance. */
+	private CellMLVariable variable;
+	
+	/** The roles it plays. */
+	private List<Role> roles;
+	
+	/** The corresponding component that defines the reaction. */
+	private CellMLComponent component;
+	
+	/**
+	 * The Class Role.
+	 */
 	public class Role
 	extends CellMLEntity
 	{
-		// The role attribute must have a value of "reactant", "product", "catalyst", "activator", "inhibitor", "modifier", or "rate"
+		
+		/** The role attribute must have a value of "reactant", "product", "catalyst", "activator", "inhibitor", "modifier", or "rate". */
 		public int role;
-		// The optional direction attribute may be used on <role> elements in reversible reactions. If defined, it must have a value of "forward", "reverse", or "both". Its value indicates the direction of the reaction for which the role is relevant. It has a default value of "forward".
+		/**  The optional direction attribute may be used on <role> elements in reversible reactions. If defined, it must have a value of "forward", "reverse", or "both". Its value indicates the direction of the reaction for which the role is relevant. It has a default value of "forward". */
 		public int direction;
-		// The optional delta_variable attribute indicates which variable is used to store the change in concentration of the species represented by the variable referenced by the current <variable_ref> element
+		
+		/** The optional delta_variable attribute indicates which variable is used to store the change in concentration of the species represented by the variable referenced by the current <variable_ref> element. */
 		public CellMLVariable delta_variable;
-		// The optional stoichiometry attribute stores the stoichiometry of the current variable relative to the other reaction participants.
+		/**  The optional stoichiometry attribute stores the stoichiometry of the current variable relative to the other reaction participants. */
 		public Double stoichiometry;
-		// The <role> elements may also contain <math> elements in the MathML namespace, which define equations using MathML
+		
+		/** The <role> elements may also contain <math> elements in the MathML namespace, which define equations using MathML. */
 		public List<MathML> math;
 		
+		/**
+		 * Instantiates a new role.
+		 *
+		 * @param model the model that contains this reaction
+		 * @param node the corresponding document node in the XML tree
+		 * @throws BivesCellMLParseException the bives cell ml parse exception
+		 * @throws BivesDocumentConsistencyException the bives document consistency exception
+		 */
 		public Role (CellMLModel model, DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException
 		{
 			super (node, model);
@@ -75,26 +99,17 @@ extends CellMLEntity
 			for (TreeNode kid : kids)
 				math.add (new MathML ((DocumentNode) kid));
 		}
-		
-		/*public String getStoichiometry ()
-		{
-			if (stoichiometry == null)
-				return "";
-			if ((stoichiometry == Math.rint (stoichiometry)) && !Double.isInfinite (stoichiometry) && !Double.isNaN (stoichiometry))
-			{
-				int s = stoichiometry.intValue ();
-				if (s == 1)
-					return "";
-		    return stoichiometry.intValue () + "";
-			}
-			return stoichiometry.toString ();
-		}*/
 	}
 	
-	private CellMLVariable variable;
-	private List<Role> roles;
-	private CellMLComponent component;
-	
+	/**
+	 * Instantiates a new CellML reaction substance.
+	 *
+	 * @param model the model that defines this substance
+	 * @param component the component that hosts the reaction
+	 * @param node the corresponding node in the XML tree
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	public CellMLReactionSubstance (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException
 	{
 		super (node, model);
@@ -113,16 +128,33 @@ extends CellMLEntity
 			roles.add (new Role (model, (DocumentNode) kid));
 	}
 	
+	/**
+	 * Gets the corresponding CellML variable.
+	 *
+	 * @return the variable
+	 */
 	public CellMLVariable getVariable ()
 	{
 		return variable;
 	}
 	
+	/**
+	 * Gets the roles of this substance.
+	 *
+	 * @return the roles
+	 */
 	public List<Role> getRoles ()
 	{
 		return roles;
 	}
 
+	/**
+	 * Resolve direction of this substance.
+	 *
+	 * @param direction the direction flag
+	 * @return the direction as a string
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	public static final String resolveDirection (int direction) throws BivesCellMLParseException
 	{
 		if (direction == DIRECTION_FORWARD)
@@ -133,6 +165,14 @@ extends CellMLEntity
 			return "both";
 		throw  new BivesCellMLParseException ("unknown direction: " + direction);
 	}
+	
+	/**
+	 * Resolve direction.
+	 *
+	 * @param direction the direction as a string
+	 * @return the direction flag
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	public static final int resolveDirection (String direction) throws BivesCellMLParseException
 	{
 		if (direction.equals ("forward"))
@@ -144,6 +184,13 @@ extends CellMLEntity
 		throw  new BivesCellMLParseException ("unknown direction: " + direction);
 	}
 
+	/**
+	 * Resolve the role flag to get a textual representation.
+	 *
+	 * @param role the role flag
+	 * @return the role as a string
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	public static final String resolveRole (int role) throws BivesCellMLParseException
 	{
 		if (role == ROLE_REACTANT)
@@ -162,6 +209,14 @@ extends CellMLEntity
 			return "rate";
 		throw  new BivesCellMLParseException ("unknown role: " + role);
 	}
+	
+	/**
+	 * Resolve role as a string to get the corresponding flag.
+	 *
+	 * @param role the role as a sting 
+	 * @return the role flag
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 */
 	public static final int resolveRole (String role) throws BivesCellMLParseException
 	{
 		if (role.equals ("reactant"))

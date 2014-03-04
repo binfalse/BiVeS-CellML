@@ -4,7 +4,6 @@
 package de.unirostock.sems.bives.cellml.parser;
 
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
@@ -15,11 +14,25 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLConnection to parse connections inside CellML models.
  *
+ * @author Martin Scharm
  */
 public class CellMLConnection
 {
+	
+	/**
+	 * Parses a connection as defined in a CellML document.
+	 *
+	 * @param model the corresponding model
+	 * @param hierarchy the hierarchy network
+	 * @param connection the connection node to parse
+	 * @param limit the limit
+	 * @return true, if successful
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 */
 	public static final boolean parseConnection (CellMLModel model, CellMLHierarchy hierarchy, DocumentNode connection, HashMap<String, CellMLComponent> limit) throws BivesCellMLParseException, BivesLogicalException, BivesDocumentConsistencyException
 	{
 		// A <connection> element must contain exactly one <map_components> element, which is used to reference the two componList<E>nvolved in the connection.

@@ -11,50 +11,71 @@ import de.unirostock.sems.bives.cellml.parser.CellMLDocument;
 import de.unirostock.sems.bives.exception.BivesConnectionException;
 import de.unirostock.sems.xmlutils.comparison.Connection;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
-import de.unirostock.sems.xmlutils.ds.TreeDocument;
 import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLConnector to connect CellML documents.
  *
+ * @author Martin Scharm
  */
 public class CellMLConnector
 	extends Connector
 {
+	
+	/** The preprocessor. */
 	private Connector preprocessor;
+	
+	/** The cellml docs A and B. */
 	private CellMLDocument cellmlDocA, cellmlDocB;
 
+	/**
+	 * Instantiates a new CellML connector.
+	 *
+	 * @param cellmlDocA the original document
+	 * @param cellmlDocB the modified document
+	 */
 	public CellMLConnector (CellMLDocument cellmlDocA, CellMLDocument cellmlDocB)
 	{
-		super ();
+		super (cellmlDocA.getTreeDocument (), cellmlDocB.getTreeDocument ());
 		this.cellmlDocA = cellmlDocA;
 		this.cellmlDocB = cellmlDocB;
 	}
 	
+	/**
+	 * Instantiates a new CellML connector.
+	 *
+	 * @param preprocessor the preprocessor
+	 */
 	public CellMLConnector (Connector preprocessor)
 	{
-		super ();
+		super (preprocessor.getDocA (), preprocessor.getDocB ());
 		this.preprocessor = preprocessor;
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.algorithm.Connector#init()
+	 */
 	@Override
 	protected void init () throws BivesConnectionException
 	{
-		// TODO: maybe preporcessing -> instead of id's use annotations/ontologies etc
-		// use id's
-		// use variables for rules
-
-		// preprocessor connects by id and stuff
-		// xy propagates connections
-		XyDiffConnector id = new XyDiffConnector (new CellMLConnectorPreprocessor (cellmlDocA, cellmlDocB));
-		id.init (docA, docB);
-		id.findConnections ();
-
-		conMgmt = id.getConnections ();
-		//System.out.println (conMgmt);
-		
+		// not yet initialized?
+		if (preprocessor == null)
+		{
+			// then we'll use by default an XyDiffConnector initialized by a CellMLConnectorPreprocessor
+			XyDiffConnector id = new XyDiffConnector (new CellMLConnectorPreprocessor (cellmlDocA, cellmlDocB));
+			id.findConnections ();
+	
+			conMgmt = id.getConnections ();
+		}
+		else
+		{
+			//preprocessor.init (docA, docB);
+			preprocessor.findConnections ();
+	
+			conMgmt = preprocessor.getConnections ();
+		}
 	}
 	
 	

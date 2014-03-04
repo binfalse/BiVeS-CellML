@@ -9,26 +9,49 @@ import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 
 
 /**
- * @author Martin Scharm
+ * The Class CellMLUnitDictionary storing all known units.
  *
+ * @author Martin Scharm
  */
 public class CellMLUnitDictionary
 {
+	/** The common standard units*/
+	public final static String [] STANDARD_UNITS = new String [] {"ampere", "farad", "katal", "lux", "pascal", "tesla", "becquerel", "gram", "kelvin", "meter", "radian", "volt", "candela", "gray", "kilogram", "metre", "second", "watt", "celsius", "henry", "liter", "mole", "siemens", "weber", "coulomb", "hertz", "litre", "newton", "sievert", "dimensionless", "joule", "lumen", "ohm", "steradian"};
+	
+	/** The corresponding model. */
 	private CellMLModel model;
-	private HashMap<String, CellMLUnit> commonUnits;
+	
+	/** The standard units. */
+	private HashMap<String, CellMLUnit> standardUnits;
+	
+	/** The units defined in the model. */
 	private HashMap<String, CellMLUserUnit> modelUnits;
+	
+	/** The units defined in certain components. */
 	private HashMap<CellMLComponent, HashMap<String, CellMLUserUnit>> componentUnits;
 	
+	/**
+	 * Instantiates a new CellML unit dictionary.
+	 *
+	 * @param model the corresponding model
+	 */
 	public CellMLUnitDictionary (CellMLModel model)
 	{
 		this.model = model;
-		commonUnits = new HashMap<String, CellMLUnit> ();
+		standardUnits = new HashMap<String, CellMLUnit> ();
 		modelUnits = new HashMap<String, CellMLUserUnit> ();
 		componentUnits = new HashMap<CellMLComponent, HashMap<String, CellMLUserUnit>> ();
 		
 		init ();
 	}
 	
+	/**
+	 * Gets a unit by its name. Tries to first find the unit in the component and in the whole model, before it searched for this unit in the standard units.
+	 *
+	 * @param name the name of the unit
+	 * @param c the component which needs the unit
+	 * @return the unit
+	 */
 	public CellMLUnit getUnit (String name, CellMLComponent c)
 	{
 		HashMap<String, CellMLUserUnit> cu = componentUnits.get (c);
@@ -43,27 +66,48 @@ public class CellMLUnitDictionary
 		if (u != null)
 			return u;
 
-		u = commonUnits.get (name);
+		u = standardUnits.get (name);
 		if (u != null)
 			return u;
 		
 		return null;
 	}
 	
-	public HashMap<String, CellMLUserUnit> getComponetUnits (CellMLComponent component)
+	/**
+	 * Gets the units defined in a certain component.
+	 *
+	 * @param component the component of interest
+	 * @return the units defined in this component
+	 */
+	public HashMap<String, CellMLUserUnit> getComponentUnits (CellMLComponent component)
 	{
 		return componentUnits.get (component);
 	}
 	
+	/**
+	 * Gets the units defined globally in the model.
+	 *
+	 * @return the model units
+	 */
 	public HashMap<String, CellMLUserUnit> getModelUnits ()
 	{
 		return modelUnits;
 	}
 	
+	/**
+	 * Adds a unit.
+	 *
+	 * @param c the component which defines the unit locally, or null if it's a global unit
+	 * @param u the unit
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 */
 	public void addUnit (CellMLComponent c, CellMLUserUnit u) throws BivesDocumentConsistencyException
 	{
-		if (commonUnits.get (u.getName ()) != null)
+		if (standardUnits.get (u.getName ()) != null)
 			throw new BivesDocumentConsistencyException ("not allowed to overwrite unit: " + u.getName ());
+		
+		if (u.getModel () != model)
+			throw new BivesDocumentConsistencyException ("adding a unit to a model it doesn't emerge from " + u.getName ());
 		
 		if (c == null)
 		{
@@ -85,29 +129,12 @@ public class CellMLUnitDictionary
 		}
 	}
 	
+	/**
+	 * Initialises the dictionary.
+	 */
 	private void init ()
 	{
-		String [] common = new String [] {"ampere", "farad", "katal", "lux", "pascal", "tesla", "becquerel", "gram", "kelvin", "meter", "radian", "volt", "candela", "gray", "kilogram", "metre", "second", "watt", "celsius", "henry", "liter", "mole", "siemens", "weber", "coulomb", "hertz", "litre", "newton", "sievert", "dimensionless", "joule", "lumen", "ohm", "steradian"};
-		for (String c : common)
-			commonUnits.put (c, CellMLUnit.createStandardUnit (c));
-	}
-	
-	public void debug (String prefix)
-	{
-		System.out.println (prefix + "common units");
-		for (CellMLUnit u : commonUnits.values ())
-			u.debug (prefix + "  ");
-		
-		System.out.println (prefix + "model units");
-		for (CellMLUnit u : modelUnits.values ())
-			u.debug (prefix + "  ");
-		
-		for (CellMLComponent c : componentUnits.keySet ())
-		{
-			System.out.println (prefix + "component units: " + c.getName ());
-			HashMap<String, CellMLUserUnit> m = componentUnits.get (c);
-			for (CellMLUnit u : m.values ())
-				u.debug (prefix + "  ");
-		}
+		for (String c : STANDARD_UNITS)
+			standardUnits.put (c, CellMLUnit.createStandardUnit (c));
 	}
 }
