@@ -393,7 +393,7 @@ extends GraphProducer
 	{
 		CellMLModel modelB = cellmlDocB.getModel ();
 		wholeCompartment.setDocB (modelB.getDocumentNode ());
-		crn.setCompartment (modelB.getDocumentNode (), wholeCompartment);
+		//crn.setCompartment (modelB.getDocumentNode (), wholeCompartment);
 
 		LOGGER.info ("looping through components in B");
 		HashMap<String, CellMLComponent> components = modelB.getComponents ();

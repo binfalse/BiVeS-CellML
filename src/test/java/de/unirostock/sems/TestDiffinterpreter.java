@@ -3,35 +3,25 @@
  */
 package de.unirostock.sems;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.BeforeClass;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.xml.sax.SAXException;
 
-import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.bives.api.Diff;
-import de.unirostock.sems.bives.api.RegularDiff;
 import de.unirostock.sems.bives.cellml.api.CellMLDiff;
-import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
-import de.unirostock.sems.bives.ds.Patch;
-import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
-import de.unirostock.sems.bives.exception.BivesImportException;
-import de.unirostock.sems.bives.exception.BivesLogicalException;
-import de.unirostock.sems.xmlutils.ds.DocumentNode;
-import de.unirostock.sems.xmlutils.ds.TreeDocument;
-import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
-import de.unirostock.sems.xmlutils.tools.DocumentTools;
-import de.unirostock.sems.xmlutils.tools.XmlTools;
 
 
 /**
@@ -56,9 +46,23 @@ public class TestDiffinterpreter
 		{
 			CellMLDiff differ = new CellMLDiff (FILE_3, FILE_4);
 			differ.mapTrees ();
-			//assertNotNull ();
-			//System.out.println (graphMl);
 			checkDiff (differ);
+			
+			String crnJson = differ.getCRNJsonGraph ();
+			System.out.println (crnJson);
+			
+			JSONObject jsonGraph = (JSONObject) new JSONParser ().parse (crnJson);
+			assertNotNull ("json graph shouldn't be null", jsonGraph);
+			
+			JSONObject elements = (JSONObject) jsonGraph.get ("elements");
+			assertNotNull ("elements in json graph shouldn't be null", elements);
+			
+			assertNotNull ("edges shouldn't be null", elements.get ("edges"));
+			assertFalse ("expected to find edges", ((JSONArray) elements.get ("edges")).isEmpty ());
+			
+			assertNotNull ("nodes shouldn't be null", elements.get ("nodes"));
+			assertFalse("nodes shouldn't be empty", ((JSONArray) elements.get ("nodes")).isEmpty ());
+			assertTrue("there should be more than one node", 1 < ((JSONArray) elements.get ("nodes")).size ());
 		}
 		catch (Exception e)
 		{
@@ -74,9 +78,24 @@ public class TestDiffinterpreter
 		{
 			CellMLDiff differ = new CellMLDiff (FILE_1, FILE_2);
 			differ.mapTrees ();
-			//assertNotNull ();
-			//System.out.println (graphMl);
 			checkDiff (differ);
+			
+			String crnJson = differ.getCRNJsonGraph ();
+			System.out.println (crnJson);
+			
+			JSONObject jsonGraph = (JSONObject) new JSONParser ().parse (crnJson);
+			assertNotNull ("json graph shouldn't be null", jsonGraph);
+			
+			JSONObject elements = (JSONObject) jsonGraph.get ("elements");
+			assertNotNull ("elements in json graph shouldn't be null", elements);
+			
+			assertNotNull ("edges shouldn't be null", elements.get ("edges"));
+			assertTrue("expected to find no edges", ((JSONArray) elements.get ("edges")).isEmpty ());
+			
+			assertNotNull ("nodes shouldn't be null", elements.get ("nodes"));
+			assertFalse("nodes shouldn't be empty", ((JSONArray) elements.get ("nodes")).isEmpty ());
+			assertEquals("there should be exactly one node (the compartment)", 1, ((JSONArray) elements.get ("nodes")).size ());
+			
 		}
 		catch (Exception e)
 		{
@@ -101,7 +120,7 @@ public class TestDiffinterpreter
 		assertNotNull ("hierarchyGraphml shouldn't be null", hierarchyGraphml);
 		assertNotNull ("hierarchyDot shouldn't be null", hierarchyDot);
 		assertNotNull ("hierarchyJson shouldn't be null", hierarchyJson);
-		
+
 		String html = diff.getHTMLReport ();
 		String md = diff.getMarkDownReport ();
 		String rst = diff.getReStructuredTextReport ();
