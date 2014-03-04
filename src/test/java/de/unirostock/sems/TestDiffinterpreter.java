@@ -6,6 +6,7 @@ package de.unirostock.sems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -83,18 +84,7 @@ public class TestDiffinterpreter
 			String crnJson = differ.getCRNJsonGraph ();
 			System.out.println (crnJson);
 			
-			JSONObject jsonGraph = (JSONObject) new JSONParser ().parse (crnJson);
-			assertNotNull ("json graph shouldn't be null", jsonGraph);
-			
-			JSONObject elements = (JSONObject) jsonGraph.get ("elements");
-			assertNotNull ("elements in json graph shouldn't be null", elements);
-			
-			assertNotNull ("edges shouldn't be null", elements.get ("edges"));
-			assertTrue("expected to find no edges", ((JSONArray) elements.get ("edges")).isEmpty ());
-			
-			assertNotNull ("nodes shouldn't be null", elements.get ("nodes"));
-			assertFalse("nodes shouldn't be empty", ((JSONArray) elements.get ("nodes")).isEmpty ());
-			assertEquals("there should be exactly one node (the compartment)", 1, ((JSONArray) elements.get ("nodes")).size ());
+			assertNull ("json graph should be null", crnJson);
 			
 		}
 		catch (Exception e)
@@ -110,16 +100,16 @@ public class TestDiffinterpreter
 		String crnGraphMl = diff.getCRNGraphML ();
 		String crnDot = diff.getCRNDotGraph ();
 		String crnJson = diff.getCRNJsonGraph ();
-		assertNotNull ("crnGraphMl shouldn't be null", crnGraphMl);
-		assertNotNull ("crnDot shouldn't be null", crnDot);
-		assertNotNull ("crnJson shouldn't be null", crnJson);
+		assertTrue ("crnGraphMl shouldn't be null", crnGraphMl == null || crnGraphMl.length () > 10);
+		assertTrue ("crnDot shouldn't be null", crnDot == null || crnDot.length () > 10);
+		assertTrue ("crnJson shouldn't be null", crnJson == null || crnJson.length () > 10);
 
 		String hierarchyGraphml = diff.getHierarchyGraphML ();
 		String hierarchyDot = diff.getHierarchyGraphML ();
 		String hierarchyJson = diff.getHierarchyGraphML ();
-		assertNotNull ("hierarchyGraphml shouldn't be null", hierarchyGraphml);
-		assertNotNull ("hierarchyDot shouldn't be null", hierarchyDot);
-		assertNotNull ("hierarchyJson shouldn't be null", hierarchyJson);
+		assertTrue ("hierarchyGraphml shouldn't be null", hierarchyGraphml == null || hierarchyGraphml.length () > 10);
+		assertTrue ("hierarchyDot shouldn't be null", hierarchyDot == null || hierarchyDot.length () > 10);
+		assertTrue ("hierarchyJson shouldn't be null", hierarchyJson == null || hierarchyJson.length () > 10);
 
 		String html = diff.getHTMLReport ();
 		String md = diff.getMarkDownReport ();

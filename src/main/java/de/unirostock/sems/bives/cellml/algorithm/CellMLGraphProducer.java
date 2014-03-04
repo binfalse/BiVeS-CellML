@@ -95,19 +95,25 @@ extends GraphProducer
 		{
 			LOGGER.error (e, "something bad happened");
 		}
+		
+		if (crn.getSubstances ().size () < 1)
+			crn = null;
 	}
 
 	/* (non-Javadoc)
 	 * @see de.unirostock.sems.bives.algorithm.GraphProducer#produceHierachyGraph()
 	 */
 	@Override
-	protected void produceHierachyGraph ()
+	protected void produceHierarchyGraph ()
 	{
 		processHnA ();
 		if (single)
 			hn.setSingleDocument ();
 		else
 			processHnB ();
+		
+		if (hn.getComponents ().size () < 1)
+			hn = null;
 	}
 	
 	/**
@@ -425,7 +431,7 @@ extends GraphProducer
 					CellMLVariable rootvar = var.getRootVariable ();
 					List<CellMLReactionSubstance.Role> roles = substance.getRoles ();
 
-					DocumentNode varDoc = var.getDocumentNode ();
+					//DocumentNode varDoc = var.getDocumentNode ();
 					DocumentNode varRootDoc = rootvar.getDocumentNode ();
 
 					CRNSubstance subst = null;

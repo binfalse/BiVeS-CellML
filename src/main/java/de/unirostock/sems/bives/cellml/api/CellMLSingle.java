@@ -90,7 +90,7 @@ public class CellMLSingle
 	 * Instantiates a new object.
 	 * 
 	 * @param xml
-	 *          the encoding the model
+	 *          the encoded the model
 	 * @throws ParserConfigurationException
 	 *           the parser configuration exception
 	 * @throws XmlDocumentParseException

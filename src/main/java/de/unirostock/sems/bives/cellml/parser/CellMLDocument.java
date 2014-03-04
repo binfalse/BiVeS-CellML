@@ -7,7 +7,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -16,6 +15,7 @@ import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
+import de.unirostock.sems.bives.ds.ModelDocument;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.exception.BivesFlattenException;
 import de.unirostock.sems.bives.exception.BivesImportException;
@@ -33,13 +33,11 @@ import de.unirostock.sems.xmlutils.tools.XmlTools;
  * @author Martin Scharm
  */
 public class CellMLDocument
+extends ModelDocument
 {
 	
 	/** The actual model. */
 	private CellMLModel		model;
-	
-	/** The document storing this model. */
-	private TreeDocument	doc;
 	
 	
 	/**
@@ -74,7 +72,7 @@ public class CellMLDocument
 			SAXException,
 			BivesImportException
 	{
-		this.doc = doc;
+		super (doc);
 		if (!doc.getRoot ().getTagName ().equals ("model"))
 			throw new BivesCellMLParseException (
 				"cellml document does not define a model");
@@ -90,17 +88,6 @@ public class CellMLDocument
 	public CellMLModel getModel ()
 	{
 		return model;
-	}
-	
-	
-	/**
-	 * Gets the base URI. (used to resolve relative paths e.g. for imports)
-	 * 
-	 * @return the base URI
-	 */
-	public URI getBaseUri ()
-	{
-		return doc.getBaseUri ();
 	}
 	
 	
@@ -150,16 +137,5 @@ public class CellMLDocument
 		BufferedWriter bw = new BufferedWriter (new FileWriter (dest));
 		bw.write (s);
 		bw.close ();
-	}
-	
-	
-	/**
-	 * Gets the tree document.
-	 * 
-	 * @return the tree document
-	 */
-	public TreeDocument getTreeDocument ()
-	{
-		return doc;
 	}
 }
