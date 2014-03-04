@@ -122,9 +122,7 @@ implements DiffReporter
 		{
 			for (CellMLReactionSubstance.Role role: sub.getRoles ())
 			{
-				String name = GeneralTools.prettyDouble (role.stoichiometry, 1);
-				if (name.length () > 0)
-					name += " ";
+				String name = GeneralTools.prettyDouble (role.stoichiometry, 1, "", " ");
 				name += sub.getVariable ().getName ();
 				switch (role.role)
 				{
@@ -154,11 +152,8 @@ implements DiffReporter
 		{
 			for (CellMLReactionSubstance.Role role: sub.getRoles ())
 			{
-				String name = GeneralTools.prettyDouble (role.stoichiometry, 1);//role.getStoichiometry ();
-				if (name.length () > 0)
-					name += " ";
+				String name = GeneralTools.prettyDouble (role.stoichiometry, 1, "", " ");
 				name += sub.getVariable ().getName ();
-//				String name = role.getStoichiometry () + " " + sub.getVariable ().getName ();
 				switch (role.role)
 				{
 					case CellMLReactionSubstance.ROLE_REACTANT:
