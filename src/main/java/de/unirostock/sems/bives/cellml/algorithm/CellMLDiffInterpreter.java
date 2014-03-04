@@ -151,8 +151,9 @@ public class CellMLDiffInterpreter
 				MarkupSection msec = new MarkupSection ("Component " + MarkupDocument.delete (MarkupDocument.highlight (component.getName ())));
 				// units
 				HashMap<String,CellMLUserUnit> componentUnits = unitsA.getComponentUnits (component);
-				for (CellMLUserUnit unit : componentUnits.values ())
-					msec.addValue (unit.reportDelete ());
+				if (componentUnits != null)
+					for (CellMLUserUnit unit : componentUnits.values ())
+						msec.addValue (unit.reportDelete ());
 				// variables
 				HashMap<String, CellMLVariable> vars = component.getVariables ();
 				for (CellMLVariable var : vars.values ())
@@ -212,8 +213,9 @@ public class CellMLDiffInterpreter
 			{
 				// units
 				HashMap<String,CellMLUserUnit> componentUnits = unitsB.getComponentUnits (component);
-				for (CellMLUserUnit unit : componentUnits.values ())
-					msec.addValue (unit.reportInsert ());
+				if (componentUnits != null)
+					for (CellMLUserUnit unit : componentUnits.values ())
+						msec.addValue (unit.reportInsert ());
 				// variables
 				HashMap<String, CellMLVariable> vars = component.getVariables ();
 				for (CellMLVariable var : vars.values ())
