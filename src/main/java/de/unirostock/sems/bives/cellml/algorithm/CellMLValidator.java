@@ -5,6 +5,7 @@ package de.unirostock.sems.bives.cellml.algorithm;
 
 import java.io.File;
 
+import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.bives.algorithm.ModelValidator;
 import de.unirostock.sems.bives.cellml.parser.CellMLDocument;
 import de.unirostock.sems.xmlutils.ds.TreeDocument;
@@ -22,10 +23,6 @@ public class CellMLValidator
 	/** The doc. */
 	private CellMLDocument doc;
 	
-	
-	/** The error. */
-	private Exception error;
-	
 	/* (non-Javadoc)
 	 * @see de.unirostock.sems.bives.algorithm.ModelValidator#validate(de.unirostock.sems.xmlutils.ds.TreeDocument)
 	 */
@@ -39,6 +36,7 @@ public class CellMLValidator
 		catch (Exception e)
 		{
 			error = e;
+			LOGGER.info (e, "error validating document");
 			return false;
 		}
 		return true;
@@ -53,11 +51,12 @@ public class CellMLValidator
 	{
 		try
 		{
-			return validate (new TreeDocument (XmlTools.readDocument (d), null));
+			return validate (new TreeDocument (XmlTools.readDocument (d), d.toURI ()));
 		}
 		catch (Exception e)
 		{
 			error = e;
+			LOGGER.info (e, "error validating document");
 			return false;
 		}
 	}
@@ -76,6 +75,7 @@ public class CellMLValidator
 		catch (Exception e)
 		{
 			error = e;
+			LOGGER.info (e, "error validating document");
 			return false;
 		}
 	}
@@ -88,16 +88,6 @@ public class CellMLValidator
 	public CellMLDocument getDocument ()
 	{
 		return doc;
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see de.unirostock.sems.bives.algorithm.ModelValidator#getError()
-	 */
-	@Override
-	public Exception getError ()
-	{
-		return error;
 	}
 	
 }

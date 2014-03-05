@@ -318,7 +318,7 @@ implements DiffReporter
 	 * @see de.unirostock.sems.bives.algorithm.DiffReporter#reportMofification(de.unirostock.sems.bives.algorithm.SimpleConnectionManager, de.unirostock.sems.bives.algorithm.DiffReporter, de.unirostock.sems.bives.algorithm.DiffReporter)
 	 */
 	@Override
-	public MarkupElement reportMofification (SimpleConnectionManager conMgmt,
+	public MarkupElement reportModification (SimpleConnectionManager conMgmt,
 		DiffReporter docA, DiffReporter docB)
 	{
 		CellMLVariable a = (CellMLVariable) docA;

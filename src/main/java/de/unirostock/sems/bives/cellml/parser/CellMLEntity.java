@@ -85,4 +85,16 @@ public abstract class CellMLEntity
 	{
 		return model;
 	}
+	
+	/**
+	 * Gets the CellML meta id of this entity. Might return null if not defined.
+	 *
+	 * @return the meta id
+	 */
+	public String getMetaId ()
+	{
+		if (node != null)
+			return node.getAttribute ("cmeta:id");
+		else return null;
+	}
 }

@@ -119,7 +119,7 @@ public class CellMLDiffInterpreter
 				
 				CellMLUserUnit unitB = (CellMLUserUnit) modelB.getFromNode (con.getPartnerOf (dn));
 				//System.out.println (unitB);
-				MarkupElement element = unit.reportMofification (conMgmt, unit, unitB);
+				MarkupElement element = unit.reportModification (conMgmt, unit, unitB);
 				if (element != null)
 					unitsSec.addValue (element);
 			}
@@ -325,7 +325,7 @@ public class CellMLDiffInterpreter
 				CellMLReaction reactionB = (CellMLReaction) modelB.getFromNode (con.getPartnerOf (reactionA.getDocumentNode ()));
 				if (reactionsB.contains (reactionB))
 				{
-					MarkupElement element = reactionA.reportMofification (conMgmt, reactionA, reactionB);
+					MarkupElement element = reactionA.reportModification (conMgmt, reactionA, reactionB);
 					if (element != null && element.getValues ().size () > 0)
 						msec.addValue (element);
 					continue;
@@ -367,7 +367,7 @@ public class CellMLDiffInterpreter
 				CellMLVariable varB = (CellMLVariable) modelB.getFromNode (con.getPartnerOf (varA.getDocumentNode ()));
 				if (varB == varsB.get (varB.getName ()))
 				{
-					MarkupElement element = varA.reportMofification (conMgmt, varA, varB);
+					MarkupElement element = varA.reportModification (conMgmt, varA, varB);
 					if (element != null && element.getValues ().size () > 0)
 						msec.addValue (element);
 					continue;
@@ -414,7 +414,7 @@ public class CellMLDiffInterpreter
 				LOGGER.error ("b: ", unitB.getName ());
 				if (unitB == unitsB.get (unitB.getName ()))
 				{
-					MarkupElement element = unitA.reportMofification (conMgmt, unitA, unitB);
+					MarkupElement element = unitA.reportModification (conMgmt, unitA, unitB);
 					if (element != null && element.getValues ().size () > 0)
 						msec.addValue (element);
 					continue;

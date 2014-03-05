@@ -37,7 +37,7 @@ public class CellMLGraphProducer
 extends GraphProducer
 {
 	
-	/** The cellml documents A and B. */
+	/** The CellML documents A and B. */
 	private CellMLDocument cellmlDocA, cellmlDocB;
 	
 	/** The connection manager. */
