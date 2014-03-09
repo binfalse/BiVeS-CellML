@@ -106,8 +106,8 @@ public class CellMLUnitDictionary
 		if (standardUnits.get (u.getName ()) != null)
 			throw new BivesDocumentConsistencyException ("not allowed to overwrite unit: " + u.getName ());
 		
-		if (u.getModel () != model)
-			throw new BivesDocumentConsistencyException ("adding a unit to a model it doesn't emerge from " + u.getName ());
+		//if (u.getModel () != model)
+		//	throw new BivesDocumentConsistencyException ("adding a unit to a model it doesn't emerge from " + u.getName ());
 		
 		if (c == null)
 		{
