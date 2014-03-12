@@ -95,13 +95,14 @@ public class CellMLUnitDictionary
 	}
 	
 	/**
-	 * Adds a unit.
+	 * Adds a unit. If import is set to true we allow for double-definition of units if they emerged from the same document.
 	 *
 	 * @param c the component which defines the unit locally, or null if it's a global unit
 	 * @param u the unit
+	 * @param imported is that an import?
 	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 */
-	public void addUnit (CellMLComponent c, CellMLUserUnit u) throws BivesDocumentConsistencyException
+	public void addUnit (CellMLComponent c, CellMLUserUnit u, boolean imported) throws BivesDocumentConsistencyException
 	{
 		if (standardUnits.get (u.getName ()) != null)
 			throw new BivesDocumentConsistencyException ("not allowed to overwrite unit: " + u.getName ());
@@ -112,7 +113,12 @@ public class CellMLUnitDictionary
 		if (c == null)
 		{
 			if (modelUnits.get (u.getName ()) != null)
-				throw new BivesDocumentConsistencyException ("unit name is not unique: " + u.getName ());
+			{
+				if (imported)
+					checkDoubleImportOfUnit (modelUnits.get (u.getName ()), u);
+				else
+					throw new BivesDocumentConsistencyException ("unit name is not unique: " + u.getName ());
+			}
 			modelUnits.put (u.getName (), u);
 		}
 		else
@@ -124,9 +130,20 @@ public class CellMLUnitDictionary
 				componentUnits.put (c, cu);
 			}
 			if (cu.get (u.getName ()) != null)
-				throw new BivesDocumentConsistencyException ("unit name is not unique: " + u.getName ());
+			{
+				if (imported)
+					checkDoubleImportOfUnit (cu.get (u.getName ()), u);
+				else
+					throw new BivesDocumentConsistencyException ("unit name is not unique: " + u.getName ());
+			}
 			cu.put (u.getName (), u);
 		}
+	}
+	
+	private void checkDoubleImportOfUnit (CellMLUserUnit a, CellMLUserUnit b) throws BivesDocumentConsistencyException
+	{
+		if (!a.getModel ().getDocument ().getBaseUri ().equals (b.getModel ().getDocument ().getBaseUri ()))
+			throw new BivesDocumentConsistencyException ("unit name is not unique: " + a.getName ());
 	}
 	
 	/**

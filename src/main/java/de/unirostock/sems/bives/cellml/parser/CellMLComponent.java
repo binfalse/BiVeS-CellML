@@ -75,7 +75,7 @@ extends CellMLEntity
 					continue;
 				try
 				{
-					units.addUnit (this, new CellMLUserUnit (model, units, this, (DocumentNode) kid));
+					units.addUnit (this, new CellMLUserUnit (model, units, this, (DocumentNode) kid), false);
 				}
 				catch (BivesDocumentConsistencyException ex)
 				{

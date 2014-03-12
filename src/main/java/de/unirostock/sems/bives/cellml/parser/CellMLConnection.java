@@ -104,6 +104,8 @@ public class CellMLConnection
 						continue;
 					}
 					throw new BivesLogicalException ("cannot connect variables due to logical restrictions. (par) (components: "+component_1.getName ()+","+component_2.getName ()+", variables: "+variable_1.getName ()+","+variable_2.getName ()+")");
+					
+					
 				case CellMLHierarchy.RELATION_ENCAPSULATED:
 					// component_1 = childOf (component_2)
 					if (variable_2.getPrivateInterface () == CellMLVariable.INTERFACE_IN && variable_1.getPublicInterface () == CellMLVariable.INTERFACE_OUT && variable_2.getPrivateInterfaceConnections ().size () == 0)
@@ -121,6 +123,8 @@ public class CellMLConnection
 						continue;
 					}
 					throw new BivesLogicalException ("cannot connect variables due to logical restrictions. (enc) (components: "+component_1.getName ()+","+component_2.getName ()+", variables: "+variable_1.getName ()+","+variable_2.getName ()+")");
+					
+					
 				case CellMLHierarchy.RELATION_SIBLING:
 					// parentOf (component_1) = parentOf (component_2)
 					if (variable_1.getPublicInterface () == CellMLVariable.INTERFACE_IN && variable_2.getPublicInterface () == CellMLVariable.INTERFACE_OUT && variable_1.getPublicInterfaceConnections ().size () == 0)
@@ -138,6 +142,8 @@ public class CellMLConnection
 						continue;
 					}
 					throw new BivesLogicalException ("cannot connect variables due to logical restrictions. (sib) (components: "+component_1.getName ()+","+component_2.getName ()+", variables: "+variable_1.getName ()+","+variable_2.getName ()+")");
+					
+					
 				default:
 					throw new BivesLogicalException ("components are in hidden relationship and must not be connected. (components: "+component_1.getName ()+","+component_2.getName ()+")");
 			}

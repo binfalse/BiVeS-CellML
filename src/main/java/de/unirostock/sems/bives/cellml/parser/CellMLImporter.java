@@ -38,7 +38,7 @@ extends CellMLEntity
 {
 	
 	/** The import mapper. */
-	private static HashMap<URI, CellMLDocument> importMapper;
+	//private static HashMap<URI, CellMLDocument> importMapper;
 	
 	/** The location of imported entities. */
 	private String href;
@@ -62,8 +62,8 @@ extends CellMLEntity
 		if (href == null)
 			throw new BivesCellMLParseException ("href attribute in import is empty");
 		
-		if (importMapper == null)
-			importMapper = new HashMap<URI, CellMLDocument> ();
+		//if (importMapper == null)
+			//importMapper = new HashMap<URI, CellMLDocument> ();
 		
 	}
 	
@@ -107,14 +107,14 @@ extends CellMLEntity
 		tmp.deleteOnExit ();
 		
 		URI fileUri = FileRetriever.getUri (href, baseUri);
-		CellMLDocument toImport = importMapper.get (fileUri);
-		if (toImport == null)
-		{
+		//CellMLDocument toImport = importMapper.get (fileUri);
+		//if (toImport == null)
+		//{
 			FileRetriever.getFile (fileUri, tmp);
 		  TreeDocument tdoc = new TreeDocument (DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(tmp), null, fileUri);
-			toImport = new CellMLDocument (tdoc);
-			importMapper.put (fileUri, toImport);
-		}
+		  CellMLDocument toImport = new CellMLDocument (tdoc);
+			//importMapper.put (fileUri, toImport);
+		//}
 		CellMLModel modelToImport = toImport.getModel ();
 		
 		List<Object> doubles = new ArrayList<Object> ();

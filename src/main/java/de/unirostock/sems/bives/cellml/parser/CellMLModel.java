@@ -183,7 +183,7 @@ extends CellMLEntity
 					continue;
 				try
 				{
-					unitDict.addUnit (null, new CellMLUserUnit (model, unitDict, null, (DocumentNode) kid));
+					unitDict.addUnit (null, new CellMLUserUnit (model, unitDict, null, (DocumentNode) kid), false);
 				}
 				catch (BivesDocumentConsistencyException ex)
 				{
@@ -295,7 +295,7 @@ extends CellMLEntity
 	 */
 	public void importUnit (CellMLUserUnit unit) throws BivesDocumentConsistencyException
 	{
-		addUnit (unit);
+		addUnit (unit, true);
 		importedUnits.add (unit);
 	}
 	
@@ -314,11 +314,12 @@ extends CellMLEntity
 	 * Adds a unit.
 	 *
 	 * @param unit the unit
+	 * @param imported is that an import?
 	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 */
-	public void addUnit (CellMLUserUnit unit) throws BivesDocumentConsistencyException
+	public void addUnit (CellMLUserUnit unit, boolean imported) throws BivesDocumentConsistencyException
 	{
-		unitDict.addUnit (null, unit);
+		unitDict.addUnit (null, unit, imported);
 	}
 	
 	/**
