@@ -8,14 +8,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.ds.ModelDocument;
+import de.unirostock.sems.bives.ds.rdf.RDFDescription;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.exception.BivesFlattenException;
 import de.unirostock.sems.bives.exception.BivesImportException;
@@ -39,6 +37,8 @@ extends ModelDocument
 	/** The actual model. */
 	private CellMLModel		model;
 	
+	/** The rdf descriptions. */
+	private List<RDFDescription> rdfDescriptions;
 	
 	/**
 	 * Instantiates a new cell ml document.
@@ -55,10 +55,6 @@ extends ModelDocument
 	 *           Signals that an I/O exception has occurred.
 	 * @throws URISyntaxException
 	 *           the uRI syntax exception
-	 * @throws ParserConfigurationException
-	 *           the parser configuration exception
-	 * @throws SAXException
-	 *           the sAX exception
 	 * @throws BivesImportException
 	 *           the bives import exception
 	 */
@@ -68,15 +64,15 @@ extends ModelDocument
 			BivesLogicalException,
 			IOException,
 			URISyntaxException,
-			ParserConfigurationException,
-			SAXException,
 			BivesImportException
 	{
 		super (doc);
 		if (!doc.getRoot ().getTagName ().equals ("model"))
 			throw new BivesCellMLParseException (
 				"cellml document does not define a model");
+		rdfDescriptions = new ArrayList<RDFDescription> ();
 		model = new CellMLModel (this, doc.getRoot ());
+		
 	}
 	
 	
@@ -111,11 +107,12 @@ extends ModelDocument
 	 *           the bives document consistency exception
 	 * @throws XmlDocumentConsistencyException
 	 *           the xml document consistency exception
+	 * @throws BivesLogicalException 
 	 */
 	public void flatten ()
 		throws BivesFlattenException,
 			BivesDocumentConsistencyException,
-			XmlDocumentConsistencyException
+			XmlDocumentConsistencyException, BivesLogicalException
 	{
 		model.flatten ();
 	}
@@ -128,14 +125,22 @@ extends ModelDocument
 	 *          the target file
 	 * @throws IOException
 	 *           Signals that an I/O exception has occurred.
-	 * @throws TransformerException
-	 *           the transformer exception
 	 */
-	public void write (File dest) throws IOException, TransformerException
+	public void write (File dest) throws IOException
 	{
 		String s = XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc));
 		BufferedWriter bw = new BufferedWriter (new FileWriter (dest));
 		bw.write (s);
 		bw.close ();
+	}
+	
+	/**
+	 * Associate an rdf description.
+	 *
+	 * @param descr the description
+	 */
+	public void associateRdfDescription (RDFDescription descr)
+	{
+		rdfDescriptions.add (descr);
 	}
 }

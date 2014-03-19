@@ -6,6 +6,7 @@ package de.unirostock.sems.bives.cellml.parser;
 import java.util.HashMap;
 
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
+import de.unirostock.sems.bives.exception.BivesLogicalException;
 
 
 /**
@@ -34,8 +35,9 @@ public class CellMLUnitDictionary
 	 * Instantiates a new CellML unit dictionary.
 	 *
 	 * @param model the corresponding model
+	 * @throws BivesLogicalException 
 	 */
-	public CellMLUnitDictionary (CellMLModel model)
+	public CellMLUnitDictionary (CellMLModel model) throws BivesLogicalException
 	{
 		this.model = model;
 		standardUnits = new HashMap<String, CellMLUnit> ();
@@ -148,8 +150,9 @@ public class CellMLUnitDictionary
 	
 	/**
 	 * Initialises the dictionary.
+	 * @throws BivesLogicalException 
 	 */
-	private void init ()
+	private void init () throws BivesLogicalException
 	{
 		for (String c : STANDARD_UNITS)
 			standardUnits.put (c, CellMLUnit.createStandardUnit (c));

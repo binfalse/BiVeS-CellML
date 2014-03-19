@@ -5,6 +5,9 @@ package de.unirostock.sems.bives.cellml.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.jdom2.Attribute;
 
 import de.binfalse.bflog.LOGGER;
 import de.binfalse.bfutils.GeneralTools;
@@ -12,6 +15,7 @@ import de.unirostock.sems.bives.algorithm.DiffReporter;
 import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
+import de.unirostock.sems.bives.exception.BivesLogicalException;
 import de.unirostock.sems.bives.markup.Markup;
 import de.unirostock.sems.bives.markup.MarkupDocument;
 import de.unirostock.sems.bives.markup.MarkupElement;
@@ -64,6 +68,9 @@ public class CellMLUserUnit
 		/** The exponent. */
 		public double exponent;
 		
+		/** The document node. */
+		public DocumentNode node;
+		
 		/**
 		 * Instantiates a new base quantity.
 		 *
@@ -87,22 +94,23 @@ public class CellMLUserUnit
 		 */
 		public BaseQuantity (DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException
 		{
-			LOGGER.debug ("reading base quantity from: ", node.getXPath (), " -> ", node.getAttribute ("units"));
+			LOGGER.debug ("reading base quantity from: ", node.getXPath (), " -> ", node.getAttributeValue ("units"));
 			
-			this.unit = dict.getUnit (node.getAttribute ("units"), component);
+			this.node = node;
+			this.unit = dict.getUnit (node.getAttributeValue ("units"), component);
 			if (this.unit == null)
-				throw new BivesDocumentConsistencyException ("no such base unit: " + node.getAttribute ("units"));
+				throw new BivesDocumentConsistencyException ("no such base unit: " + node.getAttributeValue ("units"));
 			
 			multiplier = 1;
 			offset = 0;
 			prefix = 0;
 			exponent = 1;
-			if (node.getAttribute ("multiplier") != null)
+			if (node.getAttributeValue ("multiplier") != null)
 			{
-				multiplier = Double.parseDouble (node.getAttribute ("multiplier"));
+				multiplier = Double.parseDouble (node.getAttributeValue ("multiplier"));
 			}
 
-			String sc =  node.getAttribute ("prefix");
+			String sc =  node.getAttributeValue ("prefix");
 			if (sc != null)
 			{
 				try
@@ -111,16 +119,16 @@ public class CellMLUserUnit
 				}
 				catch (NumberFormatException e)
 				{
-					prefix = scale (node.getAttribute ("prefix"));
+					prefix = scale (node.getAttributeValue ("prefix"));
 				}
 			}
-			if (node.getAttribute ("offset") != null)
+			if (node.getAttributeValue ("offset") != null)
 			{
-				offset = Double.parseDouble (node.getAttribute ("offset"));
+				offset = Double.parseDouble (node.getAttributeValue ("offset"));
 			}
-			if (node.getAttribute ("exponent") != null)
+			if (node.getAttributeValue ("exponent") != null)
 			{
-				exponent = Double.parseDouble (node.getAttribute ("exponent"));
+				exponent = Double.parseDouble (node.getAttributeValue ("exponent"));
 			}
 		}
 
@@ -140,6 +148,22 @@ public class CellMLUserUnit
 			.append (GeneralTools.prettyDouble (offset, 0, "+", ""));
 			return ret.append (")").toString ();
 		}
+
+		/**
+		 * Rename the corresponding unit. (Intended to be used for flattening)
+		 *
+		 * @param original the original name
+		 * @param newName the new name
+		 * @throws BivesLogicalException the bives logical exception
+		 */
+		public void renameUnit (String original, String newName) throws BivesLogicalException
+		{
+			Attribute attr = node.getAttribute ("units");
+			if (attr != null && (attr.getValue ().equals (original) || attr.getValue ().equals (newName)))
+				attr.setValue (newName);
+			else
+				throw new BivesLogicalException ("cannot rename unit from " + original + " to " + newName + " (we don't know this unit, we are " + attr.getValue () + ")");
+		}
 	}
 	
 	/**
@@ -151,16 +175,17 @@ public class CellMLUserUnit
 	 * @param node the corresponding node in the XML tree
 	 * @throws BivesCellMLParseException the bives cell ml parse exception
 	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException 
 	 */
-	public CellMLUserUnit (CellMLModel model, CellMLUnitDictionary dict, CellMLComponent component, DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException
+	public CellMLUserUnit (CellMLModel model, CellMLUnitDictionary dict, CellMLComponent component, DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException
 	{
-		super (model, node.getAttribute ("name"), node);
+		super (model, node.getAttributeValue ("name"), node);
 		//System.out.println ("should be mapped: " + node.getXPath () + model);
 		
 		this.dict = dict;
 		this.component = component;
 		
-		String base = node.getAttribute ("name");
+		String base = node.getAttributeValue ("name");
 		if (base != null && base.equals ("yes"))
 		{
 			base_units = true;
@@ -258,19 +283,23 @@ public class CellMLUserUnit
 	 * Add the units this unit depends on to a global list of dependencies.
 	 *
 	 * @param list the global list of dependencies
-	 * @return the dependencies including dependencies of this unit
 	 */
-	public List<CellMLUserUnit> getDependencies (List<CellMLUserUnit> list)
+	public void getDependencies (Map<CellMLUserUnit, List<CellMLEntity>> list)
 	{
 		if (base_units || baseQuantities == null)
-			return list;
+			return;
 		
 		for (BaseQuantity bq : baseQuantities)
 		{
 			if (!bq.unit.isStandardUnits ())
-				list.add ((CellMLUserUnit) bq.unit);
+			{
+				CellMLUserUnit unit = (CellMLUserUnit) bq.unit;
+				if (list.get (unit) == null)
+					list.put (unit, new ArrayList<CellMLEntity> ());
+				list.get (unit).add (this);
+			}
 		}
-		return list;
+		return;
 	}
 
 	/* (non-Javadoc)
@@ -329,5 +358,27 @@ public class CellMLUserUnit
 		MarkupElement me = new MarkupElement ("Units: " + MarkupDocument.delete (getName ()));
 		me.addValue (MarkupDocument.delete ("deleted: " + this.markup ()));
 		return me;
+	}
+
+	/**
+	 * Rename the corresponding unit. (Intended to be used for flattening)
+	 *
+	 * @param original the original name
+	 * @param newName the new name
+	 * @throws BivesLogicalException the bives logical exception
+	 */
+	public void renameUnit (String original, String newName) throws BivesLogicalException
+	{
+		boolean renamed = false;
+		for (BaseQuantity bq : baseQuantities)
+		{
+			if (!bq.unit.isStandardUnits () && bq.unit.getName ().equals (original))
+			{
+				bq.renameUnit (original, newName);
+				renamed = true;
+			}
+		}
+		if (!renamed)
+			throw new BivesLogicalException ("cannot rename unit from " + original + " to " + newName + " (we don't know this unit)");
 	}
 }

@@ -4,13 +4,10 @@
 package de.unirostock.sems.bives.cellml.api;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
+import org.jdom2.JDOMException;
 
 import de.unirostock.sems.bives.api.Single;
 import de.unirostock.sems.bives.cellml.algorithm.CellMLGraphProducer;
@@ -23,7 +20,10 @@ import de.unirostock.sems.bives.ds.graph.GraphTranslatorJson;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.exception.BivesImportException;
 import de.unirostock.sems.bives.exception.BivesLogicalException;
+import de.unirostock.sems.xmlutils.ds.TreeDocument;
 import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
+import de.unirostock.sems.xmlutils.tools.DocumentTools;
+import de.unirostock.sems.xmlutils.tools.XmlTools;
 
 
 
@@ -45,41 +45,18 @@ public class CellMLSingle
 	
 	/**
 	 * Instantiates a new object.
-	 * 
-	 * @param file
-	 *          the file containing the model
-	 * @throws ParserConfigurationException
-	 *           the parser configuration exception
-	 * @throws XmlDocumentParseException
-	 *           the xml document parse exception
-	 * @throws FileNotFoundException
-	 *           the file not found exception
-	 * @throws SAXException
-	 *           the sAX exception
-	 * @throws IOException
-	 *           Signals that an I/O exception has occurred.
-	 * @throws BivesCellMLParseException
-	 *           the bives cell ml parse exception
-	 * @throws BivesDocumentConsistencyException
-	 *           the bives document consistency exception
-	 * @throws BivesLogicalException
-	 *           the bives logical exception
-	 * @throws URISyntaxException
-	 *           the uRI syntax exception
-	 * @throws BivesImportException
-	 *           the bives import exception
+	 *
+	 * @param file the file containing the model
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JDOMException the jDOM exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesImportException the bives import exception
+	 * @throws URISyntaxException the uRI syntax exception
 	 */
-	public CellMLSingle (File file)
-		throws ParserConfigurationException,
-			XmlDocumentParseException,
-			FileNotFoundException,
-			SAXException,
-			IOException,
-			BivesCellMLParseException,
-			BivesDocumentConsistencyException,
-			BivesLogicalException,
-			URISyntaxException,
-			BivesImportException
+	public CellMLSingle (File file) throws XmlDocumentParseException, IOException, JDOMException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, URISyntaxException
 	{
 		super (file);
 		doc = new CellMLDocument (tree);
@@ -88,41 +65,18 @@ public class CellMLSingle
 	
 	/**
 	 * Instantiates a new object.
-	 * 
-	 * @param xml
-	 *          the encoded the model
-	 * @throws ParserConfigurationException
-	 *           the parser configuration exception
-	 * @throws XmlDocumentParseException
-	 *           the xml document parse exception
-	 * @throws FileNotFoundException
-	 *           the file not found exception
-	 * @throws SAXException
-	 *           the sAX exception
-	 * @throws IOException
-	 *           Signals that an I/O exception has occurred.
-	 * @throws BivesCellMLParseException
-	 *           the bives cell ml parse exception
-	 * @throws BivesDocumentConsistencyException
-	 *           the bives document consistency exception
-	 * @throws BivesLogicalException
-	 *           the bives logical exception
-	 * @throws URISyntaxException
-	 *           the uRI syntax exception
-	 * @throws BivesImportException
-	 *           the bives import exception
+	 *
+	 * @param xml the encoded the model
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JDOMException the jDOM exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesImportException the bives import exception
+	 * @throws URISyntaxException the uRI syntax exception
 	 */
-	public CellMLSingle (String xml)
-		throws ParserConfigurationException,
-			XmlDocumentParseException,
-			FileNotFoundException,
-			SAXException,
-			IOException,
-			BivesCellMLParseException,
-			BivesDocumentConsistencyException,
-			BivesLogicalException,
-			URISyntaxException,
-			BivesImportException
+	public CellMLSingle (String xml) throws XmlDocumentParseException, IOException, JDOMException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, URISyntaxException
 	{
 		super (xml);
 		doc = new CellMLDocument (tree);
@@ -131,41 +85,28 @@ public class CellMLSingle
 	
 	/**
 	 * Instantiates a new object.
-	 * 
-	 * @param doc
-	 *          the document
-	 * @throws ParserConfigurationException
-	 *           the parser configuration exception
-	 * @throws XmlDocumentParseException
-	 *           the xml document parse exception
-	 * @throws FileNotFoundException
-	 *           the file not found exception
-	 * @throws SAXException
-	 *           the sAX exception
-	 * @throws IOException
-	 *           Signals that an I/O exception has occurred.
-	 * @throws BivesCellMLParseException
-	 *           the bives cell ml parse exception
-	 * @throws BivesDocumentConsistencyException
-	 *           the bives document consistency exception
-	 * @throws BivesLogicalException
-	 *           the bives logical exception
-	 * @throws URISyntaxException
-	 *           the uRI syntax exception
-	 * @throws BivesImportException
-	 *           the bives import exception
+	 *
+	 * @param td the tree document
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JDOMException the jDOM exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesImportException the bives import exception
+	 * @throws URISyntaxException the uRI syntax exception
+	 */
+	public CellMLSingle (TreeDocument td) throws XmlDocumentParseException, IOException, JDOMException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, URISyntaxException
+	{
+		super (td);
+		doc = new CellMLDocument (tree);
+	}
+	
+	
+	/**
+	 * Instantiates a new object.
 	 */
 	public CellMLSingle (CellMLDocument doc)
-		throws ParserConfigurationException,
-			XmlDocumentParseException,
-			FileNotFoundException,
-			SAXException,
-			IOException,
-			BivesCellMLParseException,
-			BivesDocumentConsistencyException,
-			BivesLogicalException,
-			URISyntaxException,
-			BivesImportException
 	{
 		super (doc.getTreeDocument ());
 		this.doc = doc;
@@ -178,7 +119,7 @@ public class CellMLSingle
 	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
 	 */
 	@Override
-	public String getCRNGraphML () throws ParserConfigurationException
+	public String getCRNGraphML ()
 	{
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (doc);
@@ -204,7 +145,7 @@ public class CellMLSingle
 	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
 	 */
 	@Override
-	public String getHierarchyGraphML () throws ParserConfigurationException
+	public String getHierarchyGraphML ()
 	{
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (doc);
@@ -282,6 +223,17 @@ public class CellMLSingle
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (doc);
 		return new GraphTranslatorJson ().translate (graphProducer.getHierarchy ());
+	}
+
+
+	/* (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Single#flatten()
+	 */
+	@Override
+	public String flatten () throws Exception
+	{
+		doc.flatten ();
+		return XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc.getTreeDocument ()));
 	}
 	
 }

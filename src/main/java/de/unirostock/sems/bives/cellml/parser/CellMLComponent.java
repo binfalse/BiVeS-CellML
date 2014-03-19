@@ -6,6 +6,7 @@ package de.unirostock.sems.bives.cellml.parser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.ds.MathML;
@@ -57,7 +58,7 @@ extends CellMLEntity
 		variables = new HashMap<String, CellMLVariable> ();
 		reactions = new ArrayList<CellMLReaction> ();
 
-		name = node.getAttribute ("name");
+		name = node.getAttributeValue ("name");
 		if (name == null || name.length () < 1)
 			throw new BivesCellMLParseException ("component doesn't have a name.");
 		
@@ -191,14 +192,13 @@ extends CellMLEntity
 	 * Adds the units the variables in this component depend on to a global list of dependencies.
 	 *
 	 * @param list the global list of dependencies
-	 * @return the list plus local dependencies
 	 */
-	public List<CellMLUserUnit> getDependencies (List<CellMLUserUnit> list)
+	public void getDependencies (Map<CellMLUserUnit, List<CellMLEntity>> list)
 	{
 		for (CellMLVariable var : variables.values ())
 			var.getDependencies (list);
 		
-		return list;
+		return;
 	}
 	
 	/**

@@ -61,6 +61,25 @@ public class CellMLHierarchyNetwork
 	}
 	
 	/**
+	 * Install a new hierarchy node if it doesn't exist. Will return a new
+	 * node if there is no node for this component, or the corresponding
+	 * node if it exists.
+	 *
+	 * @param component the component
+	 * @return the corresponding CellML hierarchy node
+	 */
+	public CellMLHierarchyNode putNode (CellMLComponent component)
+	{
+		CellMLHierarchyNode node = componentMapper.get (component);
+		if (node == null)
+		{
+			node = new CellMLHierarchyNode (component);
+			componentMapper.put (component, node);
+		}
+		return node;
+	}
+	
+	/**
 	 * Connect a parent component and its child hierarchically.
 	 *
 	 * @param parent the parent component

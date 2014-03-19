@@ -3,6 +3,7 @@
  */
 package de.unirostock.sems.bives.cellml.parser;
 
+import de.unirostock.sems.bives.exception.BivesLogicalException;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
 
 
@@ -27,8 +28,9 @@ extends CellMLEntity
 	 *
 	 * @param name the name of the unit
 	 * @return the CellML unit
+	 * @throws BivesLogicalException 
 	 */
-	public static CellMLUnit createStandardUnit (String name)
+	public static CellMLUnit createStandardUnit (String name) throws BivesLogicalException
 	{
 		CellMLUnit u = new CellMLUnit (null, name, null);
 		u.standard_units = true;
@@ -41,8 +43,9 @@ extends CellMLEntity
 	 * @param model the model that defines the unit
 	 * @param name the name of the unit
 	 * @param node the corresponding node in the XML tree
+	 * @throws BivesLogicalException 
 	 */
-	protected CellMLUnit (CellMLModel model, String name, DocumentNode node)
+	protected CellMLUnit (CellMLModel model, String name, DocumentNode node) throws BivesLogicalException
 	{
 		super (node, model);
 		this.name = name;

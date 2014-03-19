@@ -20,6 +20,15 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
  */
 public class CellMLConnection
 {
+	public static class ConnectedComponents
+	{
+		public CellMLComponent component_1, component_2;
+		public ConnectedComponents (CellMLComponent component_1, CellMLComponent component_2)
+		{
+			this.component_1 = component_1;
+			this.component_2 = component_2;
+		}
+	}
 	
 	/**
 	 * Parses a connection as defined in a CellML document.
@@ -33,19 +42,19 @@ public class CellMLConnection
 	 * @throws BivesLogicalException the bives logical exception
 	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 */
-	public static final boolean parseConnection (CellMLModel model, CellMLHierarchy hierarchy, DocumentNode connection, HashMap<String, CellMLComponent> limit) throws BivesCellMLParseException, BivesLogicalException, BivesDocumentConsistencyException
+	public static final ConnectedComponents parseConnection (CellMLModel model, CellMLHierarchy hierarchy, DocumentNode connection, HashMap<String, CellMLComponent> limit) throws BivesCellMLParseException, BivesLogicalException, BivesDocumentConsistencyException
 	{
 		// A <connection> element must contain exactly one <map_components> element, which is used to reference the two componList<E>nvolved in the connection.
 		List<TreeNode> kids = connection.getChildrenWithTag ("map_components");
 		if (kids.size () != 1)
 			throw new BivesCellMLParseException ("connection does not have exactly one map_components.");
 		DocumentNode child = (DocumentNode) kids.get (0);
-		String v1 = child.getAttribute ("component_1");
-		String v2 = child.getAttribute ("component_2");
+		String v1 = child.getAttributeValue ("component_1");
+		String v2 = child.getAttributeValue ("component_2");
 		
 		if (limit != null)
 			if (limit.get (v1) == null || limit.get (v2) == null)
-				return false;
+				return null;
 		
 		if (v1 == null || v2 == null || v1.equals (v2))
 			throw new BivesCellMLParseException ("map_components does not define two components.");
@@ -66,8 +75,8 @@ public class CellMLConnection
 		{
 			DocumentNode dkid = (DocumentNode) kid;
 			// Each <map_variables> element must define variable_1 and variable_2 attributes, the values of which are equal to the names of variables defined in the components referenced by the component_1 and component_2 attributes on the <map_components> element, respectively. 
-			v1 = dkid.getAttribute ("variable_1"); 
-			v2 = dkid.getAttribute ("variable_2");
+			v1 = dkid.getAttributeValue ("variable_1"); 
+			v2 = dkid.getAttributeValue ("variable_2");
 			
 			if (v1 == null || v2 == null)
 				throw new BivesCellMLParseException ("map_variables does not define two variables. (components: "+component_1.getName ()+","+component_2.getName ()+")");
@@ -149,6 +158,6 @@ public class CellMLConnection
 			}
 		}
 		
-		return true;
+		return new ConnectedComponents (component_1, component_2);
 	}
 }

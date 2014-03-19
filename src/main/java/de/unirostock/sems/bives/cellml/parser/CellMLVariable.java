@@ -5,6 +5,9 @@ package de.unirostock.sems.bives.cellml.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.jdom2.Attribute;
 
 import de.unirostock.sems.bives.algorithm.DiffReporter;
 import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
@@ -74,15 +77,15 @@ implements DiffReporter
 	{
 		super (node, model);
 		this.component = component;
-		name = node.getAttribute ("name");
+		name = node.getAttributeValue ("name");
 		if (name == null || name.length () < 1)
 			throw new BivesCellMLParseException ("variable doesn't have a name. (component: "+component.getName ()+")");
-		unit = component.getUnit (node.getAttribute ("units"));
+		unit = component.getUnit (node.getAttributeValue ("units"));
 		if (unit == null)
-			throw new BivesCellMLParseException ("variable "+name+" doesn't have a valid unit. (component: "+component.getName ()+", searching for: "+node.getAttribute ("units")+")");
+			throw new BivesCellMLParseException ("variable "+name+" doesn't have a valid unit. (component: "+component.getName ()+", searching for: "+node.getAttributeValue ("units")+")");
 		
-		public_interface = parseInterface (node.getAttribute ("public_interface"));
-		private_interface = parseInterface (node.getAttribute ("private_interface"));
+		public_interface = parseInterface (node.getAttributeValue ("public_interface"));
+		private_interface = parseInterface (node.getAttributeValue ("private_interface"));
 		
 		if (public_interface == private_interface && public_interface == INTERFACE_IN)
 			throw new BivesLogicalException ("variable " + name + " defines public and private interface to be 'in'. (component: "+component.getName ()+")");
@@ -92,7 +95,7 @@ implements DiffReporter
 		
 		// An initial_value attribute must not be defined on a <variable> element with a public_interface or private_interface attribute with a value of "in". [ These variables receive their value from variables belonging to another component. ]
 		
-		String attr = node.getAttribute ("initial_value");
+		String attr = node.getAttributeValue ("initial_value");
 		if (attr != null)
 		{
 			if (public_interface == INTERFACE_IN || private_interface == INTERFACE_IN)
@@ -304,13 +307,16 @@ implements DiffReporter
 	 * @param list the global list of dependencies
 	 * @return the list plus local dependencies
 	 */
-	public void getDependencies (List<CellMLUserUnit> list)
+	public void getDependencies (Map<CellMLUserUnit, List<CellMLEntity>> list)
 	{
-		if (!unit.isStandardUnits ())
+		if (!this.unit.isStandardUnits ())
 		{
-			CellMLUserUnit u = (CellMLUserUnit) unit;
-			list.add (u);
-			u.getDependencies (list);
+			CellMLUserUnit unit = (CellMLUserUnit) this.unit;
+
+			if (list.get (unit) == null)
+				list.put (unit, new ArrayList<CellMLEntity> ());
+			list.get (unit).add (this);
+			unit.getDependencies (list);
 		}
 	}
 
@@ -361,5 +367,21 @@ implements DiffReporter
 		MarkupElement me = new MarkupElement ("Variable: " + MarkupDocument.delete (name));
 		me.addValue (MarkupDocument.delete ("deleted"));
 		return me;
+	}
+
+	/**
+	 * Rename the corresponding unit. (Intended to be used for flattening)
+	 *
+	 * @param original the original name
+	 * @param newName the new name
+	 * @throws BivesLogicalException the bives logical exception
+	 */
+	public void renameUnit (String original, String newName) throws BivesLogicalException
+	{
+		Attribute attr = getDocumentNode ().getAttribute ("units");
+		if (attr != null && attr.getValue ().equals (original))
+			attr.setValue (newName);
+		else
+			throw new BivesLogicalException ("cannot rename unit from " + original + " to " + newName + " (we don't know this unit)");
 	}
 }

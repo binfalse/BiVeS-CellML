@@ -9,6 +9,7 @@ import java.util.List;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.ds.MathML;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
+import de.unirostock.sems.bives.exception.BivesLogicalException;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
 import de.unirostock.sems.xmlutils.ds.TreeNode;
 
@@ -68,8 +69,9 @@ extends CellMLEntity
 		 * @param node the corresponding document node in the XML tree
 		 * @throws BivesCellMLParseException the bives cell ml parse exception
 		 * @throws BivesDocumentConsistencyException the bives document consistency exception
+		 * @throws BivesLogicalException 
 		 */
-		public Role (CellMLModel model, DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException
+		public Role (CellMLModel model, DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException
 		{
 			super (node, model);
 			direction = DIRECTION_FORWARD;
@@ -77,22 +79,22 @@ extends CellMLEntity
 			stoichiometry = null;
 			math = new ArrayList<MathML> ();
 			
-			role = resolveRole (node.getAttribute ("role"));
+			role = resolveRole (node.getAttributeValue ("role"));
 			
-			if (node.getAttribute ("direction") != null)
-				direction = resolveDirection (node.getAttribute ("direction"));
+			if (node.getAttributeValue ("direction") != null)
+				direction = resolveDirection (node.getAttributeValue ("direction"));
 			
-			if (node.getAttribute ("delta_variable") != null)
-				delta_variable = component.getVariable (node.getAttribute ("delta_variable"));
+			if (node.getAttributeValue ("delta_variable") != null)
+				delta_variable = component.getVariable (node.getAttributeValue ("delta_variable"));
 			
-			if (node.getAttribute ("stoichiometry") != null)
+			if (node.getAttributeValue ("stoichiometry") != null)
 				try
 				{
-					stoichiometry = Double.parseDouble (node.getAttribute ("stoichiometry"));
+					stoichiometry = Double.parseDouble (node.getAttributeValue ("stoichiometry"));
 				}
 				catch (NumberFormatException ex)
 				{
-					throw new BivesCellMLParseException ("no proper stoichiometry: " + node.getAttribute ("stoichiometry"));
+					throw new BivesCellMLParseException ("no proper stoichiometry: " + node.getAttributeValue ("stoichiometry"));
 				}
 			
 			List<TreeNode> kids = node.getChildrenWithTag ("math");
@@ -109,12 +111,13 @@ extends CellMLEntity
 	 * @param node the corresponding node in the XML tree
 	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesLogicalException 
 	 */
-	public CellMLReactionSubstance (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException
+	public CellMLReactionSubstance (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException, BivesLogicalException
 	{
 		super (node, model);
 		this.component = component;
-		String var = node.getAttribute ("variable");
+		String var = node.getAttributeValue ("variable");
 		if (var == null)
 			throw new BivesCellMLParseException ("variable ref in reaction of component " + component.getName () + " doesn't define a variable. ("+var+", "+node.getXPath ()+")");
 		variable = component.getVariable (var);

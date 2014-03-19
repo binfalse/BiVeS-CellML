@@ -54,6 +54,16 @@ public class CellMLHierarchy
 	}
 	
 	/**
+	 * Gets the encapsulation hierarchy network.
+	 *
+	 * @return the encapsulation hierarchy network
+	 */
+	public CellMLHierarchyNetwork getEncapsulationHierarchyNetwork ()
+	{
+		return networks.get ("encapsulation:");
+	}
+	
+	/**
 	 * Gets a specific hierarchy network.
 	 *
 	 * @param relationship the name of the relationship
@@ -84,14 +94,14 @@ public class CellMLHierarchy
 				continue;
 			
 			DocumentNode dkid = (DocumentNode) kid;
-			String rs = dkid.getAttribute ("relationship");
+			String rs = dkid.getAttributeValue ("relationship");
 			if (rs == null)
 			{
 				LOGGER.warn ("skipping relationship_ref definition: no valid relation ship defined.");
 				continue;
 			}
 			
-			String name = dkid.getAttribute ("name");
+			String name = dkid.getAttributeValue ("name");
 			if (name == null)
 				name = "";
 			
@@ -143,7 +153,7 @@ public class CellMLHierarchy
 				continue;
 			DocumentNode next = (DocumentNode) kid;
 			
-			String componentName = (next).getAttribute ("component");
+			String componentName = (next).getAttributeValue ("component");
 			if (componentName == null)
 				throw new BivesCellMLParseException ("no component defined in component_ref of grouping.");
 			

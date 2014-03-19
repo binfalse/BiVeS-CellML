@@ -6,7 +6,12 @@ package de.unirostock.sems.bives.cellml.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.unirostock.sems.bives.ds.RDF;
+import org.jdom2.Attribute;
+import org.jdom2.Namespace;
+
+import de.unirostock.sems.bives.ds.rdf.RDF;
+import de.unirostock.sems.bives.ds.rdf.RDFDescription;
+import de.unirostock.sems.bives.exception.BivesLogicalException;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
 import de.unirostock.sems.xmlutils.ds.TreeNode;
 
@@ -23,34 +28,47 @@ public abstract class CellMLEntity
 	protected CellMLModel model;
 
 	/** The RDF descriptions. */
-	private List<RDF> rdfDescriptions;
+	private List<RDF> rdfBlocks;
 	
 	/** The document node. */
 	private DocumentNode node;
+	
+	/** The rdf descriptions. */
+	private List<RDFDescription> rdfDescriptions;
 	
 	/**
 	 * Instantiates a new CellML entity.
 	 *
 	 * @param node the corresponding node in the XML document
 	 * @param model the model
+	 * @throws BivesLogicalException 
 	 */
-	public CellMLEntity (DocumentNode node, CellMLModel model)
+	public CellMLEntity (DocumentNode node, CellMLModel model) throws BivesLogicalException
 	{
 		this.model = model;
 		this.node = node;
-		rdfDescriptions = new ArrayList<RDF> ();
+		rdfBlocks = new ArrayList<RDF> ();
+		rdfDescriptions = new ArrayList<RDFDescription> ();
 
 		if (model != null)
+		{
 			model.mapNode (node, this);
+			String metaId = getMetaId ();
+			if (metaId != null)
+				model.registerMetaId (metaId, this);
+		}
 		
 		if (node != null)
 		{
-			List<TreeNode> kids= node.getChildrenWithTag ("rdf:RDF");
+			List<TreeNode> kids= node.getChildrenWithTag ("RDF");
 			for (TreeNode kid : kids)
 			{
 				if (kid.getType () != TreeNode.DOC_NODE)
 					continue;
-				rdfDescriptions.add (new RDF ((DocumentNode) kid));
+				RDF rdf = new RDF ((DocumentNode) kid);
+				rdfBlocks.add (rdf);
+				if (model != null)
+					model.registerRdfBlock (rdf);
 			}
 		}
 	}
@@ -70,9 +88,9 @@ public abstract class CellMLEntity
 	 *
 	 * @return the RDF descriptions
 	 */
-	public List<RDF> getRdfDescriptions ()
+	public List<RDF> getRdfBlocks ()
 	{
-		return rdfDescriptions;
+		return rdfBlocks;
 	}
 	
 	
@@ -86,6 +104,44 @@ public abstract class CellMLEntity
 		return model;
 	}
 	
+
+	/**
+	 * Sets the model.
+	 *
+	 * @param model the new model
+	 * @throws BivesLogicalException 
+	 */
+	public void setModel (CellMLModel model) throws BivesLogicalException
+	{
+		model.mapNode (node, this);
+		String metaId = getMetaId ();
+		if (metaId != null)
+			model.registerMetaId (metaId, this);
+	}
+	
+	/**
+	 * Sets the meta id of this entity. Must be unique in this model and 
+	 *
+	 * @param metaId the meta id
+	 * @return true, if successful
+	 * @throws BivesLogicalException 
+	 */
+	public boolean setMetaId (String metaId) throws BivesLogicalException
+	{
+		if (metaId == null || metaId.length () < 1)
+			return false;
+		
+		if (getMetaId () != null)
+			model.unregisterMetaId (getMetaId ());
+		
+		if (model.getEntityByMetaId (metaId) != null)
+			return false;
+		
+		node.setAttribute (new Attribute ("id", metaId, Namespace.getNamespace ("cmeta", "http://www.cellml.org/metadata/1.0#")));
+		model.registerMetaId (metaId, this);
+		return true;
+	}
+	
 	/**
 	 * Gets the CellML meta id of this entity. Might return null if not defined.
 	 *
@@ -94,7 +150,27 @@ public abstract class CellMLEntity
 	public String getMetaId ()
 	{
 		if (node != null)
-			return node.getAttribute ("cmeta:id");
+			return node.getAttributeValue ("id", "cellml.org/metadata");
 		else return null;
+	}
+	
+	/**
+	 * Associate an rdf description.
+	 *
+	 * @param descr the description
+	 */
+	public void associateRdfDescription (RDFDescription descr)
+	{
+		rdfDescriptions.add (descr);
+	}
+	
+	/**
+	 * Gets the rdf descriptions.
+	 *
+	 * @return the rdf descriptions
+	 */
+	public List<RDFDescription> getRdfDescriptions ()
+	{
+		return rdfDescriptions;
 	}
 }

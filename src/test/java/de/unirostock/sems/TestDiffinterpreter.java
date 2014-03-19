@@ -3,7 +3,6 @@
  */
 package de.unirostock.sems;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -97,26 +96,33 @@ public class TestDiffinterpreter
 	
 	public void checkDiff (Diff diff) throws ParserConfigurationException
 	{
-		String crnGraphMl = diff.getCRNGraphML ();
-		String crnDot = diff.getCRNDotGraph ();
-		String crnJson = diff.getCRNJsonGraph ();
-		assertTrue ("crnGraphMl shouldn't be null", crnGraphMl == null || crnGraphMl.length () > 10);
-		assertTrue ("crnDot shouldn't be null", crnDot == null || crnDot.length () > 10);
-		assertTrue ("crnJson shouldn't be null", crnJson == null || crnJson.length () > 10);
-
-		String hierarchyGraphml = diff.getHierarchyGraphML ();
-		String hierarchyDot = diff.getHierarchyGraphML ();
-		String hierarchyJson = diff.getHierarchyGraphML ();
-		assertTrue ("hierarchyGraphml shouldn't be null", hierarchyGraphml == null || hierarchyGraphml.length () > 10);
-		assertTrue ("hierarchyDot shouldn't be null", hierarchyDot == null || hierarchyDot.length () > 10);
-		assertTrue ("hierarchyJson shouldn't be null", hierarchyJson == null || hierarchyJson.length () > 10);
-
-		String html = diff.getHTMLReport ();
-		String md = diff.getMarkDownReport ();
-		String rst = diff.getReStructuredTextReport ();
-		assertNotNull ("html shouldn't be null", html);
-		assertNotNull ("md shouldn't be null", md);
-		assertNotNull ("rst shouldn't be null", rst);
+		try 
+		{
+			String crnGraphMl = diff.getCRNGraphML ();
+			String crnDot = diff.getCRNDotGraph ();
+			String crnJson = diff.getCRNJsonGraph ();
+			assertTrue ("crnGraphMl shouldn't be null", crnGraphMl == null || crnGraphMl.length () > 10);
+			assertTrue ("crnDot shouldn't be null", crnDot == null || crnDot.length () > 10);
+			assertTrue ("crnJson shouldn't be null", crnJson == null || crnJson.length () > 10);
+	
+			String hierarchyGraphml = diff.getHierarchyGraphML ();
+			String hierarchyDot = diff.getHierarchyGraphML ();
+			String hierarchyJson = diff.getHierarchyGraphML ();
+			assertTrue ("hierarchyGraphml shouldn't be null", hierarchyGraphml == null || hierarchyGraphml.length () > 10);
+			assertTrue ("hierarchyDot shouldn't be null", hierarchyDot == null || hierarchyDot.length () > 10);
+			assertTrue ("hierarchyJson shouldn't be null", hierarchyJson == null || hierarchyJson.length () > 10);
+	
+			String html = diff.getHTMLReport ();
+			String md = diff.getMarkDownReport ();
+			String rst = diff.getReStructuredTextReport ();
+			assertNotNull ("html shouldn't be null", html);
+			assertNotNull ("md shouldn't be null", md);
+			assertNotNull ("rst shouldn't be null", rst);
+		}
+		catch (Exception e)
+		{
+			fail ("unexpected exception " + e);
+		}
 	}
 	
 	

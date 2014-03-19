@@ -47,7 +47,7 @@ public class TestParser
 				fail ("validator fails on file from web: " + validator.getError ());
 			
 			CellMLDocument doc = validator.getDocument ();
-			doc.flatten ();
+			// TODO: doc.flatten ();
 			
 			//System.out.println (DocumentTools.printPrettySubDoc (doc.getTreeDocument ().getRoot ()));
 		}

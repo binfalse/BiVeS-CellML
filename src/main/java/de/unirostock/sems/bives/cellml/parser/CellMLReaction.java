@@ -12,6 +12,7 @@ import de.unirostock.sems.bives.algorithm.DiffReporter;
 import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
+import de.unirostock.sems.bives.exception.BivesLogicalException;
 import de.unirostock.sems.bives.markup.MarkupDocument;
 import de.unirostock.sems.bives.markup.MarkupElement;
 import de.unirostock.sems.bives.tools.BivesTools;
@@ -45,13 +46,14 @@ implements DiffReporter
 	 * @param node the corresponding document node in the XML tree
 	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesLogicalException 
 	 */
-	public CellMLReaction (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException
+	public CellMLReaction (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException, BivesLogicalException
 	{
 		super (node, model);
 		this.component = component;
 		
-		if (node.getAttribute ("reversible") == null || !node.getAttribute ("reversible").equals ("no"))
+		if (node.getAttributeValue ("reversible") == null || !node.getAttributeValue ("reversible").equals ("no"))
 			reversible = true;
 		else
 			reversible = false;
