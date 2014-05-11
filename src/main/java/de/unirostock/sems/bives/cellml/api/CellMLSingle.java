@@ -116,19 +116,20 @@ public class CellMLSingle
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
+	 * @see de.unirostock.sems.bives.api.Diff#getReactionsGraphML()
 	 */
 	@Override
 	public String getReactionsGraphML ()
 	{
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (doc);
-		return new GraphTranslatorGraphML ().translate (graphProducer.getCRN ());
+		return new GraphTranslatorGraphML ().translate (graphProducer.getReactionNetwork ());
 	}
 	
 	
 	/*
 	 * (non-Javadoc)
+	 * @see de.unirostock.sems.bives.api.Diff#getHierarchyGraph()
 	 */
 	@Override
 	public Object getHierarchyGraph (GraphTranslator gt) throws Exception
@@ -142,7 +143,7 @@ public class CellMLSingle
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
+	 * @see de.unirostock.sems.bives.api.Diff#getHierarchyGraphML()
 	 */
 	@Override
 	public String getHierarchyGraphML ()
@@ -158,7 +159,7 @@ public class CellMLSingle
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * de.unirostock.sems.bives.api.Single#getCRNGraph(de.unirostock.sems.bives
+	 * de.unirostock.sems.bives.api.Single#getReactionsGraph(de.unirostock.sems.bives
 	 * .ds.graph.GraphTranslator)
 	 */
 	@Override
@@ -166,42 +167,42 @@ public class CellMLSingle
 	{
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (doc);
-		return gt.translate (graphProducer.getCRN ());
+		return gt.translate (graphProducer.getReactionNetwork ());
 	}
 	
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.unirostock.sems.bives.api.Single#getCRNDotGraph()
+	 * @see de.unirostock.sems.bives.api.Single#getReactionsDotGraph()
 	 */
 	@Override
 	public String getReactionsDotGraph ()
 	{
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (doc);
-		return new GraphTranslatorDot ().translate (graphProducer.getCRN ());
+		return new GraphTranslatorDot ().translate (graphProducer.getReactionNetwork ());
 	}
 	
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.unirostock.sems.bives.api.Single#getCRNJsonGraph()
+	 * @see de.unirostock.sems.bives.api.Single#getReactionsJsonGraph()
 	 */
 	@Override
 	public String getReactionsJsonGraph ()
 	{
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (doc);
-		return new GraphTranslatorJson ().translate (graphProducer.getCRN ());
+		return new GraphTranslatorJson ().translate (graphProducer.getReactionNetwork ());
 	}
 	
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.unirostock.sems.bives.api.Diff#getGraphML()
+	 * @see de.unirostock.sems.bives.api.Diff#getHierarchyDotGraph()
 	 */
 	@Override
 	public String getHierarchyDotGraph ()

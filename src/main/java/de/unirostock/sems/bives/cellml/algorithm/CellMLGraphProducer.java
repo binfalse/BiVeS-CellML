@@ -73,31 +73,31 @@ extends GraphProducer
 	}
 
 	/* (non-Javadoc)
-	 * @see de.unirostock.sems.bives.algorithm.GraphProducer#produceCRN()
+	 * @see de.unirostock.sems.bives.algorithm.GraphProducer#produceReactionNetwork()
 	 */
 	@Override
-	protected void produceCRN ()
+	protected void produceReactionNetwork ()
 	{
 		if (wholeCompartment == null)
 		{
-			wholeCompartment = new ReactionNetworkCompartment (crn, "document", "document", null, null);
+			wholeCompartment = new ReactionNetworkCompartment (rn, "document", "document", null, null);
 			wholeCompartment.setSingleDocument ();
 		}
 		try
 		{
-			processCrnA ();
+			processRnA ();
 			if (single)
-				crn.setSingleDocument ();
+				rn.setSingleDocument ();
 			else
-				processCrnB ();
+				processRnB ();
 		}
 		catch (BivesUnsupportedException e)
 		{
 			LOGGER.error (e, "something bad happened");
 		}
 		
-		if (crn.getSubstances ().size () < 1)
-			crn = null;
+		if (rn.getSubstances ().size () < 1)
+			rn = null;
 	}
 
 	/* (non-Javadoc)
@@ -320,17 +320,17 @@ extends GraphProducer
 	
 	
 	/**
-	 * Process Chemical Reaction Network of the original document.
+	 * Process Reaction Network of the original document.
 	 * @throws BivesUnsupportedException 
 	 */
-	protected void processCrnA () throws BivesUnsupportedException
+	protected void processRnA () throws BivesUnsupportedException
 	{
 		LOGGER.info ("init compartment");
 		CellMLModel modelA = cellmlDocA.getModel ();
 		//LOGGER.info ("setup compartment in A: " + wholeCompartment + " - " + modelA);
 		wholeCompartment.setDocA (modelA.getDocumentNode ());
 		//LOGGER.info ("setting compartment");
-		crn.setCompartment (modelA.getDocumentNode (), wholeCompartment);
+		rn.setCompartment (modelA.getDocumentNode (), wholeCompartment);
 
 		
 		LOGGER.info ("looping through components in A");
@@ -340,8 +340,8 @@ extends GraphProducer
 			List<CellMLReaction> reactions = component.getReactions ();
 			for (CellMLReaction reaction : reactions)
 			{
-				ReactionNetworkReaction crnreaction = new ReactionNetworkReaction (crn, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, null, reaction.isReversible ());
-				crn.setReaction (reaction.getDocumentNode (), crnreaction);
+				ReactionNetworkReaction rnReaction = new ReactionNetworkReaction (rn, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, null, reaction.isReversible ());
+				rn.setReaction (reaction.getDocumentNode (), rnReaction);
 				List<CellMLReactionSubstance> substances = reaction.getSubstances ();
 				for (CellMLReactionSubstance substance : substances)
 				{
@@ -349,11 +349,11 @@ extends GraphProducer
 					CellMLVariable var = substance.getVariable ();
 					CellMLVariable rootvar = var.getRootVariable ();
 					List<CellMLReactionSubstance.Role> roles = substance.getRoles ();
-					ReactionNetworkSubstance subst = crn.getSubstance (rootvar.getDocumentNode ());
+					ReactionNetworkSubstance subst = rn.getSubstance (rootvar.getDocumentNode ());
 					// substance undefined?
 					if (subst == null)
 					{
-						subst = new ReactionNetworkSubstance (crn, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment, null);
+						subst = new ReactionNetworkSubstance (rn, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment, null);
 						addSubstance = true;
 					}
 					// set up of reaction
@@ -362,27 +362,27 @@ extends GraphProducer
 						switch (role.role)
 						{
 							case CellMLReactionSubstance.ROLE_REACTANT:
-								crnreaction.addInputA (subst, null);
+								rnReaction.addInputA (subst, null);
 								break;
 							case CellMLReactionSubstance.ROLE_PRODUCT:
-								crnreaction.addOutputA (subst, null);
+								rnReaction.addOutputA (subst, null);
 								break;
 							case CellMLReactionSubstance.ROLE_MODIFIER:
-								crnreaction.addModA (subst, null);
+								rnReaction.addModA (subst, null);
 								break;
 							case CellMLReactionSubstance.ROLE_ACTIVATOR:
 							case CellMLReactionSubstance.ROLE_CATALYST:
-								crnreaction.addModA (subst, SBOTerm.createStimulator ());
+								rnReaction.addModA (subst, SBOTerm.createStimulator ());
 								break;
 							case CellMLReactionSubstance.ROLE_INHIBITOR:
-								crnreaction.addModA (subst, SBOTerm.createInhibitor ());
+								rnReaction.addModA (subst, SBOTerm.createInhibitor ());
 								break;
 							case CellMLReactionSubstance.ROLE_RATE:
 								continue;
 						}
 						if (addSubstance)
 						{
-							crn.setSubstance (rootvar.getDocumentNode (), subst);
+							rn.setSubstance (rootvar.getDocumentNode (), subst);
 							addSubstance = false;
 						}
 					}
@@ -392,14 +392,14 @@ extends GraphProducer
 	}
 	
 	/**
-	 * Process Chemical Reaction Network of the modified document.
+	 * Process Reaction Network of the modified document.
 	 * @throws BivesUnsupportedException 
 	 */
-	protected void processCrnB () throws BivesUnsupportedException
+	protected void processRnB () throws BivesUnsupportedException
 	{
 		CellMLModel modelB = cellmlDocB.getModel ();
 		wholeCompartment.setDocB (modelB.getDocumentNode ());
-		//crn.setCompartment (modelB.getDocumentNode (), wholeCompartment);
+		//rn.setCompartment (modelB.getDocumentNode (), wholeCompartment);
 
 		LOGGER.info ("looping through components in B");
 		HashMap<String, CellMLComponent> components = modelB.getComponents ();
@@ -410,19 +410,19 @@ extends GraphProducer
 			{
 				DocumentNode rNode = reaction.getDocumentNode ();
 				Connection con = conMgmt.getConnectionForNode (rNode);
-				ReactionNetworkReaction crnreaction = null;
+				ReactionNetworkReaction rnReaction = null;
 				if (con == null)
 				{
 					// no equivalent in doc a
-					crnreaction = new ReactionNetworkReaction (crn, null, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, reaction.isReversible ());
-					crn.setReaction (rNode, crnreaction);
+					rnReaction = new ReactionNetworkReaction (rn, null, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, reaction.isReversible ());
+					rn.setReaction (rNode, rnReaction);
 				}
 				else
 				{
-					crnreaction = crn.getReaction (con.getPartnerOf (rNode));
-					crn.setReaction (rNode, crnreaction);
-					crnreaction.setDocB (rNode);
-					crnreaction.setCompartmentB (wholeCompartment);
+					rnReaction = rn.getReaction (con.getPartnerOf (rNode));
+					rn.setReaction (rNode, rnReaction);
+					rnReaction.setDocB (rNode);
+					rnReaction.setCompartmentB (wholeCompartment);
 				}
 				List<CellMLReactionSubstance> substances = reaction.getSubstances ();
 				for (CellMLReactionSubstance substance : substances)
@@ -438,22 +438,22 @@ extends GraphProducer
 					
 					// species already defined?
 					Connection c = conMgmt.getConnectionForNode (varRootDoc);
-					if (c == null || crn.getSubstance (c.getPartnerOf (varRootDoc)) == null)
+					if (c == null || rn.getSubstance (c.getPartnerOf (varRootDoc)) == null)
 					{
 						// no equivalent in doc a
-						subst = new ReactionNetworkSubstance (crn, null, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment);
-						//crn.setSubstance (varRootDoc, subst);
+						subst = new ReactionNetworkSubstance (rn, null, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment);
+						//rn.setSubstance (varRootDoc, subst);
 					}
 					else
 					{
 						//System.out.println (varRootDoc);
 						//System.out.println (c.getPartnerOf (varRootDoc));
-						subst = crn.getSubstance (c.getPartnerOf (varRootDoc));
+						subst = rn.getSubstance (c.getPartnerOf (varRootDoc));
 						//System.out.println (subst);
 						subst.setDocB (varRootDoc);
 						subst.setLabelB (rootvar.getName ());
 						subst.setCompartmentB (wholeCompartment);
-						//crn.setSubstance (varRootDoc, subst);
+						//rn.setSubstance (varRootDoc, subst);
 					}
 					
 					// set up of reaction
@@ -462,25 +462,25 @@ extends GraphProducer
 						switch (role.role)
 						{
 							case CellMLReactionSubstance.ROLE_REACTANT:
-								crnreaction.addInputB (subst, null);
+								rnReaction.addInputB (subst, null);
 								break;
 							case CellMLReactionSubstance.ROLE_PRODUCT:
-								crnreaction.addOutputB (subst, null);
+								rnReaction.addOutputB (subst, null);
 								break;
 							case CellMLReactionSubstance.ROLE_MODIFIER:
-								crnreaction.addModB (subst, null);
+								rnReaction.addModB (subst, null);
 								break;
 							case CellMLReactionSubstance.ROLE_ACTIVATOR:
 							case CellMLReactionSubstance.ROLE_CATALYST:
-								crnreaction.addModB (subst, SBOTerm.createStimulator ());
+								rnReaction.addModB (subst, SBOTerm.createStimulator ());
 								break;
 							case CellMLReactionSubstance.ROLE_INHIBITOR:
-								crnreaction.addModB (subst, SBOTerm.createInhibitor ());
+								rnReaction.addModB (subst, SBOTerm.createInhibitor ());
 								break;
 							case CellMLReactionSubstance.ROLE_RATE:
 								continue;
 						}
-						crn.setSubstance (rootvar.getDocumentNode (), subst);
+						rn.setSubstance (rootvar.getDocumentNode (), subst);
 					}
 				}
 			}

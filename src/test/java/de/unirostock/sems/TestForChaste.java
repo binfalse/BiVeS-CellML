@@ -50,9 +50,9 @@ public class TestForChaste
 			differ.mapTrees ();
 			checkDiff (differ);
 			
-			String crnJson = differ.getCRNJsonGraph ();
+			String reactionsJson = differ.getReactionsJsonGraph ();
 			
-			assertNull ("json graph should be null", crnJson);
+			assertNull ("json graph should be null", reactionsJson);
 			
 			//String html = differ.getHTMLReport ();
 			// tODO: delete
@@ -76,12 +76,12 @@ public class TestForChaste
 	{
 		try 
 		{
-			String crnGraphMl = diff.getCRNGraphML ();
-			String crnDot = diff.getCRNDotGraph ();
-			String crnJson = diff.getCRNJsonGraph ();
-			assertTrue ("crnGraphMl shouldn't be null", crnGraphMl == null || crnGraphMl.length () > 10);
-			assertTrue ("crnDot shouldn't be null", crnDot == null || crnDot.length () > 10);
-			assertTrue ("crnJson shouldn't be null", crnJson == null || crnJson.length () > 10);
+			String reactionsGraphMl = diff.getReactionsGraphML ();
+			String reactionsDot = diff.getReactionsDotGraph ();
+			String reactionsJson = diff.getReactionsJsonGraph ();
+			assertTrue ("reactionsGraphMl shouldn't be null", reactionsGraphMl == null || reactionsGraphMl.length () > 10);
+			assertTrue ("reactionsDot shouldn't be null", reactionsDot == null || reactionsDot.length () > 10);
+			assertTrue ("reactionsJson shouldn't be null", reactionsJson == null || reactionsJson.length () > 10);
 	
 			String hierarchyGraphml = diff.getHierarchyGraphML ();
 			String hierarchyDot = diff.getHierarchyGraphML ();
