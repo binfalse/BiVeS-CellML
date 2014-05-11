@@ -17,12 +17,12 @@ import de.unirostock.sems.bives.cellml.parser.CellMLModel;
 import de.unirostock.sems.bives.cellml.parser.CellMLReaction;
 import de.unirostock.sems.bives.cellml.parser.CellMLReactionSubstance;
 import de.unirostock.sems.bives.cellml.parser.CellMLVariable;
-import de.unirostock.sems.bives.ds.crn.CRNCompartment;
-import de.unirostock.sems.bives.ds.crn.CRNReaction;
-import de.unirostock.sems.bives.ds.crn.CRNSubstance;
 import de.unirostock.sems.bives.ds.hn.HierarchyNetworkComponent;
 import de.unirostock.sems.bives.ds.hn.HierarchyNetworkVariable;
 import de.unirostock.sems.bives.ds.ontology.SBOTerm;
+import de.unirostock.sems.bives.ds.rn.ReactionNetworkCompartment;
+import de.unirostock.sems.bives.ds.rn.ReactionNetworkReaction;
+import de.unirostock.sems.bives.ds.rn.ReactionNetworkSubstance;
 import de.unirostock.sems.bives.exception.BivesUnsupportedException;
 import de.unirostock.sems.xmlutils.comparison.Connection;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
@@ -44,7 +44,7 @@ extends GraphProducer
 	private SimpleConnectionManager conMgmt;
 	
 	/** The dummy compartment for reactions. */
-	private CRNCompartment wholeCompartment;
+	private ReactionNetworkCompartment wholeCompartment;
 	
 	/**
 	 * Instantiates a new CellML graph producer for difference graphs.
@@ -80,7 +80,7 @@ extends GraphProducer
 	{
 		if (wholeCompartment == null)
 		{
-			wholeCompartment = new CRNCompartment (crn, "document", "document", null, null);
+			wholeCompartment = new ReactionNetworkCompartment (crn, "document", "document", null, null);
 			wholeCompartment.setSingleDocument ();
 		}
 		try
@@ -340,7 +340,7 @@ extends GraphProducer
 			List<CellMLReaction> reactions = component.getReactions ();
 			for (CellMLReaction reaction : reactions)
 			{
-				CRNReaction crnreaction = new CRNReaction (crn, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, null, reaction.isReversible ());
+				ReactionNetworkReaction crnreaction = new ReactionNetworkReaction (crn, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, null, reaction.isReversible ());
 				crn.setReaction (reaction.getDocumentNode (), crnreaction);
 				List<CellMLReactionSubstance> substances = reaction.getSubstances ();
 				for (CellMLReactionSubstance substance : substances)
@@ -349,11 +349,11 @@ extends GraphProducer
 					CellMLVariable var = substance.getVariable ();
 					CellMLVariable rootvar = var.getRootVariable ();
 					List<CellMLReactionSubstance.Role> roles = substance.getRoles ();
-					CRNSubstance subst = crn.getSubstance (rootvar.getDocumentNode ());
+					ReactionNetworkSubstance subst = crn.getSubstance (rootvar.getDocumentNode ());
 					// substance undefined?
 					if (subst == null)
 					{
-						subst = new CRNSubstance (crn, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment, null);
+						subst = new ReactionNetworkSubstance (crn, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment, null);
 						addSubstance = true;
 					}
 					// set up of reaction
@@ -410,11 +410,11 @@ extends GraphProducer
 			{
 				DocumentNode rNode = reaction.getDocumentNode ();
 				Connection con = conMgmt.getConnectionForNode (rNode);
-				CRNReaction crnreaction = null;
+				ReactionNetworkReaction crnreaction = null;
 				if (con == null)
 				{
 					// no equivalent in doc a
-					crnreaction = new CRNReaction (crn, null, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, reaction.isReversible ());
+					crnreaction = new ReactionNetworkReaction (crn, null, reaction.getComponent ().getName (), null, reaction.getDocumentNode (), null, wholeCompartment, reaction.isReversible ());
 					crn.setReaction (rNode, crnreaction);
 				}
 				else
@@ -434,14 +434,14 @@ extends GraphProducer
 					//DocumentNode varDoc = var.getDocumentNode ();
 					DocumentNode varRootDoc = rootvar.getDocumentNode ();
 
-					CRNSubstance subst = null;
+					ReactionNetworkSubstance subst = null;
 					
 					// species already defined?
 					Connection c = conMgmt.getConnectionForNode (varRootDoc);
 					if (c == null || crn.getSubstance (c.getPartnerOf (varRootDoc)) == null)
 					{
 						// no equivalent in doc a
-						subst = new CRNSubstance (crn, null, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment);
+						subst = new ReactionNetworkSubstance (crn, null, rootvar.getName (), null, rootvar.getDocumentNode (), null, wholeCompartment);
 						//crn.setSubstance (varRootDoc, subst);
 					}
 					else
