@@ -20,9 +20,27 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
  */
 public class CellMLConnection
 {
+	
+	/**
+	 * The Class ConnectedComponents representing a connection of two components.
+	 */
 	public static class ConnectedComponents
 	{
-		public CellMLComponent component_1, component_2;
+		/**
+		 * 
+		 */
+		public CellMLComponent component_1;
+		/**
+		 * 
+		 */
+		public CellMLComponent component_2;
+		
+		/**
+		 * Instantiates a new component connection.
+		 *
+		 * @param component_1 the first component
+		 * @param component_2 the second component
+		 */
 		public ConnectedComponents (CellMLComponent component_1, CellMLComponent component_2)
 		{
 			this.component_1 = component_1;

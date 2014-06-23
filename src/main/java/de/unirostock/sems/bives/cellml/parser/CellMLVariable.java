@@ -305,7 +305,6 @@ implements DiffReporter
 	 * Adds the unit this variable depends on to a global list of dependencies.
 	 *
 	 * @param list the global list of dependencies
-	 * @return the list plus local dependencies
 	 */
 	public void getDependencies (Map<CellMLUserUnit, List<CellMLEntity>> list)
 	{

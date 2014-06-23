@@ -110,6 +110,9 @@ public class CellMLDiff extends Diff
 
 	/**
 	 * Instantiates a new CellML differ.
+	 *
+	 * @param a the original CellML document
+	 * @param b the modified CellML document
 	 */
 	public CellMLDiff (CellMLDocument a, CellMLDocument b)
 	{

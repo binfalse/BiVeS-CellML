@@ -14,6 +14,7 @@ import de.unirostock.sems.xmlutils.ds.DocumentNode;
 import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class CellMLReactionSubstance representing a substance taking part in a reaction.
  *
@@ -22,15 +23,35 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 public class CellMLReactionSubstance
 extends CellMLEntity
 {
+	
+	/** The Constant ROLE_REACTANT representing a reactant. */
 	public static final int ROLE_REACTANT = 1;
+	
+	/** The Constant ROLE_PRODUCT representing a product. */
 	public static final int ROLE_PRODUCT = 2;
+	
+	/** The Constant ROLE_CATALYST representing a catalyst. */
 	public static final int ROLE_CATALYST = 3;
+	
+	/** The Constant ROLE_INHIBITOR representing an inhibitor. */
 	public static final int ROLE_INHIBITOR = 4;
+	
+	/** The Constant ROLE_ACTIVATOR representing an activator. */
 	public static final int ROLE_ACTIVATOR= 5;
+	
+	/** The Constant ROLE_RATE representing a the rate variable. */
 	public static final int ROLE_RATE= 6;
+	
+	/** The Constant ROLE_MODIFIER representing a modifier. */
 	public static final int ROLE_MODIFIER= 7;
+	
+	/** The Constant DIRECTION_FORWARD representing a forward reaction. */
 	public static final int DIRECTION_FORWARD = 0;
+	
+	/** The Constant DIRECTION_REVERSE representing a reverse reaction. */
 	public static final int DIRECTION_REVERSE = 1;
+	
+	/** The Constant DIRECTION_BOTH representing a reversable reaction. */
 	public static final int DIRECTION_BOTH = 2;
 	
 	/** The variable that corresponds to this substance. */
@@ -69,7 +90,7 @@ extends CellMLEntity
 		 * @param node the corresponding document node in the XML tree
 		 * @throws BivesCellMLParseException the bives cell ml parse exception
 		 * @throws BivesDocumentConsistencyException the bives document consistency exception
-		 * @throws BivesLogicalException 
+		 * @throws BivesLogicalException the bives logical exception
 		 */
 		public Role (CellMLModel model, DocumentNode node) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException
 		{
@@ -111,7 +132,7 @@ extends CellMLEntity
 	 * @param node the corresponding node in the XML tree
 	 * @throws BivesDocumentConsistencyException the bives document consistency exception
 	 * @throws BivesCellMLParseException the bives cell ml parse exception
-	 * @throws BivesLogicalException 
+	 * @throws BivesLogicalException the bives logical exception
 	 */
 	public CellMLReactionSubstance (CellMLModel model, CellMLComponent component, DocumentNode node) throws BivesDocumentConsistencyException, BivesCellMLParseException, BivesLogicalException
 	{

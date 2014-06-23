@@ -105,6 +105,8 @@ public class CellMLSingle
 	
 	/**
 	 * Instantiates a new object.
+	 *
+	 * @param doc the CellML document
 	 */
 	public CellMLSingle (CellMLDocument doc)
 	{
