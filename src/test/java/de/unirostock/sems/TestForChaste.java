@@ -11,6 +11,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.net.URL;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -21,6 +22,8 @@ import org.junit.runners.JUnit4;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.bives.api.Diff;
 import de.unirostock.sems.bives.cellml.api.CellMLDiff;
+import de.unirostock.sems.xmlutils.ds.TreeDocument;
+import de.unirostock.sems.xmlutils.tools.XmlTools;
 
 
 /**
@@ -34,6 +37,9 @@ public class TestForChaste
 	private static final File		FILE_2	= new File ("test/decker_2009-fixed-from-chastefc.cellml");
 
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void  testCase1 ()
 	{
@@ -71,7 +77,56 @@ public class TestForChaste
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	@Test
+	public void  testCase2 ()
+	{
+		try
+		{
+			/*File log = new File ("/tmp/bives-cellml-test/log");
+			if (log.exists ())
+				log.delete ();
+			LOGGER.setLogFile (log);
+			LOGGER.setLogToFile (true);
+			LOGGER.setMinLevel (LOGGER.DEBUG);*/
+			LOGGER.setLogToStdErr (false);
+			
+
+			URL url1 = new URL ("http://budhat.sems.uni-rostock.de/download?downloadModel=27"),
+				url2 = new URL ("http://budhat.sems.uni-rostock.de/download?downloadModel=28");
+
+			
+			TreeDocument td1 = new TreeDocument (XmlTools.readDocument (url1), url1.toURI ()),
+				td2 = new TreeDocument (XmlTools.readDocument (url2), url2.toURI ());
+			
+			
+			CellMLDiff differ = new CellMLDiff (td1, td2);
+			differ.mapTrees ();
+			checkDiff (differ);
+			
+			String reactionsJson = differ.getReactionsJsonGraph ();
+			assertNotNull ("json reaction graph should not be null", reactionsJson);
+			
+			String componentsJson = differ.getHierarchyJsonGraph ();
+			assertNotNull ("json hierarchy graph should not be null", reactionsJson);
+			
+			
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+		}
+	}
 	
+	
+	/**
+	 * @param diff
+	 * @throws ParserConfigurationException
+	 */
 	public void checkDiff (Diff diff) throws ParserConfigurationException
 	{
 		try 

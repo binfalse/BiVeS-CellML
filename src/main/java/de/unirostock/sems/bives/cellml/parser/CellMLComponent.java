@@ -90,6 +90,7 @@ extends CellMLEntity
 		if (kids.size () != 0)
 			throw new BivesDocumentConsistencyException ("inconsistencies for "+kids.size ()+" units in component "+name+", problems: " + problems);
 		
+		nextRound = true;
 		kids = node.getChildrenWithTag ("variable");
 		while (nextRound && kids.size () > 0)
 		{

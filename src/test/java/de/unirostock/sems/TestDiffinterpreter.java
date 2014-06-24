@@ -39,6 +39,9 @@ public class TestDiffinterpreter
 
 	
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void  testCase2 ()
 	{
@@ -71,6 +74,9 @@ public class TestDiffinterpreter
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void  testCase1 ()
 	{
@@ -94,6 +100,10 @@ public class TestDiffinterpreter
 	}
 	
 	
+	/**
+	 * @param diff
+	 * @throws ParserConfigurationException
+	 */
 	public void checkDiff (Diff diff) throws ParserConfigurationException
 	{
 		try 

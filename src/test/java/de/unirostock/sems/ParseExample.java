@@ -22,6 +22,9 @@ import de.unirostock.sems.bives.cellml.parser.CellMLVariable;
  */
 public class ParseExample
 {
+	/**
+	 * @param args
+	 */
 	public static void main (String[] args)
 	{
 		File document = new File ("your/cellml/file");
