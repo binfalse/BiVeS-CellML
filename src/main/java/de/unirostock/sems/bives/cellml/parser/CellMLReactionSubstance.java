@@ -14,7 +14,6 @@ import de.unirostock.sems.xmlutils.ds.DocumentNode;
 import de.unirostock.sems.xmlutils.ds.TreeNode;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CellMLReactionSubstance representing a substance taking part in a reaction.
  *
