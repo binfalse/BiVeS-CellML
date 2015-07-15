@@ -36,6 +36,24 @@ public class CellMLConnectorPreprocessor
 	 *
 	 * @param cellmlDocA the original CellML document
 	 * @param cellmlDocB the modified CellML document
+	 * @param allowDifferentIds may mapped entities have different ids? see {@link de.unirostock.sems.bives.api.Diff#ALLOW_DIFFERENT_IDS}
+	 * @param careAboutNames should we care about names? see {@link de.unirostock.sems.bives.api.Diff#CARE_ABOUT_NAMES}
+	 * @param stricterNames should we handle the names very strictly? see {@link de.unirostock.sems.bives.api.Diff#STRICTER_NAMES}
+	 */
+	public CellMLConnectorPreprocessor (CellMLDocument cellmlDocA, CellMLDocument cellmlDocB, boolean allowDifferentIds, boolean careAboutNames, boolean stricterNames)
+	{
+		super (cellmlDocA.getTreeDocument (), cellmlDocB.getTreeDocument (), allowDifferentIds, careAboutNames, stricterNames);
+		this.cellmlDocA = cellmlDocA;
+		this.cellmlDocB = cellmlDocB;
+	}
+
+	/**
+	 * Instantiates a new CellML connector preprocessor.
+	 *
+	 * Uses default values for the mapping, see {@link de.unirostock.sems.bives.api.Diff#ALLOW_DIFFERENT_IDS}, {@link de.unirostock.sems.bives.api.Diff#CARE_ABOUT_NAMES}, and {@link de.unirostock.sems.bives.api.Diff#STRICTER_NAMES}.
+	 *
+	 * @param cellmlDocA the original CellML document
+	 * @param cellmlDocB the modified CellML document
 	 */
 	public CellMLConnectorPreprocessor (CellMLDocument cellmlDocA, CellMLDocument cellmlDocB)
 	{
@@ -46,6 +64,22 @@ public class CellMLConnectorPreprocessor
 	
 	/**
 	 * Instantiates a new CellML connector preprocessor.
+	 *
+	 * @param preprocessor the preprocessor
+	 * @param allowDifferentIds may mapped entities have different ids? see {@link de.unirostock.sems.bives.api.Diff#ALLOW_DIFFERENT_IDS}
+	 * @param careAboutNames should we care about names? see {@link de.unirostock.sems.bives.api.Diff#CARE_ABOUT_NAMES}
+	 * @param stricterNames should we handle the names very strictly? see {@link de.unirostock.sems.bives.api.Diff#STRICTER_NAMES}
+	 */
+	public CellMLConnectorPreprocessor (Connector preprocessor, boolean allowDifferentIds, boolean careAboutNames, boolean stricterNames)
+	{
+		super (preprocessor.getDocA (), preprocessor.getDocB (), allowDifferentIds, careAboutNames, stricterNames);
+		this.preprocessor = preprocessor;
+	}
+	
+	/**
+	 * Instantiates a new CellML connector preprocessor.
+	 *
+	 * Uses default values for the mapping, see {@link de.unirostock.sems.bives.api.Diff#ALLOW_DIFFERENT_IDS}, {@link de.unirostock.sems.bives.api.Diff#CARE_ABOUT_NAMES}, and {@link de.unirostock.sems.bives.api.Diff#STRICTER_NAMES}.
 	 *
 	 * @param preprocessor the preprocessor
 	 */

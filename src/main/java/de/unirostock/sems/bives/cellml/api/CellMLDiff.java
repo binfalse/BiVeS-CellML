@@ -121,12 +121,13 @@ public class CellMLDiff extends Diff
 		doc2 = b;
 	}
 
+	
 	/* (non-Javadoc)
-	 * @see de.unirostock.sems.bives.api.Diff#mapTrees()
+	 * @see de.unirostock.sems.bives.api.Diff#mapTrees(boolean, boolean, boolean)
 	 */
 	@Override
-	public boolean mapTrees() throws BivesConnectionException {
-		CellMLConnector con = new CellMLConnector (doc1, doc2);
+	public boolean mapTrees(boolean allowDifferentIds, boolean careAboutNames, boolean stricterNames) throws BivesConnectionException {
+		CellMLConnector con = new CellMLConnector (doc1, doc2, allowDifferentIds, careAboutNames, stricterNames);
 		con.findConnections ();
 		connections = con.getConnections();
 		
