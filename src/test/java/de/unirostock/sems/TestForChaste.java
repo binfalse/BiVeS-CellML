@@ -56,6 +56,8 @@ public class TestForChaste
 			differ.mapTrees ();
 			checkDiff (differ);
 			
+			System.out.println (differ.getDiff ());
+			
 			String reactionsJson = differ.getReactionsJsonGraph ();
 			
 			assertNull ("json graph should be null", reactionsJson);

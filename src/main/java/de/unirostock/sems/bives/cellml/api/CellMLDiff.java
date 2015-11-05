@@ -9,8 +9,10 @@ import java.net.URISyntaxException;
 
 import org.jdom2.JDOMException;
 
+import de.unirostock.sems.bives.algorithm.DiffAnnotator;
 import de.unirostock.sems.bives.api.Diff;
 import de.unirostock.sems.bives.cellml.algorithm.CellMLConnector;
+import de.unirostock.sems.bives.cellml.algorithm.CellMLDiffAnnotator;
 import de.unirostock.sems.bives.cellml.algorithm.CellMLDiffInterpreter;
 import de.unirostock.sems.bives.cellml.algorithm.CellMLGraphProducer;
 import de.unirostock.sems.bives.cellml.exception.BivesCellMLParseException;
@@ -52,6 +54,84 @@ public class CellMLDiff extends Diff
 	 *
 	 * @param a the file containing the original CellML model
 	 * @param b the file containing the modified CellML model
+	 * @param diffAnnotator the annotator for identified changes
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JDOMException the jDOM exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesImportException the bives import exception
+	 * @throws URISyntaxException the uRI syntax exception
+	 */
+	public CellMLDiff (File a, File b, DiffAnnotator diffAnnotator) throws XmlDocumentParseException, IOException, JDOMException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, URISyntaxException
+	{
+		super(a, b, diffAnnotator);
+		doc1 = new CellMLDocument (treeA);
+		doc2 = new CellMLDocument (treeB);
+	}
+
+	/**
+	 * Instantiates a new CellML differ.
+	 *
+	 * @param a the XML code representing the original CellML model
+	 * @param b the XML code representing the modified CellML model
+	 * @param diffAnnotator the annotator for identified changes
+	 * @throws XmlDocumentParseException the xml document parse exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JDOMException the jDOM exception
+	 * @throws BivesCellMLParseException the bives cell ml parse exception
+	 * @throws BivesDocumentConsistencyException the bives document consistency exception
+	 * @throws BivesLogicalException the bives logical exception
+	 * @throws BivesImportException the bives import exception
+	 * @throws URISyntaxException the uRI syntax exception
+	 */
+	public CellMLDiff (String a, String b, DiffAnnotator diffAnnotator) throws XmlDocumentParseException, IOException, JDOMException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, URISyntaxException
+	{
+		super(a, b, diffAnnotator);
+		doc1 = new CellMLDocument (treeA);
+		doc2 = new CellMLDocument (treeB);
+	}
+
+	/**
+	 * Instantiates a new CellML differ.
+	 *
+	 * @param a the tree document representing the original CellML model
+	 * @param b the tree document representing the modified CellML model
+	 * @param diffAnnotator the annotator for identified changes
+	 * @throws URISyntaxException 
+	 * @throws IOException 
+	 * @throws BivesImportException 
+	 * @throws BivesLogicalException 
+	 * @throws BivesDocumentConsistencyException 
+	 * @throws BivesCellMLParseException 
+	 */
+	public CellMLDiff (TreeDocument a, TreeDocument b, DiffAnnotator diffAnnotator) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, IOException, URISyntaxException
+	{
+		super(a, b, diffAnnotator);
+		doc1 = new CellMLDocument (treeA);
+		doc2 = new CellMLDocument (treeB);
+	}
+
+	/**
+	 * Instantiates a new CellML differ.
+	 *
+	 * @param a the original CellML document
+	 * @param b the modified CellML document
+	 * @param diffAnnotator the annotator for identified changes
+	 */
+	public CellMLDiff (CellMLDocument a, CellMLDocument b, DiffAnnotator diffAnnotator)
+	{
+		super(a.getTreeDocument (), b.getTreeDocument (), diffAnnotator);
+		doc1 = a;
+		doc2 = b;
+	}
+
+	/**
+	 * Instantiates a new CellML differ. This CellML differ uses a {@link CellMLDiffAnnotator} to annotate the differences.
+	 *
+	 * @param a the file containing the original CellML model
+	 * @param b the file containing the modified CellML model
 	 * @throws XmlDocumentParseException the xml document parse exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws JDOMException the jDOM exception
@@ -63,7 +143,7 @@ public class CellMLDiff extends Diff
 	 */
 	public CellMLDiff (File a, File b) throws XmlDocumentParseException, IOException, JDOMException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, URISyntaxException
 	{
-		super(a, b);
+		super(a, b, new CellMLDiffAnnotator ());
 		doc1 = new CellMLDocument (treeA);
 		doc2 = new CellMLDocument (treeB);
 	}
@@ -84,7 +164,7 @@ public class CellMLDiff extends Diff
 	 */
 	public CellMLDiff (String a, String b) throws XmlDocumentParseException, IOException, JDOMException, BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, URISyntaxException
 	{
-		super(a, b);
+		super(a, b, new CellMLDiffAnnotator ());
 		doc1 = new CellMLDocument (treeA);
 		doc2 = new CellMLDocument (treeB);
 	}
@@ -103,7 +183,7 @@ public class CellMLDiff extends Diff
 	 */
 	public CellMLDiff (TreeDocument a, TreeDocument b) throws BivesCellMLParseException, BivesDocumentConsistencyException, BivesLogicalException, BivesImportException, IOException, URISyntaxException
 	{
-		super(a, b);
+		super(a, b, new CellMLDiffAnnotator ());
 		doc1 = new CellMLDocument (treeA);
 		doc2 = new CellMLDocument (treeB);
 	}
@@ -116,7 +196,7 @@ public class CellMLDiff extends Diff
 	 */
 	public CellMLDiff (CellMLDocument a, CellMLDocument b)
 	{
-		super(a.getTreeDocument (), b.getTreeDocument ());
+		super(a.getTreeDocument (), b.getTreeDocument (), new CellMLDiffAnnotator ());
 		doc1 = a;
 		doc2 = b;
 	}
