@@ -3,11 +3,14 @@
  */
 package de.unirostock.sems.bives.cellml.algorithm;
 
+import java.util.regex.Pattern;
+
 import org.jdom2.Element;
 
 import de.unirostock.sems.bives.algorithm.general.DefaultDiffAnnotator;
 import de.unirostock.sems.comodi.Change;
 import de.unirostock.sems.comodi.ChangeFactory;
+import de.unirostock.sems.comodi.branches.ComodiTarget;
 import de.unirostock.sems.xmlutils.ds.TextNode;
 import de.unirostock.sems.xmlutils.ds.TreeNode;
 
@@ -28,6 +31,7 @@ public class CellMLDiffAnnotator
 		ChangeFactory changeFac)
 	{
 		Change change = super.annotateDeletion (node, diffNode, changeFac);
+		annotateTarget (change, node, null, diffNode);
 		return change;
 	}
 	
@@ -40,6 +44,7 @@ public class CellMLDiffAnnotator
 		ChangeFactory changeFac)
 	{
 		Change change = super.annotateInsertion (node, diffNode, changeFac);
+		annotateTarget (change, null, node, diffNode);
 		return change;
 	}
 	
@@ -52,6 +57,7 @@ public class CellMLDiffAnnotator
 		ChangeFactory changeFac, boolean permutation)
 	{
 		Change change = super.annotateMove (nodeA, nodeB, diffNode, changeFac, permutation);
+		annotateTarget (change, nodeA, nodeB, diffNode);
 		return change;
 	}
 	
@@ -64,6 +70,7 @@ public class CellMLDiffAnnotator
 		String attributeName, Element diffNode, ChangeFactory changeFac)
 	{
 		Change change = super.annotateUpdateAttribute (nodeA, nodeB, attributeName, diffNode, changeFac);
+		annotateTarget (change, nodeA, nodeB, diffNode);
 		return change;
 	}
 	
@@ -76,6 +83,7 @@ public class CellMLDiffAnnotator
 		Element diffNode, ChangeFactory changeFac)
 	{
 		Change change = super.annotateUpdateText (nodeA, nodeB, diffNode, changeFac);
+		annotateTarget (change, nodeA, nodeB, diffNode);
 		return change;
 	}
 	
@@ -90,4 +98,23 @@ public class CellMLDiffAnnotator
 		super.annotatePatch (rootId, changeFac);
 	}
 	
+	
+	
+	private Pattern variablePath = Pattern.compile ("/model\\[\\d+\\]/component\\[\\d+\\]/variable\\[\\d+\\]");
+	
+	private Change annotateTarget (Change change, TreeNode nodeA, TreeNode nodeB, Element diffNode)
+	{
+		// as nodeA or nodeB might be null, but we don't care at some points, we just need one of them which is definietely not 0...
+		TreeNode defNode = nodeA == null ? nodeB : nodeA;
+		// the xpath in one of the documents, no matter if old or new doc
+		String xPath = diffNode.getAttributeValue ("newPath") == null ?
+			diffNode.getAttributeValue ("oldPath") : diffNode.getAttributeValue ("newPath");
+		
+		if (variablePath.matcher (xPath).find () && defNode.getTagName ().equals ("variable"))
+		{
+			// annotate with variable definition
+			change.affects (ComodiTarget.getVariableDefinition ());
+		}
+		return change;
+	}
 }
