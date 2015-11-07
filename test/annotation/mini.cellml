@@ -2,12 +2,18 @@
     name="hodgkin_huxley_model_excerpt"
     xmlns="http://www.cellml.org/cellml/1.1#"
     xmlns:cellml="http://www.cellml.org/cellml/1.1#"
+    xmlns:bqs="http://www.cellml.org/bqs/1.0#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
 
   <!--
     model taken from https://www.cellml.org/specifications/cellml_1.1/#sec_structure_examples
     units are stupid, just inserted to have a valid cellml file... ;-)
   -->
+
+<documentation xmlns="http://cellml.org/tmp-documentation">
+<strong>testing rocks</strong>
+</documentation>
 
 <units name="microF_per_cm2">
   <unit multiplier="2.54" prefix="centi" units="metre" />
@@ -164,6 +170,24 @@
     </annotation-xml>
   </math>
   </component>
+
+
+  <rdf:RDF
+      xmlns:cmeta="http://www.cellml.org/metadata/1.0#"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:Description rdf:about="#hodgkin_huxley_model_excerpt">
+  <bqs:reference rdf:parseType="Resource">
+        <dc:subject rdf:parseType="Resource">
+          <bqs:subject_type>keyword</bqs:subject_type>
+          <rdf:value>
+            <rdf:Bag>
+              <rdf:li>hudgkin</rdf:li>
+            </rdf:Bag>
+          </rdf:value>
+        </dc:subject>
+      </bqs:reference>
+    </rdf:Description>
+  </rdf:RDF>
 
 <group>
   <relationship_ref relationship="encapsulation" />
