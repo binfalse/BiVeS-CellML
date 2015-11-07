@@ -404,14 +404,10 @@ public class CellMLDiffInterpreter
 		for (CellMLUserUnit unitA : unitsA.values ())
 		{
 			Connection con = conMgmt.getConnectionForNode (unitA.getDocumentNode ());
-			LOGGER.error ("a: ", unitA.getName ());
-			LOGGER.error ("con: ", con);
-			LOGGER.error ("unitsB: ", unitsB);
 			
 			if (con != null && unitsB != null)
 			{
 				CellMLUserUnit unitB = (CellMLUserUnit) modelB.getFromNode (con.getPartnerOf (unitA.getDocumentNode ()));
-				LOGGER.error ("b: ", unitB.getName ());
 				if (unitB == unitsB.get (unitB.getName ()))
 				{
 					MarkupElement element = unitA.reportModification (conMgmt, unitA, unitB);
