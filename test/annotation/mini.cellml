@@ -1,0 +1,98 @@
+<model
+    name="hodgkin_huxley_model_excerpt"
+    xmlns="http://www.cellml.org/cellml/1.1#"
+    xmlns:cellml="http://www.cellml.org/cellml/1.1#"
+    xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+
+  <!--
+    model taken from https://www.cellml.org/specifications/cellml_1.1/#sec_structure_examples
+    units are stupid, just inserted to have a valid cellml file... ;-)
+  -->
+
+<units name="microF_per_cm2">
+  <unit multiplier="2.54" prefix="centi" units="metre" />
+</units>
+
+<units name="microA_per_cm2">
+  <unit multiplier="1.8" units="celsius" offset="32.0" />
+</units>
+
+<units name="millisecond">
+  <unit units="fahrenheit" />
+  <unit units="inch" exponent="-1" />
+</units>
+
+<units name="millivolt">
+  <unit units="pH" />
+  <unit units="celsius" exponent="-1" />
+</units>
+
+<units name="fahrenheit">
+  <unit multiplier="1.8" units="celsius" offset="32.0" />
+</units>
+
+<units name="inch">
+  <unit multiplier="2.54" prefix="centi" units="metre" />
+</units>
+
+<units name="pH" base_units="yes" />
+
+
+  <component name="membrane">
+    <!-- the following variable is used in other components -->
+    <variable
+        name="V" public_interface="out"
+        initial_value="-75.0" units="millivolt" />
+
+    <!-- the following variables are imported from other components -->
+    <variable name="time" public_interface="in" units="millisecond" />
+    <variable name="i_Na" public_interface="in" units="microA_per_cm2" />
+    <variable name="i_K" public_interface="in" units="microA_per_cm2" />
+    <variable name="i_L" public_interface="in" units="microA_per_cm2" />
+
+    <!-- the following variable is only used internally -->
+    <variable name="C" initial_value="1.0" units="microF_per_cm2" />
+
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply id="membrane_voltage_diff_eq"><eq />
+        <apply><diff />
+          <bvar><ci> time </ci></bvar>
+          <ci> V </ci>
+        </apply>
+        <apply><divide />
+          <apply><minus />
+            <apply><plus />
+              <ci> i_Na </ci>
+              <ci> i_K </ci>
+              <ci> i_L </ci>
+            </apply>
+          </apply>
+          <ci> C </ci>
+        </apply>
+      </apply>
+    </math>
+  </component>
+
+  <component name="sodium_channel">
+    <!-- the following variables are used in other components -->
+    <variable name="i_Na" public_interface="out" units="microA_per_cm2" />
+
+    <!-- the following variables are imported from other components -->
+    <variable name="time" public_interface="in" units="millisecond" />
+    <variable name="V" public_interface="in" units="millivolt" />
+
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply id="i_Na_calculation"><eq />
+        <ci> i_Na </ci>
+        ...  <!-- a function of V & time -->
+      </apply>
+    </math>
+  </component>
+
+  <connection>
+    <map_components component_1="membrane" component_2="sodium_channel" />
+    <map_variables variable_1="V" variable_2="V" />
+    <map_variables variable_1="i_Na" variable_2="i_Na" />
+  </connection>
+
+</model>
