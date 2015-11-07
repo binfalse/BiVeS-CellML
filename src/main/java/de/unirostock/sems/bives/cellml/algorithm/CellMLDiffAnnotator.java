@@ -108,6 +108,7 @@ public class CellMLDiffAnnotator
 	private Pattern componentReactionNetworkPath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/reaction\\[\\d+\\]");
 	private Pattern unitsPath = Pattern.compile ("^/model\\[\\d+\\]/units\\[\\d+\\]");
 	private Pattern componentUnitsPath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/units\\[\\d+\\]");
+	private Pattern variableConnectionPath = Pattern.compile ("^/model\\[\\d+\\]/connection\\[\\d+\\]");
 	
 	private Change annotateTarget (Change change, TreeNode nodeA, TreeNode nodeB, Element diffNode, boolean permutation)
 	{
@@ -222,7 +223,8 @@ public class CellMLDiffAnnotator
 				if (attr.equals ("id") || attr.equals ("name"))
 					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
 			}
-			change.affects (ComodiTarget.getUnitDefinition ());
+			if (!(diffNode.getName ().equals ("node") && defNode.getParent ().getTagName ().equals ("model") && permutation))
+				change.affects (ComodiTarget.getUnitDefinition ());
 		}
 		if (componentUnitsPath.matcher (xPath).find ())
 		{
@@ -233,7 +235,10 @@ public class CellMLDiffAnnotator
 				if (attr.equals ("id") || attr.equals ("name"))
 					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
 			}
-			change.affects (ComodiTarget.getUnitDefinition ());
+
+			if (!(diffNode.getName ().equals ("node") && permutation))
+				change.affects (ComodiTarget.getUnitDefinition ());
+			
 			// if this is the math node and it was ins/del/mov -> change comp def
 			if (defNode.getTagName ().equals ("units") && defNode.getParent ().getTagName ().equals ("component"))
 			{
@@ -249,12 +254,16 @@ public class CellMLDiffAnnotator
 					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
 			}
 		}
+
+		if (variableConnectionPath.matcher (xPath).find ())
+		{
+			if (!(diffNode.getName ().equals ("node") && permutation))
+				change.affects (ComodiTarget.getVariableConnections ());
+		}
 		
 		/*
 		annotations
-		UnitDefinition
-    ComponentHierarchy
-    VariableConnections*/
+    ComponentHierarchy*/
 		
 		return change;
 	}

@@ -96,6 +96,7 @@
 
     <!-- the following variables are used in other components -->
     <variable name="i_Na" public_interface="out" units="microA_per_cm2" />
+    <variable name="i_Pa" public_interface="out" units="microA_per_cm2" />
 
     <!-- the following variables are imported from other components -->
     <variable name="time" public_interface="in" units="millisecond" />
