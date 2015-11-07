@@ -6,7 +6,6 @@ package de.unirostock.sems.bives.cellml.algorithm;
 import java.util.HashMap;
 import java.util.List;
 
-import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.bives.algorithm.Interpreter;
 import de.unirostock.sems.bives.algorithm.SimpleConnectionManager;
 import de.unirostock.sems.bives.cellml.parser.CellMLComponent;

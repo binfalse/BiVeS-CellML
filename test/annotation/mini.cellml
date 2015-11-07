@@ -40,6 +40,17 @@
   <component name="myStupidComponent">
     <variable name="myStupidVariable" public_interface="out" initial_value="-75.0" units="millivolt" />
   </component>
+  
+<component name="mySecondStupidComponent">
+    <variable name="mySecondStupidVariable" public_interface="out" initial_value="-75.0" units="millivolt" />
+<reaction reversible="no">
+  <variable_ref variable="mySecondStupidVariable">
+    <role role="reactant" delta_variable="mySecondStupidVariable" stoichiometry="1" />
+  </variable_ref>
+
+</reaction>
+  </component>
+
 
   <component name="membrane">
     <!-- the following variable is used in other components -->
