@@ -51,6 +51,11 @@
 </reaction>
   </component>
 
+<component name="myThirdStupidComponent">
+<units name="someUnit" >
+<unit multiplier="1.9" prefix="centi" units="metre" />
+</units>
+  </component>
 
   <component name="membrane">
     <!-- the following variable is used in other components -->
@@ -164,5 +169,9 @@
     <map_variables variable_1="V" variable_2="V" />
     <map_variables variable_1="i_Na" variable_2="i_Na" />
   </connection>
+
+<units name="unusedUnit" >
+<unit multiplier="1.9" prefix="centi" units="metre" />
+</units>
 
 </model>

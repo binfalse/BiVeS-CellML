@@ -31,7 +31,9 @@ import de.unirostock.sems.bives.api.Diff;
 import de.unirostock.sems.bives.cellml.algorithm.CellMLValidator;
 import de.unirostock.sems.bives.cellml.api.CellMLDiff;
 import de.unirostock.sems.bives.cellml.parser.CellMLDocument;
+import de.unirostock.sems.bives.cellml.parser.CellMLUnit;
 import de.unirostock.sems.bives.ds.Patch;
+import de.unirostock.sems.xmlutils.ds.DocumentNode;
 import de.unirostock.sems.xmlutils.ds.TreeDocument;
 import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
 import de.unirostock.sems.xmlutils.tools.DocumentTools;
@@ -103,7 +105,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, true, true, false, false, false);
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, true, true, false, false, false, false);
 		}
 		catch (Exception e)
 		{
@@ -133,7 +135,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 2, 2, 0, 0, false, false, true, false, false, false, false, false);
+			simpleCheckAnnotations (differ, 2, 2, 0, 0, false, false, true, false, false, false, false, false, false);
 		}
 		catch (Exception e)
 		{
@@ -163,7 +165,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 			//System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 25, 0, 0, 0, false, true, true, false, false, false, false, false);
+			simpleCheckAnnotations (differ, 25, 0, 0, 0, false, true, true, false, false, false, false, false, false);
 		}
 		catch (Exception e)
 		{
@@ -193,7 +195,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 			//System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, false, true, true);
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, false, true, true, false);
 		}
 		catch (Exception e)
 		{
@@ -223,7 +225,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, false, true, false);
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, false, true, false, false);
 		}
 		catch (Exception e)
 		{
@@ -253,7 +255,188 @@ public class TestAnnotations
 			checkDiff (differ);
 
 			//System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 8, 0, 0, false, true, false, false, false, false, true, true);
+			simpleCheckAnnotations (differ, 0, 8, 0, 0, false, true, false, false, false, false, true, true, false);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
+		}
+	}
+	
+	
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void  testChangeUnitNameInComponent ()
+	{
+		try
+		{
+			CellMLDocument doc1 = getValidTestModel ();
+			CellMLDocument doc2 = getValidTestModel ();
+			String d = XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc2.getTreeDocument ())).replace ("name=\"someUnit\"", "name=\"someUnit2\"");
+//			System.out.println (d);
+			doc2 = getModel (d);
+			
+			
+			CellMLDiff differ = new CellMLDiff (doc1, doc2);
+			differ.mapTrees ();
+			checkDiff (differ);
+
+//			System.out.println (differ.getDiff ());
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, true, false, false, true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
+		}
+	}
+	
+	
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void  testChangeUnitName ()
+	{
+		try
+		{
+			CellMLDocument doc1 = getValidTestModel ();
+			CellMLDocument doc2 = getValidTestModel ();
+			String d = XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc2.getTreeDocument ())).replace ("name=\"unusedUnit\"", "name=\"unusedUnit2\"");
+			doc2 = getModel (d);
+			
+			
+			CellMLDiff differ = new CellMLDiff (doc1, doc2);
+			differ.mapTrees ();
+			checkDiff (differ);
+
+			//System.out.println (differ.getDiff ());
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, true, false, false, true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
+		}
+	}
+	
+		
+		
+		
+		/**
+		 * 
+		 */
+		@Test
+		public void testChangeUnitsInComponents ()
+		{
+			try
+			{
+				CellMLDocument doc1 = getValidTestModel ();
+				CellMLDocument doc2 = getValidTestModel ();
+				((DocumentNode) doc2.getModel ().getComponent ("myThirdStupidComponent").getUnit ("someUnit").getDocumentNode ().getChildren ().get (0)).setAttribute ("multiplier", "5");
+				doc2 = getModel (XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc2.getTreeDocument ())));
+				
+				
+				CellMLDiff differ = new CellMLDiff (doc1, doc2);
+				differ.mapTrees ();
+				checkDiff (differ);
+
+//				System.out.println (differ.getDiff ());
+				simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, false, false, false, true);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
+			}
+		}
+	
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void  testChangeUnits ()
+	{
+		try
+		{
+			CellMLDocument doc1 = getValidTestModel ();
+			CellMLDocument doc2 = getValidTestModel ();
+			((DocumentNode) doc2.getModel ().getUnits ().getUnit ("inch", null).getDocumentNode ().getChildren ().get (0)).setAttribute ("multiplier", "5");
+			doc2 = getModel (XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc2.getTreeDocument ())));
+			
+			
+			CellMLDiff differ = new CellMLDiff (doc1, doc2);
+			differ.mapTrees ();
+			checkDiff (differ);
+
+//			System.out.println (differ.getDiff ());
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, false, false, false, true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
+		}
+	}
+	
+	
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void  testDelUnitsInComponents ()
+	{
+		try
+		{
+			CellMLDocument doc1 = getValidTestModel ();
+			CellMLDocument doc2 = getValidTestModel ();
+			doc2.getModel ().getComponent ("myThirdStupidComponent").getDocumentNode ().rmChild (doc2.getModel ().getComponent ("myThirdStupidComponent").getUnit ("someUnit").getDocumentNode ());
+			doc2 = getModel (XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc2.getTreeDocument ())));
+			
+			
+			CellMLDiff differ = new CellMLDiff (doc1, doc2);
+			differ.mapTrees ();
+			checkDiff (differ);
+
+//			System.out.println (differ.getDiff ());
+			simpleCheckAnnotations (differ, 0, 6, 0, 0, false, true, false, false, false, true, false, false, true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
+		}
+	}
+	
+	
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void  testDelUnits ()
+	{
+		try
+		{
+			CellMLDocument doc1 = getValidTestModel ();
+			CellMLDocument doc2 = getValidTestModel ();
+			doc2.getModel ().getDocumentNode ().rmChild (doc2.getModel ().getUnits ().getUnit ("unusedUnit", null).getDocumentNode ());
+			doc2 = getModel (XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc2.getTreeDocument ())));
+			
+			
+			CellMLDiff differ = new CellMLDiff (doc1, doc2);
+			differ.mapTrees ();
+			checkDiff (differ);
+
+//			System.out.println (differ.getDiff ());
+			simpleCheckAnnotations (differ, 0, 6, 0, 0, false, false, false, false, false, true, false, false, true);
 		}
 		catch (Exception e)
 		{
@@ -287,7 +470,8 @@ public class TestAnnotations
 		int ins, int del, int up, int mov,
 		boolean changeVariableDef, boolean changeComponentDef, boolean changeMathModel,
 		boolean changeSpec, boolean changeModelName, boolean changeEntityIdentifier,
-		boolean changeReactionNetwork, boolean changeReactionReversibility
+		boolean changeReactionNetwork, boolean changeReactionReversibility,
+		boolean changeUnits
 		) throws XmlDocumentParseException, IOException, JDOMException
 	{
 		// stolen from my logger :)
@@ -316,6 +500,7 @@ public class TestAnnotations
 		assertEquals ("occurence of http://purl.org/net/comodi#EntityIdentifier", changeEntityIdentifier, annotations.contains ("http://purl.org/net/comodi#EntityIdentifier"));
 		assertEquals ("occurence of http://purl.org/net/comodi#ReactionNetwork", changeReactionNetwork, annotations.contains ("http://purl.org/net/comodi#ReactionNetwork"));
 		assertEquals ("occurence of http://purl.org/net/comodi#ReactionReversibility", changeReactionReversibility, annotations.contains ("http://purl.org/net/comodi#ReactionReversibility"));
+		assertEquals ("occurence of http://purl.org/net/comodi#UnitDefinition", changeUnits, annotations.contains ("http://purl.org/net/comodi#UnitDefinition"));
 //	assertEquals ("occurence of http://purl.org/net/comodi#", , annotations.contains ("http://purl.org/net/comodi#"));
 	}
 	
@@ -339,7 +524,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 5, 0, 0, true, true, true, false, false, true, false, false);
+			simpleCheckAnnotations (differ, 0, 5, 0, 0, true, true, true, false, false, true, false, false, false);
 			
 		}
 		catch (Exception e)
@@ -370,7 +555,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 0, 1, 0, true, false, true, false, false, false, false, false);
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, true, false, true, false, false, false, false, false, false);
 			
 		}
 		catch (Exception e)
@@ -401,7 +586,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, true, false, false);
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, true, false, false, false);
 			
 		}
 		catch (Exception e)
@@ -432,7 +617,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, true, false, false);
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, false, false, false, false, false, true, false, false, false);
 		}
 		catch (Exception e)
 		{
@@ -462,7 +647,7 @@ public class TestAnnotations
 			Document patchDoc = patch.getDocument (false);
 			TreeDocument myPatchDoc = new TreeDocument (patchDoc, null);
 
-			simpleCheckAnnotations (differ, 0, 0, 0, 0, false, false, false, false, false, false, false, false);
+			simpleCheckAnnotations (differ, 0, 0, 0, 0, false, false, false, false, false, false, false, false, false);
 			assertNotNull ("diff shouldn't be null", diff);
 			assertEquals ("didn't expect any changes", 5, myPatchDoc.getNumNodes ());
 			assertTrue ("didn't expect any changes but some annotations", 5 < new TreeDocument (patch.getDocument (true), null).getNumNodes ());

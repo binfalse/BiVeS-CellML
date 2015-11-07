@@ -105,7 +105,9 @@ public class CellMLDiffAnnotator
 	private Pattern variablePath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/variable\\[\\d+\\]$");
 	private Pattern componentPath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]$");
 	private Pattern componentMathPath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/math\\[\\d+\\]");
-	private Pattern componentReactionNetwork = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/reaction\\[\\d+\\]");
+	private Pattern componentReactionNetworkPath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/reaction\\[\\d+\\]");
+	private Pattern unitsPath = Pattern.compile ("^/model\\[\\d+\\]/units\\[\\d+\\]");
+	private Pattern componentUnitsPath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/units\\[\\d+\\]");
 	
 	private Change annotateTarget (Change change, TreeNode nodeA, TreeNode nodeB, Element diffNode, boolean permutation)
 	{
@@ -190,7 +192,7 @@ public class CellMLDiffAnnotator
 		
 		
 		// test reaction network
-		if (componentReactionNetwork.matcher (xPath).find ())
+		if (componentReactionNetworkPath.matcher (xPath).find ())
 		{
 			change.affects (ComodiTarget.getReactionNetwork ());
 			// if this is the math node and it was ins/del/mov -> change comp def
@@ -209,21 +211,49 @@ public class CellMLDiffAnnotator
 			}
 		}
 		
+		
+		// test units in components
+		if (unitsPath.matcher (xPath).find ())
+		{
+			// in cellml `name` is the identifier
+			if (diffNode.getName ().equals ("attribute"))
+			{
+				String attr = diffNode.getAttributeValue ("name");
+				if (attr.equals ("id") || attr.equals ("name"))
+					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
+			}
+			change.affects (ComodiTarget.getUnitDefinition ());
+		}
+		if (componentUnitsPath.matcher (xPath).find ())
+		{
+			// in cellml `name` is the identifier
+			if (diffNode.getName ().equals ("attribute"))
+			{
+				String attr = diffNode.getAttributeValue ("name");
+				if (attr.equals ("id") || attr.equals ("name"))
+					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
+			}
+			change.affects (ComodiTarget.getUnitDefinition ());
+			// if this is the math node and it was ins/del/mov -> change comp def
+			if (defNode.getTagName ().equals ("units") && defNode.getParent ().getTagName ().equals ("component"))
+			{
+				if (diffNode.getName ().equals ("node") && !diffNode.getParentElement ().getName ().equals ("move"))
+					change.affects (ComodiTarget.getComponentDefinition ());
+				else if (diffNode.getName ().equals ("node") && diffNode.getParentElement ().getName ().equals ("move"))
+				{
+					// is a move but into another component
+					if (!permutation)
+						change.affects (ComodiTarget.getComponentDefinition ());
+				}
+				else if (diffNode.getName ().equals ("attribute") && diffNode.getAttributeValue ("name").equals ("name"))
+					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
+			}
+		}
+		
 		/*
+		annotations
 		UnitDefinition
-		ParameterDefinition
-  
-  
-    
-    ReactionReversibility
-  
-  
-    
-    ReactionDefinition
     ComponentHierarchy
-    
-    
-    
     VariableConnections*/
 		
 		return change;
