@@ -678,15 +678,15 @@ public class TestAnnotations
 		assertEquals (pre + "occurence of http://purl.org/net/comodi#MathematicalModel", changeMathModel, annotations.contains ("http://purl.org/net/comodi#MathematicalModel"));
 		assertEquals (pre + "occurence of http://purl.org/net/comodi#CellmlSpecification", changeSpec, annotations.contains ("http://purl.org/net/comodi#CellmlSpecification"));
 		assertEquals (pre + "occurence of http://purl.org/net/comodi#ModelName", changeModelName, annotations.contains ("http://purl.org/net/comodi#ModelName"));
-		assertEquals ("occurence of http://purl.org/net/comodi#EntityIdentifier", changeEntityIdentifier, annotations.contains ("http://purl.org/net/comodi#EntityIdentifier"));
-		assertEquals ("occurence of http://purl.org/net/comodi#ReactionNetwork", changeReactionNetwork, annotations.contains ("http://purl.org/net/comodi#ReactionNetwork"));
-		assertEquals ("occurence of http://purl.org/net/comodi#ReactionReversibility", changeReactionReversibility, annotations.contains ("http://purl.org/net/comodi#ReactionReversibility"));
-		assertEquals ("occurence of http://purl.org/net/comodi#UnitDefinition", changeUnits, annotations.contains ("http://purl.org/net/comodi#UnitDefinition"));
-		assertEquals ("occurence of http://purl.org/net/comodi#VariableConnections", changeVariableConnection, annotations.contains ("http://purl.org/net/comodi#VariableConnections"));
-		assertEquals ("occurence of http://purl.org/net/comodi#ComponentHierarchy", changeComponentHierarchy, annotations.contains ("http://purl.org/net/comodi#ComponentHierarchy"));
-		assertEquals ("occurence of http://purl.org/net/comodi#Annotation", changeAnnotation, annotations.contains ("http://purl.org/net/comodi#Annotation"));
-		assertEquals ("occurence of http://purl.org/net/comodi#TextualDescription", changeTextualDescription, annotations.contains ("http://purl.org/net/comodi#TextualDescription"));
-//	assertEquals ("occurence of http://purl.org/net/comodi#", , annotations.contains ("http://purl.org/net/comodi#"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#EntityIdentifier", changeEntityIdentifier, annotations.contains ("http://purl.org/net/comodi#EntityIdentifier"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#ReactionNetwork", changeReactionNetwork, annotations.contains ("http://purl.org/net/comodi#ReactionNetwork"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#ReactionReversibility", changeReactionReversibility, annotations.contains ("http://purl.org/net/comodi#ReactionReversibility"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#UnitDefinition", changeUnits, annotations.contains ("http://purl.org/net/comodi#UnitDefinition"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#VariableConnections", changeVariableConnection, annotations.contains ("http://purl.org/net/comodi#VariableConnections"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#ComponentHierarchy", changeComponentHierarchy, annotations.contains ("http://purl.org/net/comodi#ComponentHierarchy"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#Annotation", changeAnnotation, annotations.contains ("http://purl.org/net/comodi#Annotation"));
+		assertEquals (pre + "occurence of http://purl.org/net/comodi#TextualDescription", changeTextualDescription, annotations.contains ("http://purl.org/net/comodi#TextualDescription"));
+//	assertEquals (pre + "occurence of http://purl.org/net/comodi#", , annotations.contains ("http://purl.org/net/comodi#"));
 	}
 	
 	
