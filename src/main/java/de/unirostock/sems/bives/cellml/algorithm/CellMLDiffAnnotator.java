@@ -60,11 +60,11 @@ public class CellMLDiffAnnotator
 	
 	/** The XPATH to a nannotation. */
 	private Pattern	annotationPath								= Pattern
-																									.compile ("^/model\\[\\d+\\]/.*RDF\\[\\d+\\]");
+																									.compile ("^/model\\[\\d+\\]/(.+/)*RDF\\[\\d+\\]");
 	
 	/** The XPATH to a textual description. */
 	private Pattern	textualDescriptionPath				= Pattern
-																									.compile ("^/model\\[\\d+\\]/.*documentation\\[\\d+\\]");
+																									.compile ("^/model\\[\\d+\\]/(.+/)*documentation\\[\\d+\\]");
 	
 	
 	/*
