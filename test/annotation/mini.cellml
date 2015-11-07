@@ -37,6 +37,9 @@
 
 <units name="pH" base_units="yes" />
 
+  <component name="myStupidComponent">
+    <variable name="myStupidVariable" public_interface="out" initial_value="-75.0" units="millivolt" />
+  </component>
 
   <component name="membrane">
     <!-- the following variable is used in other components -->

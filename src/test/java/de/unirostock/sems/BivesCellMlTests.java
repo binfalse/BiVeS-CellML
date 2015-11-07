@@ -13,7 +13,7 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestDiffinterpreter.class, TestForChaste.class, TestParser.class })
+@SuiteClasses({ TestDiffinterpreter.class, TestForChaste.class, TestParser.class, TestAnnotations.class })
 public class BivesCellMlTests
 {
 	
