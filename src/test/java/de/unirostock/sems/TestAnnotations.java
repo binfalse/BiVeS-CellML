@@ -107,7 +107,7 @@ public class TestAnnotations
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 	
@@ -137,7 +137,7 @@ public class TestAnnotations
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 	
@@ -147,14 +147,14 @@ public class TestAnnotations
 	 * 
 	 */
 	@Test
-	public void  testDelMath ()
+	public void  testInsMath ()
 	{
 		try
 		{
 			CellMLDocument doc1 = getValidTestModel ();
 			CellMLDocument doc2 = getValidTestModel ();
-			doc2.getModel ().getComponent ("membrane").getDocumentNode ().rmChild (doc2.getModel ().getComponent ("membrane").getMath ().get (0).getDocumentNode ());
-			doc2 = getModel (XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc2.getTreeDocument ())));
+			doc1.getModel ().getComponent ("membrane").getDocumentNode ().rmChild (doc1.getModel ().getComponent ("membrane").getMath ().get (0).getDocumentNode ());
+			doc1 = getModel (XmlTools.prettyPrintDocument (DocumentTools.getDoc (doc1.getTreeDocument ())));
 			
 			
 			CellMLDiff differ = new CellMLDiff (doc1, doc2);
@@ -162,12 +162,12 @@ public class TestAnnotations
 			checkDiff (differ);
 
 			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 25, 0, 0, false, true, true, false, false, false);
+			simpleCheckAnnotations (differ, 25, 0, 0, 0, false, true, true, false, false, false);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 	
@@ -250,7 +250,7 @@ public class TestAnnotations
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 	
@@ -281,7 +281,7 @@ public class TestAnnotations
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 	
@@ -312,7 +312,7 @@ public class TestAnnotations
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 	
@@ -342,7 +342,7 @@ public class TestAnnotations
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 	
@@ -376,7 +376,7 @@ public class TestAnnotations
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+			fail ("unexpected exception while diffing cellml models: " + e.getMessage ());
 		}
 	}
 
