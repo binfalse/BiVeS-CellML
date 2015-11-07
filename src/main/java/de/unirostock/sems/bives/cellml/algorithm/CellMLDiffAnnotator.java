@@ -109,6 +109,7 @@ public class CellMLDiffAnnotator
 	private Pattern unitsPath = Pattern.compile ("^/model\\[\\d+\\]/units\\[\\d+\\]");
 	private Pattern componentUnitsPath = Pattern.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/units\\[\\d+\\]");
 	private Pattern variableConnectionPath = Pattern.compile ("^/model\\[\\d+\\]/connection\\[\\d+\\]");
+	private Pattern componentHierarchyPath = Pattern.compile ("^/model\\[\\d+\\]/group\\[\\d+\\]");
 	
 	private Change annotateTarget (Change change, TreeNode nodeA, TreeNode nodeB, Element diffNode, boolean permutation)
 	{
@@ -223,7 +224,7 @@ public class CellMLDiffAnnotator
 				if (attr.equals ("id") || attr.equals ("name"))
 					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
 			}
-			if (!(diffNode.getName ().equals ("node") && defNode.getParent ().getTagName ().equals ("model") && permutation))
+			if (!(permutation && defNode.getParent ().getTagName ().equals ("model")))
 				change.affects (ComodiTarget.getUnitDefinition ());
 		}
 		if (componentUnitsPath.matcher (xPath).find ())
@@ -236,7 +237,7 @@ public class CellMLDiffAnnotator
 					change.appliesTo (ComodiXmlEntity.getEntityIdentifier ());
 			}
 
-			if (!(diffNode.getName ().equals ("node") && permutation))
+			if (!permutation)
 				change.affects (ComodiTarget.getUnitDefinition ());
 			
 			// if this is the math node and it was ins/del/mov -> change comp def
@@ -257,13 +258,19 @@ public class CellMLDiffAnnotator
 
 		if (variableConnectionPath.matcher (xPath).find ())
 		{
-			if (!(diffNode.getName ().equals ("node") && permutation))
+			if (!permutation)
 				change.affects (ComodiTarget.getVariableConnections ());
+		}
+
+		if (componentHierarchyPath.matcher (xPath).find ())
+		{
+			if (!permutation)
+				change.affects (ComodiTarget.getComponentHierarchy ());
 		}
 		
 		/*
 		annotations
-    ComponentHierarchy*/
+		*/
 		
 		return change;
 	}

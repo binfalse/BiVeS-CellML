@@ -165,6 +165,15 @@
   </math>
   </component>
 
+<group>
+  <relationship_ref relationship="encapsulation" />
+  <component_ref component="myThirdStupidComponent">
+    <component_ref component="membrane" />
+    <component_ref component="sodium_channel" />
+    <component_ref component="mySecondStupidComponent" />
+  </component_ref>
+</group>
+
   <connection>
     <map_components component_1="membrane" component_2="sodium_channel" />
     <map_variables variable_1="V" variable_2="V" />
