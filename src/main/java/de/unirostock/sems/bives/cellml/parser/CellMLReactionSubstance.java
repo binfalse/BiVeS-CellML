@@ -71,15 +71,15 @@ extends CellMLEntity
 		
 		/** The role attribute must have a value of "reactant", "product", "catalyst", "activator", "inhibitor", "modifier", or "rate". */
 		public int role;
-		/**  The optional direction attribute may be used on <role> elements in reversible reactions. If defined, it must have a value of "forward", "reverse", or "both". Its value indicates the direction of the reaction for which the role is relevant. It has a default value of "forward". */
+		/**  The optional direction attribute may be used on <code>role</code> elements in reversible reactions. If defined, it must have a value of "forward", "reverse", or "both". Its value indicates the direction of the reaction for which the role is relevant. It has a default value of "forward". */
 		public int direction;
 		
-		/** The optional delta_variable attribute indicates which variable is used to store the change in concentration of the species represented by the variable referenced by the current <variable_ref> element. */
+		/** The optional delta_variable attribute indicates which variable is used to store the change in concentration of the species represented by the variable referenced by the current <code>variable_ref</code> element. */
 		public CellMLVariable delta_variable;
 		/**  The optional stoichiometry attribute stores the stoichiometry of the current variable relative to the other reaction participants. */
 		public Double stoichiometry;
 		
-		/** The <role> elements may also contain <math> elements in the MathML namespace, which define equations using MathML. */
+		/** The <code>role</code> elements may also contain <code>math</code> elements in the MathML namespace, which define equations using MathML. */
 		public List<MathML> math;
 		
 		/**

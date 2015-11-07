@@ -23,16 +23,16 @@ import de.unirostock.sems.xmlutils.ds.TreeNode;
 public class CellMLHierarchy
 {
 	
-	/** The Constant RELATION_HIDDEN => components cannot see each other. */
+	/** The Constant RELATION_HIDDEN =&gt; components cannot see each other. */
 	public static final int RELATION_HIDDEN = 0;
 	
-	/** The Constant RELATION_SIBLING => components are siblings. */
+	/** The Constant RELATION_SIBLING =&gt; components are siblings. */
 	public static final int RELATION_SIBLING = 1;
 	
-	/** The Constant RELATION_PARENT => component 1 is parent of component 2 . */
+	/** The Constant RELATION_PARENT =&gt; component 1 is parent of component 2 . */
 	public static final int RELATION_PARENT = 2;
 	
-	/** The Constant RELATION_ENCAPSULATED => component 1 is encapsulated in component 2. */
+	/** The Constant RELATION_ENCAPSULATED =&gt; component 1 is encapsulated in component 2. */
 	public static final int RELATION_ENCAPSULATED = 3;
 	
 	/** The different hierarchy networks. */

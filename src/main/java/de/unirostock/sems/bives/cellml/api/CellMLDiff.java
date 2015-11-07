@@ -40,8 +40,10 @@ import de.unirostock.sems.xmlutils.exception.XmlDocumentParseException;
 public class CellMLDiff extends Diff
 {
 	
-	/** The two documents. */
-	private CellMLDocument doc1, doc2;
+	/** The original document. */
+	private CellMLDocument doc1;
+	/** The modified document. */
+	private CellMLDocument doc2;
 	
 	/** The graph producer. */
 	protected CellMLGraphProducer graphProducer;
