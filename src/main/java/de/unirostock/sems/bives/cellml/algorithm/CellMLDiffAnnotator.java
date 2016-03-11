@@ -10,6 +10,7 @@ import org.jdom2.Element;
 import de.unirostock.sems.bives.algorithm.general.DefaultDiffAnnotator;
 import de.unirostock.sems.comodi.Change;
 import de.unirostock.sems.comodi.ChangeFactory;
+import de.unirostock.sems.comodi.branches.ComodiReason;
 import de.unirostock.sems.comodi.branches.ComodiTarget;
 import de.unirostock.sems.comodi.branches.ComodiXmlEntity;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
@@ -207,7 +208,7 @@ public class CellMLDiffAnnotator
 			&& nodeB != null
 			&& ! ((DocumentNode) nodeA).getNameSpaceUri ().equals (
 				((DocumentNode) nodeB).getNameSpaceUri ()))
-			change.affects (ComodiTarget.getCellmlSpecification ());
+			change.hasReason (ComodiReason.getChangedSpecification ());
 		
 		// model definition
 		if (defNode.getParent () == null
@@ -234,8 +235,7 @@ public class CellMLDiffAnnotator
 				else
 				{
 					if (attr.equals ("initial_value") || attr.equals ("units"))
-						change.affects (ComodiTarget.getMathematicalModel ());
-					change.affects (ComodiTarget.getVariableDefinition ());
+						change.affects (ComodiTarget.getVariableSetup ());
 				}
 			}
 			else
@@ -251,7 +251,7 @@ public class CellMLDiffAnnotator
 						change.affects (ComodiTarget.getComponentDefinition ());
 				}
 				else
-					change.affects (ComodiTarget.getVariableDefinition ());
+					change.affects (ComodiTarget.getVariableSetup ());
 			}
 		}
 		
@@ -271,7 +271,7 @@ public class CellMLDiffAnnotator
 		
 		if (componentMathPath.matcher (xPath).find ())
 		{
-			change.affects (ComodiTarget.getMathematicalModel ());
+			change.affects (ComodiTarget.getMathematicalModelDefinition ());
 			// if this is the math node and it was ins/del/mov -> change comp def
 			if (defNode.getTagName ().equals ("math")
 				&& defNode.getParent ().getTagName ().equals ("component"))
@@ -292,7 +292,7 @@ public class CellMLDiffAnnotator
 		// test reaction network
 		if (componentReactionNetworkPath.matcher (xPath).find ())
 		{
-			change.affects (ComodiTarget.getReactionNetwork ());
+			change.affects (ComodiTarget.getReactionNetworkDefinition ());
 			// if this is the math node and it was ins/del/mov -> change comp def
 			if (defNode.getTagName ().equals ("reaction")
 				&& defNode.getParent ().getTagName ().equals ("component"))
@@ -309,7 +309,7 @@ public class CellMLDiffAnnotator
 				}
 				else if (diffNode.getName ().equals ("attribute")
 					&& diffNode.getAttributeValue ("name").equals ("reversible"))
-					change.affects (ComodiTarget.getReactionReversibility ());
+					change.affects (ComodiTarget.getReversibilityDefinition ());
 			}
 		}
 		
@@ -362,18 +362,18 @@ public class CellMLDiffAnnotator
 		if (variableConnectionPath.matcher (xPath).find ())
 		{
 			if (!permutation)
-				change.affects (ComodiTarget.getVariableConnections ());
+				change.affects (ComodiTarget.getVariableConnectionDefinition ());
 		}
 		
 		if (componentHierarchyPath.matcher (xPath).find ())
 		{
 			if (!permutation)
-				change.affects (ComodiTarget.getComponentHierarchy ());
+				change.affects (ComodiTarget.getHierarchyDefinition ());
 		}
 		
 		if (annotationPath.matcher (xPath).find ())
 		{
-			change.affects (ComodiTarget.getAnnotation ());
+			change.affects (ComodiTarget.getModelAnnotation ());
 		}
 		
 		if (textualDescriptionPath.matcher (xPath).find ())

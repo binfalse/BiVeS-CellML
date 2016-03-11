@@ -673,20 +673,20 @@ public class TestAnnotations
 		assertEquals (pre + "expected exactly " + up + " up", up, patch.getNumUpdates ());
 		assertEquals (pre + "expected exactly " + mov + " mov", mov, patch.getNumMoves ());
 		assertTrue (pre + "there should be some annotation, even if there weren't any changes", annotationsDoc.getNumNodes () > 5);
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#VariableDefinition", changeVariableDef, annotations.contains ("http://purl.org/net/comodi#VariableDefinition"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#ComponentDefinition", changeComponentDef, annotations.contains ("http://purl.org/net/comodi#ComponentDefinition"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#MathematicalModel", changeMathModel, annotations.contains ("http://purl.org/net/comodi#MathematicalModel"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#CellmlSpecification", changeSpec, annotations.contains ("http://purl.org/net/comodi#CellmlSpecification"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#ModelName", changeModelName, annotations.contains ("http://purl.org/net/comodi#ModelName"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#EntityIdentifier", changeEntityIdentifier, annotations.contains ("http://purl.org/net/comodi#EntityIdentifier"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#ReactionNetwork", changeReactionNetwork, annotations.contains ("http://purl.org/net/comodi#ReactionNetwork"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#ReactionReversibility", changeReactionReversibility, annotations.contains ("http://purl.org/net/comodi#ReactionReversibility"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#UnitDefinition", changeUnits, annotations.contains ("http://purl.org/net/comodi#UnitDefinition"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#VariableConnections", changeVariableConnection, annotations.contains ("http://purl.org/net/comodi#VariableConnections"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#ComponentHierarchy", changeComponentHierarchy, annotations.contains ("http://purl.org/net/comodi#ComponentHierarchy"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#Annotation", changeAnnotation, annotations.contains ("http://purl.org/net/comodi#Annotation"));
-		assertEquals (pre + "occurence of http://purl.org/net/comodi#TextualDescription", changeTextualDescription, annotations.contains ("http://purl.org/net/comodi#TextualDescription"));
-//	assertEquals (pre + "occurence of http://purl.org/net/comodi#", , annotations.contains ("http://purl.org/net/comodi#"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#VariableSetup", changeVariableDef, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#VariableSetup"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#ComponentDefinition", changeComponentDef, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#ComponentDefinition"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#MathematicalModelDefinition", changeMathModel, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#MathematicalModelDefinition"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#ChangedSpecification", changeSpec, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#ChangedSpecification"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#ModelName", changeModelName, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#ModelName"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#EntityIdentifier", changeEntityIdentifier, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#EntityIdentifier"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#ReactionNetworkDefinition", changeReactionNetwork, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#ReactionNetworkDefinition"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#ReversibilityDefinition", changeReactionReversibility, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#ReversibilityDefinition"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#UnitDefinition", changeUnits, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#UnitDefinition"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#VariableConnectionDefinition", changeVariableConnection, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#VariableConnectionDefinition"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#HierarchyDefinition", changeComponentHierarchy, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#HierarchyDefinition"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#ModelAnnotation", changeAnnotation, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#ModelAnnotation"));
+		assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#TextualDescription", changeTextualDescription, annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#TextualDescription"));
+//	assertEquals (pre + "occurence of http://purl.uni-rostock.de/comodi/comodi#", , annotations.contains ("http://purl.uni-rostock.de/comodi/comodi#"));
 	}
 	
 	
@@ -709,7 +709,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 5, 0, 0, true, true, true, false, false, true, false, false, false, false, false, false, false);
+			simpleCheckAnnotations (differ, 0, 5, 0, 0, true, true, false, false, false, true, false, false, false, false, false, false, false);
 			
 		}
 		catch (Exception e)
@@ -740,7 +740,7 @@ public class TestAnnotations
 			checkDiff (differ);
 
 //			System.out.println (differ.getDiff ());
-			simpleCheckAnnotations (differ, 0, 0, 1, 0, true, false, true, false, false, false, false, false, false, false, false, false, false);
+			simpleCheckAnnotations (differ, 0, 0, 1, 0, true, false, false, false, false, false, false, false, false, false, false, false, false);
 			
 		}
 		catch (Exception e)
