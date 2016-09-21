@@ -21,6 +21,7 @@ import de.unirostock.sems.bives.ds.graph.GraphTranslator;
 import de.unirostock.sems.bives.ds.graph.GraphTranslatorDot;
 import de.unirostock.sems.bives.ds.graph.GraphTranslatorGraphML;
 import de.unirostock.sems.bives.ds.graph.GraphTranslatorJson;
+import de.unirostock.sems.bives.ds.graph.GraphTranslatorSbgnJson;
 import de.unirostock.sems.bives.exception.BivesConnectionException;
 import de.unirostock.sems.bives.exception.BivesDocumentConsistencyException;
 import de.unirostock.sems.bives.exception.BivesImportException;
@@ -368,6 +369,14 @@ public class CellMLDiff extends Diff
 			interpreter.interprete ();
 		}
 		return ts.typeset (interpreter.getReport ());
+	}
+
+	@Override
+	public String getReactionsSbgnJsonGraph() throws Exception
+	{
+		if (graphProducer == null)
+			graphProducer = new CellMLGraphProducer (connections, doc1, doc2);
+		return new GraphTranslatorSbgnJson ().translate (graphProducer.getHierarchy ());
 	}
 
 }
