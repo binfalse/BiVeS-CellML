@@ -68,6 +68,45 @@ public class CellMLDiffAnnotator
 																									.compile ("^/model\\[\\d+\\]/(.+/)*documentation\\[\\d+\\]");
 	
 	
+		/** The XPATH to a machine readable annotation. */
+		private Pattern	contributorPath									= Pattern.compile ("^/model\\[\\d+\\]/(.*/)*RDF\\[\\d+\\]/(.*/)*Description\\[\\d+\\]/(.*/)*contributor\\[\\d+\\]");
+	
+		/** The XPATH to a machine readable annotation. */
+		private Pattern	creatorPath									= Pattern.compile ("^/model\\[\\d+\\]/(.*/)*RDF\\[\\d+\\]/(.*/)*Description\\[\\d+\\]/(.*/)*creator\\[\\d+\\]");
+		
+
+		/** The XPATH to a machine readable annotation. */
+		public static final Pattern	creationDatePath									= Pattern.compile ("^/model\\[\\d+\\]/(.*/)*RDF\\[\\d+\\]/(.*/)*created\\[\\d+\\]");
+		/** The XPATH to a machine readable annotation. */
+		public static final Pattern	modificationDatePath									= Pattern.compile ("^/model\\[\\d+\\]/(.*/)*RDF\\[\\d+\\]/(.*/)*modified\\[\\d+\\]");
+
+		
+		/** The XPATH to a textual description. */
+		private Pattern	textualDescriptionAttributionPath				= Pattern
+																										.compile ("^/model\\[\\d+\\]/(.+/)*documentation\\[\\d+\\]/(.+/)*article\\[\\d+\\]/");
+		
+	/** The XPATH to a textual description. */
+	private Pattern	textualDescriptionPersonPath				= Pattern
+																									.compile ("^/model\\[\\d+\\]/(.+/)*documentation\\[\\d+\\]/(.+/)*article\\[\\d+\\]/(.+/)*author\\[\\d+\\]");
+	
+
+	private Pattern	annotationDescriptionPath = Pattern.compile ("^/model\\[\\d+\\]/(.*/)*RDF\\[\\d+\\]/(.*/)*Description\\[\\d+\\]");
+	
+	
+
+	
+	
+		
+		
+	/** The XPATH to a machine readable annotation. */
+	private Pattern	componentReactionNetworkVarRefPath									= Pattern
+		.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/reaction\\[\\d+\\]/variable_ref\\[\\d+\\]");
+		private Pattern	componentReactionNetworkVarRefRolePath									= Pattern
+			.compile ("^/model\\[\\d+\\]/component\\[\\d+\\]/reaction\\[\\d+\\]/variable_ref\\[\\d+\\]/role\\[\\d+\\]");
+	
+	
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -222,8 +261,12 @@ public class CellMLDiffAnnotator
 			&& defNode.getTagName ().equals ("model"))
 			change.appliesTo (ComodiXmlEntity.getModelId ());
 		
+		
+		boolean isAnnotation = annotationPath.matcher (xPath).find ();
+
+		
 		// entities definitions
-		if (variablePath.matcher (xPath).find ()
+		if (!isAnnotation && variablePath.matcher (xPath).find ()
 			&& defNode.getTagName ().equals ("variable"))
 		{
 			// in cellml `name` is the identifier
@@ -255,7 +298,7 @@ public class CellMLDiffAnnotator
 			}
 		}
 		
-		if (componentPath.matcher (xPath).find ()
+		if (!isAnnotation && componentPath.matcher (xPath).find ()
 			&& defNode.getTagName ().equals ("component"))
 		{
 			// in cellml `name` is the identifier
@@ -290,7 +333,7 @@ public class CellMLDiffAnnotator
 		}
 		
 		// test reaction network
-		if (componentReactionNetworkPath.matcher (xPath).find ())
+		if (!isAnnotation && componentReactionNetworkPath.matcher (xPath).find ())
 		{
 			change.affects (ComodiTarget.getReactionNetworkDefinition ());
 			// if this is the math node and it was ins/del/mov -> change comp def
@@ -311,10 +354,22 @@ public class CellMLDiffAnnotator
 					&& diffNode.getAttributeValue ("name").equals ("reversible"))
 					change.affects (ComodiTarget.getReversibilityDefinition ());
 			}
+			
+			if (componentReactionNetworkVarRefPath.matcher (xPath).find ())
+			{
+				change.affects (ComodiTarget.getParticipantDefinition ());
+				if (componentReactionNetworkVarRefRolePath.matcher (xPath).find ())
+				{
+					if (diffNode.getName ().equals ("attribute") && diffNode.getAttributeValue ("name").equals ("role"))
+						change.affects (ComodiTarget.getReactionNetworkDefinition ());
+					else
+						change.affects (ComodiTarget.getReactionDefinition ());
+				}
+			}
 		}
 		
 		// test units in components
-		if (unitsPath.matcher (xPath).find ())
+		if (!isAnnotation && unitsPath.matcher (xPath).find ())
 		{
 			// in cellml `name` is the identifier
 			if (diffNode.getName ().equals ("attribute"))
@@ -326,7 +381,7 @@ public class CellMLDiffAnnotator
 			if (! (permutation && defNode.getParent ().getTagName ().equals ("model")))
 				change.affects (ComodiTarget.getUnitDefinition ());
 		}
-		if (componentUnitsPath.matcher (xPath).find ())
+		if (!isAnnotation && componentUnitsPath.matcher (xPath).find ())
 		{
 			// in cellml `name` is the identifier
 			if (diffNode.getName ().equals ("attribute"))
@@ -373,11 +428,53 @@ public class CellMLDiffAnnotator
 		
 		if (annotationPath.matcher (xPath).find ())
 		{
-			change.affects (ComodiTarget.getModelAnnotation ());
+			if (creatorPath.matcher (xPath).find ())
+				change.affects (ComodiTarget.getCreator ());
+			else if (contributorPath.matcher (xPath).find ())
+				change.affects (ComodiTarget.getContributor ());
+			else if (creationDatePath.matcher (xPath).find ())
+				change.affects (ComodiTarget.getCreationDate ());
+			else if (modificationDatePath.matcher (xPath).find ())
+				change.affects (ComodiTarget.getModificationDate ());
+			else if (annotationDescriptionPath.matcher (xPath).find () && diffNode.getName ().equals ("attribute"))
+			{
+				String attr = diffNode.getAttributeValue ("name");
+				if (attr.equals ("about") && nodeA != null && nodeB != null)
+				{
+					String oldValue = diffNode.getAttributeValue ("oldValue");
+					String newValue = diffNode.getAttributeValue ("newValue");
+					if (oldValue != null && newValue != null && (oldValue.startsWith ("http") || newValue.startsWith ("http") || oldValue.startsWith ("urn") || newValue.startsWith ("urn")))
+					{
+						change.affects (ComodiTarget.getOntologyReference ());
+						if ((oldValue.startsWith ("urn:") && !newValue.startsWith ("urn:")) || (!oldValue.startsWith ("urn:") && newValue.startsWith ("urn:")))
+						{
+							change.affects (ComodiTarget.getIdentifierEncoding ());
+						}
+						if ((oldValue.startsWith ("http:") && !newValue.startsWith ("http:")) || (!oldValue.startsWith ("http:") && newValue.startsWith ("http:")))
+						{
+							change.affects (ComodiTarget.getIdentifierEncoding ());
+						}
+						if ((oldValue.contains ("identifiers.org") && !newValue.contains ("identifiers.org")) || (!oldValue.contains ("identifiers.org") && newValue.contains ("identifiers.org")))
+						{
+							change.affects (ComodiTarget.getIdentifierEncoding ());
+						}
+					}
+				}
+				else
+					change.affects (ComodiTarget.getModelAnnotation ());
+			}
+			else
+				change.affects (ComodiTarget.getModelAnnotation ());
 		}
 		
 		if (textualDescriptionPath.matcher (xPath).find ())
 		{
+			if (textualDescriptionAttributionPath.matcher (xPath).find ())
+			{
+				if (textualDescriptionPersonPath.matcher (xPath).find ())
+					change.affects (ComodiTarget.getPerson ());
+				change.affects (ComodiTarget.getAttribution ());
+			}
 			change.affects (ComodiTarget.getTextualDescription ());
 		}
 		
