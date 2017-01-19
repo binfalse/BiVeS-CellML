@@ -372,11 +372,11 @@ public class CellMLDiff extends Diff
 	}
 
 	@Override
-	public String getReactionsSbgnJsonGraph() throws Exception
+	public String getReactionsSbgnJsonGraph()
 	{
 		if (graphProducer == null)
 			graphProducer = new CellMLGraphProducer (connections, doc1, doc2);
-		return new GraphTranslatorSbgnJson ().translate (graphProducer.getHierarchy ());
+		return new GraphTranslatorSbgnJson().translate (graphProducer.getReactionNetwork());
 	}
 
 }
