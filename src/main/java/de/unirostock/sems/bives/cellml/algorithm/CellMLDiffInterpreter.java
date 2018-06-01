@@ -86,6 +86,9 @@ public class CellMLDiffInterpreter
 		CellMLModel modelA = cellmlDocA.getModel ();
 		CellMLModel modelB = cellmlDocB.getModel ();
 		
+		// TODO check more than components!
+		// TODO check annotations in the document!
+		
 		checkComponents (modelA, modelB);
 	}
 	

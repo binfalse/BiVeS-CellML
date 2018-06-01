@@ -215,6 +215,9 @@ implements DiffReporter
 		sub = expandSubstances (sub, " (inhibitor)", modifiersInh, "; ");
 		if (sub.length () > 0)
 			me.addValue ("Modifiers: " + sub.toString ());
+
+		if (!a.flagMetaModifcations (me))
+			b.flagMetaModifcations (me);
 		
 		return me;
 	}
