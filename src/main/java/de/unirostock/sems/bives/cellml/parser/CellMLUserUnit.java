@@ -334,6 +334,9 @@ public class CellMLUserUnit
 		}
 		
 		BivesTools.genAttributeMarkupStats (a.getDocumentNode (), b.getDocumentNode (), me);
+
+		if (!a.flagMetaModifcations (me))
+			b.flagMetaModifcations (me);
 		
 		return me;
 	}

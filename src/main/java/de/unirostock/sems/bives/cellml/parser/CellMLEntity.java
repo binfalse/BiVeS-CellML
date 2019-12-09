@@ -12,6 +12,7 @@ import org.jdom2.Namespace;
 import de.unirostock.sems.bives.ds.rdf.RDF;
 import de.unirostock.sems.bives.ds.rdf.RDFDescription;
 import de.unirostock.sems.bives.exception.BivesLogicalException;
+import de.unirostock.sems.bives.markup.MarkupElement;
 import de.unirostock.sems.xmlutils.ds.DocumentNode;
 import de.unirostock.sems.xmlutils.ds.TreeNode;
 
@@ -71,6 +72,25 @@ public abstract class CellMLEntity
 					model.registerRdfBlock (rdf);
 			}
 		}
+	}
+	
+	
+	/**
+	 * Flags occuring modifcations of the meta information (notes, annotations) to the given MarkupElement.
+	 *
+	 * @param me the MarkupElement that should be flagged
+	 * @return true, if flagged
+	 */
+	public boolean flagMetaModifcations (MarkupElement me)
+	{
+		for (RDF rdf : rdfBlocks)
+			if (rdf.getNode ().getModification () != TreeNode.UNCHANGED)
+			{
+				me.flagInvisibleModification ();
+				return true;
+			}
+		
+		return false;
 	}
 	
 	/**
