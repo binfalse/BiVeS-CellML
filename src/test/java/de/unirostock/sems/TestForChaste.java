@@ -21,7 +21,9 @@ import org.junit.runners.JUnit4;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.bives.api.Diff;
+import de.unirostock.sems.bives.cellml.algorithm.CellMLValidator;
 import de.unirostock.sems.bives.cellml.api.CellMLDiff;
+import de.unirostock.sems.bives.cellml.parser.CellMLDocument;
 import de.unirostock.sems.xmlutils.ds.TreeDocument;
 import de.unirostock.sems.xmlutils.tools.XmlTools;
 
@@ -96,8 +98,8 @@ public class TestForChaste
 			LOGGER.setLogToStdErr (false);
 			
 
-			URL url1 = new URL ("http://budhat.sems.uni-rostock.de/download?downloadModel=27"),
-				url2 = new URL ("http://budhat.sems.uni-rostock.de/download?downloadModel=28");
+			URL url1 = new URL ("https://data.bio.informatik.uni-rostock.de/budhat/decker_2009-buggy-from-chastefc.cellml"),
+				url2 = new URL ("https://data.bio.informatik.uni-rostock.de/budhat/decker_2009-fixed-from-chastefc.cellml");
 
 			
 			TreeDocument td1 = new TreeDocument (XmlTools.readDocument (url1), url1.toURI ()),
@@ -108,11 +110,11 @@ public class TestForChaste
 			differ.mapTrees ();
 			checkDiff (differ);
 			
-			String reactionsJson = differ.getReactionsJsonGraph ();
-			assertNotNull ("json reaction graph should not be null", reactionsJson);
+//			String reactionsJson = differ.getReactionsJsonGraph ();
+//			assertNotNull ("json reaction graph should not be null", reactionsJson);
 			
 			String componentsJson = differ.getHierarchyJsonGraph ();
-			assertNotNull ("json hierarchy graph should not be null", reactionsJson);
+			assertNotNull ("json hierarchy graph should not be null", componentsJson);
 			
 			
 			
@@ -159,6 +161,66 @@ public class TestForChaste
 			fail ("unexpected exception " + e);
 		}
 	}
+	
+	
+
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void  testCase3 ()
+	{
+		try
+		{
+			/*File log = new File ("/tmp/bives-cellml-test/log");
+			if (log.exists ())
+				log.delete ();
+			LOGGER.setLogFile (log);
+			LOGGER.setLogToFile (true);
+			LOGGER.setMinLevel (LOGGER.DEBUG);*/
+			LOGGER.setLogToStdErr (false);
+
+			File a = new File ("test/priebe_beuckelmann_1998-v1.cellml");
+			File b = new File ("test/priebe_beuckelmann_1998-tidy_up_gto_tags.cellml");
+			CellMLValidator val = new CellMLValidator ();
+			if (!val.validate (a))
+			{
+				LOGGER.error (val.getError (), "test case is not valid");
+				fail ("test case is not valid: " + val.getError ().toString ());
+			}
+			
+			CellMLDocument doc1 = val.getDocument ();
+
+			if (!val.validate (b))
+			{
+				LOGGER.error (val.getError (), "test case is not valid");
+				fail ("test case is not valid: " + val.getError ().toString ());
+			}
+			CellMLDocument doc2 = val.getDocument ();
+
+			
+//			TreeDocument td1 = new TreeDocument (doc1);
+//			TreeDocument td2 = new TreeDocument (XmlTools.readDocument (url2), url2.toURI ());
+			
+			
+			CellMLDiff differ = new CellMLDiff (doc1, doc2);
+			differ.mapTrees ();
+			checkDiff (differ);
+			
+//			
+//			System.out.println (differ.getDiff());
+//			System.out.println (differ.getHTMLReport());
+			
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail ("unexpected exception while diffing cellml models " + FILE_1 + " and " + FILE_2);
+		}
+	}
+	
 	
 	
 }

@@ -101,8 +101,8 @@ public class TestParser
 	@Test
 	public void test3 () throws XmlDocumentParseException, IOException, URISyntaxException, JDOMException
 	{
-		URL url1 = new URL ("http://budhat.sems.uni-rostock.de/download?downloadModel=27"),
-			url2 = new URL ("http://budhat.sems.uni-rostock.de/download?downloadModel=28");
+		URL url1 = new URL ("https://data.bio.informatik.uni-rostock.de/budhat/decker_2009-buggy-from-chastefc.cellml"),
+			url2 = new URL ("https://data.bio.informatik.uni-rostock.de/budhat/decker_2009-fixed-from-chastefc.cellml");
 		
 		TreeDocument td1 = new TreeDocument (XmlTools.readDocument (url1), url1.toURI ()),
 			td2 = new TreeDocument (XmlTools.readDocument (url2), url2.toURI ());
