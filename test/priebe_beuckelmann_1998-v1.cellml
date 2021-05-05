@@ -1,0 +1,94 @@
+<model name="priebe_beuckelmann_1998" cmeta:id="priebe_beuckelmann_1998_version01" xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cellml="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+<!-- from https://scrambler.cs.ox.ac.uk/entities/models/compare/38:2a634280b8ddfa3d9b16b396af548b07858af34d/38:5f73f1453ecaf645421548331dac225daa97cbab/show/priebe_beuckelmann_1998.cellml/displayBivesDiff -->
+   <units name="ms">
+      <unit units="second" prefix="milli"/>
+   </units>
+   <units name="per_ms">
+      <unit units="ms" exponent="-1"/>
+   </units>
+   <units name="mV">
+      <unit units="volt" prefix="milli"/>
+   </units>
+   <units name="per_mV">
+      <unit units="mV" exponent="-1"/>
+   </units>
+   <units name="per_mV_ms">
+      <unit units="mV" exponent="-1"/>
+      <unit units="ms" exponent="-1"/>
+   </units>
+   <units name="mV_per_ms">
+      <unit units="mV"/>
+      <unit units="ms" exponent="-1"/>
+   </units>
+   <units name="mS_per_uF">
+      <unit units="siemens" prefix="milli"/>
+      <unit units="farad" prefix="micro" exponent="-1"/>
+   </units>
+   <units name="pF">
+      <unit units="farad" prefix="pico"/>
+   </units>
+   <units name="uA_per_uF">
+      <unit units="ampere" prefix="micro"/>
+      <unit units="farad" prefix="micro" exponent="-1"/>
+   </units>
+   <units name="mM">
+      <unit units="mole" prefix="milli"/>
+      <unit units="litre" exponent="-1"/>
+   </units>
+   <units name="mM_per_ms">
+      <unit units="mM"/>
+      <unit units="ms" exponent="-1"/>
+   </units>
+   <units name="joule_per_mole_kelvin">
+      <unit units="joule"/>
+      <unit units="mole" exponent="-1"/>
+      <unit units="kelvin" exponent="-1"/>
+   </units>
+   <units name="coulomb_per_millimole">
+      <unit units="coulomb"/>
+      <unit units="mole" prefix="milli" exponent="-1"/>
+   </units>
+   <units name="um">
+      <unit units="metre" prefix="micro"/>
+   </units>
+   <units name="cm2">
+      <unit units="metre" prefix="centi" exponent="2"/>
+   </units>
+   <units name="fL">
+      <unit units="litre" prefix="femto"/>
+   </units>
+   <component name="IKs_Xs_gate">
+      <variable name="Xs" units="dimensionless" initial_value="0.00885658064818147" public_interface="out"/>
+      <variable name="alpha_Xs" units="per_ms"/>
+      <variable name="beta_Xs" units="per_ms"/>
+      <variable name="V" units="mV" public_interface="in"/>
+      <variable name="time" units="ms" public_interface="in"/>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+         <apply>
+            <eq/>
+            <ci>beta_Xs</ci>
+            <apply>
+               <divide/>
+               <cn cellml:units="per_ms">5.87e-3</cn>
+               <apply>
+                  <plus/>
+                  <cn cellml:units="dimensionless">1</cn>
+                  <apply>
+                     <exp/>
+                     <apply>
+                        <divide/>
+                        <apply>
+                           <plus/>
+                           <cn cellml:units="mV">5.95</cn>
+                           <ci>V</ci>
+                           <cn cellml:units="mV">10</cn>
+                        </apply>
+                        <cn cellml:units="mV">15.82</cn>
+                     </apply>
+                  </apply>
+               </apply>
+            </apply>
+         </apply>
+      </math>
+   </component>
+</model>
