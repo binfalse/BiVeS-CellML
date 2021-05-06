@@ -362,20 +362,20 @@ extends GraphProducer
 						switch (role.role)
 						{
 							case CellMLReactionSubstance.ROLE_REACTANT:
-								rnReaction.addInputA (subst, null);
+								rnReaction.addInputA (subst, null, null);
 								break;
 							case CellMLReactionSubstance.ROLE_PRODUCT:
-								rnReaction.addOutputA (subst, null);
+								rnReaction.addOutputA (subst, null, null);
 								break;
 							case CellMLReactionSubstance.ROLE_MODIFIER:
-								rnReaction.addModA (subst, null);
+								rnReaction.addModA (subst, null, null);
 								break;
 							case CellMLReactionSubstance.ROLE_ACTIVATOR:
 							case CellMLReactionSubstance.ROLE_CATALYST:
-								rnReaction.addModA (subst, SBOTerm.createStimulator ());
+								rnReaction.addModA (subst, SBOTerm.createStimulator (), null);
 								break;
 							case CellMLReactionSubstance.ROLE_INHIBITOR:
-								rnReaction.addModA (subst, SBOTerm.createInhibitor ());
+								rnReaction.addModA (subst, SBOTerm.createInhibitor (), null);
 								break;
 							case CellMLReactionSubstance.ROLE_RATE:
 								continue;
@@ -462,20 +462,20 @@ extends GraphProducer
 						switch (role.role)
 						{
 							case CellMLReactionSubstance.ROLE_REACTANT:
-								rnReaction.addInputB (subst, null);
+								rnReaction.addInputB (subst, null, null);
 								break;
 							case CellMLReactionSubstance.ROLE_PRODUCT:
-								rnReaction.addOutputB (subst, null);
+								rnReaction.addOutputB (subst, null, null);
 								break;
 							case CellMLReactionSubstance.ROLE_MODIFIER:
-								rnReaction.addModB (subst, null);
+								rnReaction.addModB (subst, null, null);
 								break;
 							case CellMLReactionSubstance.ROLE_ACTIVATOR:
 							case CellMLReactionSubstance.ROLE_CATALYST:
-								rnReaction.addModB (subst, SBOTerm.createStimulator ());
+								rnReaction.addModB (subst, SBOTerm.createStimulator (), null);
 								break;
 							case CellMLReactionSubstance.ROLE_INHIBITOR:
-								rnReaction.addModB (subst, SBOTerm.createInhibitor ());
+								rnReaction.addModB (subst, SBOTerm.createInhibitor (), null);
 								break;
 							case CellMLReactionSubstance.ROLE_RATE:
 								continue;
